@@ -68,12 +68,12 @@ jobs:
           path: htmlcov
           destination: test-reports
 
-  build_app_staging:
+  build_app_worldquant:
     docker:
       - image: circleci/node:9.2.0
 
     environment:
-      TAG: staging
+      TAG: worldquant
       DOCKER_ORG: metagenscope
 
     steps:
@@ -116,26 +116,12 @@ jobs:
             docker tag $MAIN_SERVICE:$COMMIT $DOCKER_ORG/$MAIN_SERVICE:$TAG
             docker push $DOCKER_ORG/$MAIN_SERVICE
 
-  deploy_staging:
-    docker:
-      - image: circleci/node:9.2.0
-
-    working_directory: ~/repo
-
-    steps:
-      - run:
-          name: Deploy to emptyfish.net
-          command: |
-            set -x
-            echo "$DROPLET_IP $DROPLET_HOST_KEY" > ~/tmp_auth_hosts
-            ssh -A -o "UserKnownHostsFile ~/tmp_auth_hosts" $DROPLET_USER@$DROPLET_IP "cd /home/metagenscope/metagenscope-app && sh deploy.sh"
-
-  build_worker_staging:
+  build_worker_worldquant:
     docker:
       - image: circleci/node:9.2.0
 
     environment:
-      TAG: staging
+      TAG: worldquant
       DOCKER_ORG: metagenscope
 
     steps:
@@ -185,25 +171,17 @@ workflows:
     jobs:
       - test_app:
           context: org-global
-      - build_app_staging:
+      - build_app_worldquant:
           context: org-global
           filters:
             branches:
-              only: develop
+              only: instance/worldquant
           requires:
             - test_app
-      - build_worker_staging:
+      - build_worker_worldquant:
           context: org-global
           filters:
             branches:
-              only: develop
+              only: instance/worldquant
           requires:
             - test_app
-      - deploy_staging:
-          context: org-global
-          filters:
-            branches:
-              only: develop
-          requires:
-            - build_app_staging
-            - build_worker_staging
