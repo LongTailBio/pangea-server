@@ -1,6 +1,5 @@
 """Base display module type."""
 
-import json
 from uuid import UUID
 
 from flask_api.exceptions import NotFound, ParseError
@@ -8,6 +7,8 @@ from mongoengine.errors import DoesNotExist
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest
+
+from .utils import jsonify
 
 
 class DisplayModule:
@@ -61,7 +62,7 @@ class DisplayModule:
         module_results = getattr(query_result, cls.name())
         result = cls.get_data(module_results)
         # Conversion to dict is necessary to avoid object not callable TypeError
-        result_dict = json.loads(result.to_json())
+        result_dict = jsonify(result)
         return result_dict, 200
 
     @classmethod

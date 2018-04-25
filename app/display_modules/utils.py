@@ -9,11 +9,25 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.extensions import celery, celery_logger
 
 
+def scrub_object(obj):
+    """Remove protected fields from object (dict or list)."""
+    if isinstance(obj, list):
+        return [scrub_object(item) for item in obj]
+    elif isinstance(obj, dict):
+        clean_dict = {key: scrub_object(value)
+                      for key, value in obj.items()
+                      if not key.startswith('_')}
+        return clean_dict
+    return obj
+
+
 def jsonify(mongo_doc):
     """Convert Mongo document to JSON for serialization."""
     if isinstance(mongo_doc, (QuerySet, list,)):
         return [jsonify(element) for element in mongo_doc]
-    return mongo_doc.to_mongo().to_dict()
+    result_dict = mongo_doc.to_mongo().to_dict()
+    clean_dict = scrub_object(result_dict)
+    return clean_dict
 
 
 def persist_result_helper(result, analysis_result_id, result_name):
