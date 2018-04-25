@@ -29,7 +29,7 @@ def wrap_result(result):
 def create_saved_sample(index, uuid=None):
     """Create and save a Sample with all the fixings (plus gravy)."""
     print(f'Creating sample #{index}')
-    
+
     if uuid is None:
         uuid = UUID(f'00000000-0000-4000-8000-10000000000{index}')
 
