@@ -3,6 +3,7 @@
 from celery import chain
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
+from app.display_modules.utils import jsonify
 
 from .tasks import filter_gene_results
 
@@ -12,6 +13,19 @@ class GenericGeneWrangler(DisplayModuleWrangler):
 
     tool_result_name = None
     result_name = None
+
+    @classmethod
+    def help_run_generic_sample(cls, sample, top_n, persist_task):
+        """Gather single sample and process."""
+        samples = [jsonify(sample)]
+        filter_task = filter_gene_results.s(samples,
+                                            cls.tool_result_name,
+                                            top_n)
+        persist_signature = persist_task.s(sample.analysis_result.pk,
+                                           cls.result_name)
+        task_chain = chain(filter_task, persist_signature)
+        result = task_chain.delay()
+        return result
 
     @classmethod
     def help_run_generic_gene_group(cls, sample_group, samples, top_n, persist_task):
