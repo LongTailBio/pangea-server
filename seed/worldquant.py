@@ -60,8 +60,8 @@ def create_saved_group(uuid=None):
     if uuid is None:
         uuid = uuid4()
     analysis_result = AnalysisResultMeta().save()
-    group_description = 'April 29 - May 2, 2018 :: Los Angeles'
-    sample_group = SampleGroup(name='Milken Conference 2018',
+    group_description = 'April 29 - May 2, 2018: Los Angeles'
+    sample_group = SampleGroup(name='2018 Milken Conference',
                                analysis_result=analysis_result,
                                description=group_description,
                                theme='world-quant')
