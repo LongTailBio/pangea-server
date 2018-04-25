@@ -39,6 +39,10 @@ def create_saved_sample(index, uuid=None):
     # Add results
     analysis_result.reads_classified = wrap_result(load_reads_classified())
     analysis_result.taxa_tree = wrap_result(TaxaTreeFactory())
+    analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
+    analysis_result.methyltransferases = wrap_result(MethylsFactory())
+    analysis_result.virulence_factors = wrap_result(VFDBFactory())
+    analysis_result.functional_genes = wrap_result(FunctionalGenesFactory())
 
     # Persist analysis result
     analysis_result.save()
