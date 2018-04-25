@@ -116,54 +116,6 @@ jobs:
             docker tag $MAIN_SERVICE:$COMMIT $DOCKER_ORG/$MAIN_SERVICE:$TAG
             docker push $DOCKER_ORG/$MAIN_SERVICE
 
-  build_worker_worldquant:
-    docker:
-      - image: circleci/node:9.2.0
-
-    environment:
-      TAG: worldquant
-      DOCKER_ORG: metagenscope
-
-    steps:
-      - checkout
-
-      - setup_remote_docker
-
-      - run:
-          name: Set COMMIT env var
-          command: echo 'export COMMIT=${CIRCLE_SHA1::8}' >> $BASH_ENV
-
-      - run:
-          name: Sign in to Docker Hub
-          command: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
-
-      - run:
-          name: Build and push redis
-          environment:
-            DB_SERVICE: redis
-          command: |
-            docker build ./database_docker/redis -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push rabbitmq
-          environment:
-            DB_SERVICE: rabbitmq
-          command: |
-            docker build ./database_docker/rabbitmq -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push metagenscope-worker
-          environment:
-            DB_SERVICE: metagenscope-worker
-          command: |
-            docker build . -f Dockerfile-worker -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
 workflows:
   version: 2
 
@@ -172,13 +124,6 @@ workflows:
       - test_app:
           context: org-global
       - build_app_worldquant:
-          context: org-global
-          filters:
-            branches:
-              only: instance/worldquant
-          requires:
-            - test_app
-      - build_worker_worldquant:
           context: org-global
           filters:
             branches:
