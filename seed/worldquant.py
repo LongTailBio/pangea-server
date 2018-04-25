@@ -12,6 +12,7 @@ from app.display_modules.microbe_directory.tests.factory import MicrobeDirectory
 from app.display_modules.pathways.tests.factory import PathwayFactory
 from app.display_modules.read_stats.tests.factory import ReadStatsFactory
 from app.display_modules.reads_classified.tests.factory import ReadsClassifiedFactory
+from app.display_modules.taxa_tree.tests.factory import TaxaTreeFactory
 from app.display_modules.virulence_factors.tests.factory import VFDBFactory
 
 from app.samples.sample_models import Sample
@@ -31,12 +32,13 @@ def create_saved_sample(index, uuid=None):
     print(f'Creating sample #{index}')
 
     if uuid is None:
-        uuid = UUID(f'00000000-0000-4000-8000-10000000000{index}')
+        uuid = UUID(f'00000000-0000-4000-8000-100000000{index:03}')
 
     analysis_result = AnalysisResultMeta()
 
     # Add results
     analysis_result.reads_classified = wrap_result(load_reads_classified())
+    analysis_result.taxa_tree = wrap_result(TaxaTreeFactory())
 
     # Persist analysis result
     analysis_result.save()
