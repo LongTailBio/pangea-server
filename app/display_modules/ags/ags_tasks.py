@@ -1,23 +1,10 @@
 """Tasks for generating Average Genome Size results."""
 
-from numpy import percentile
-
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import boxplot, persist_result_helper
 from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 from .ags_models import AGSResult
-
-
-def boxplot(values):
-    """Calculate percentiles needed for a boxplot."""
-    percentiles = percentile(values, [0, 25, 50, 75, 100])
-    result = {'min_val': percentiles[0],
-              'q1_val': percentiles[1],
-              'mean_val': percentiles[2],
-              'q3_val': percentiles[3],
-              'max_val': percentiles[4]}
-    return result
 
 
 @celery.task()

@@ -4,6 +4,7 @@ from pprint import pformat
 
 from mongoengine import QuerySet
 from mongoengine.errors import ValidationError
+from numpy import percentile
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.extensions import celery, celery_logger
@@ -45,6 +46,17 @@ def persist_result_helper(result, analysis_result_id, result_name):
         wrapper.data = None
         wrapper.status = 'E'
         analysis_result.save()
+
+
+def boxplot(values):
+    """Calculate percentiles needed for a boxplot."""
+    percentiles = percentile(values, [0, 25, 50, 75, 100])
+    result = {'min_val': percentiles[0],
+              'q1_val': percentiles[1],
+              'mean_val': percentiles[2],
+              'q3_val': percentiles[3],
+              'max_val': percentiles[4]}
+    return result
 
 
 @celery.task()
