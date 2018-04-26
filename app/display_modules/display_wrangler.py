@@ -28,11 +28,11 @@ class DisplayModuleWrangler:
         pass
 
     @classmethod
-    def help_run_sample_group(cls, sample_group_id, module_name):
+    def help_run_sample_group(cls, sample_group_id, module_name, is_group_tool=False):
         """Gather group of samples and process."""
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).first()
 
-        if len(sample_group.sample_ids) <= 1:
+        if not is_group_tool and len(sample_group.sample_ids) <= 1:
             raise EmptyGroupResult()
 
         samples = jsonify(sample_group.samples)

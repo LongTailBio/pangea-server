@@ -11,4 +11,5 @@ class TestHmpSitesUploads(BaseToolResultTest):
 
     def test_upload_hmp_sites(self):
         """Ensure a raw HMP Sites tool result can be uploaded."""
-        self.generic_test_upload(create_values(), MODULE_NAME)
+        payload = create_values()
+        self.generic_test_upload_sample(payload, MODULE_NAME)

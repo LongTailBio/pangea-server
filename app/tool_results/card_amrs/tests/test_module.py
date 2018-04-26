@@ -12,11 +12,10 @@ class TestCARDAMRModel(BaseToolResultTest):
 
     def test_add_card_amr(self):
         """Ensure CARD AMR tool result model is created correctly."""
-
         card_amrs = CARDAMRToolResult(**create_values())
-        self.generic_add_test(card_amrs, MODULE_NAME)
+        self.generic_add_sample_tool_test(card_amrs, MODULE_NAME)
 
     def test_upload_card_amr(self):
         """Ensure a raw Methyl tool result can be uploaded."""
-
-        self.generic_test_upload(create_values(), MODULE_NAME)
+        payload = create_values()
+        self.generic_test_upload_sample(payload, MODULE_NAME)

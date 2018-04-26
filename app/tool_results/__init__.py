@@ -1,5 +1,6 @@
 """Modules for genomic analysis tool outputs."""
 
+from .beta_diversity import BetaDiversityResultModule
 from .card_amrs import CARDAMRResultModule
 from .food_pet import FoodPetResultModule
 from .hmp_sites import HmpSitesResultModule
@@ -18,6 +19,7 @@ from .vfdb import VFDBResultModule
 
 
 all_tool_results = [  # pylint: disable=invalid-name
+    BetaDiversityResultModule,
     CARDAMRResultModule,
     FoodPetResultModule,
     HmpSitesResultModule,

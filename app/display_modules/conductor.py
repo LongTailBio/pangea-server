@@ -57,7 +57,7 @@ class DisplayModuleConductor:
             module.get_wrangler().help_run_sample(sample_id=sample.uuid,
                                                   module_name=module_name)
 
-    def direct_sample_group(self, sample_group):
+    def direct_sample_group(self, sample_group, is_group_tool=False):
         """Kick off computation for a sample group's relevant DisplayModules."""
         tools_present_in_all = set(sample_group.tools_present)
         valid_modules = self.get_valid_modules(tools_present_in_all)
@@ -66,7 +66,8 @@ class DisplayModuleConductor:
             module_name = module.name()
             try:
                 module.get_wrangler().help_run_sample_group(sample_group_id=sample_group.id,
-                                                            module_name=module_name)
+                                                            module_name=module_name,
+                                                            is_group_tool=is_group_tool)
             except EmptyGroupResult:
                 current_app.logger.info(f'Attempted to run {module_name} sample group '
                                         'without at least two samples')
@@ -131,4 +132,4 @@ class GroupConductor(DisplayModuleConductor):
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""
         sample_group = SampleGroup.objects.get(id=self.sample_group_uuid)
-        self.direct_sample_group(sample_group)
+        self.direct_sample_group(sample_group, is_group_tool=True)

@@ -13,6 +13,8 @@ class ToolResult(mongoDB.EmbeddedDocument):
     meta = {'abstract': True}
 
 
+# This is a Document (not an EmbeddedDocument) because it is
+# attached to a SQL SampleGroup, not nested within a Mongo Sample
 class GroupToolResult(mongoDB.Document):
     """Base mongo group tool result class."""
 

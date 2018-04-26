@@ -16,7 +16,7 @@ class TestHmpSitesModel(BaseToolResultTest):
     def test_add_hmp_sites_result(self):
         """Ensure HMP Sites result model is created correctly."""
         hmp_sites = create_hmp_sites()
-        self.generic_add_test(hmp_sites, MODULE_NAME)
+        self.generic_add_sample_tool_test(hmp_sites, MODULE_NAME)
 
     def test_add_malformed_hmp_sites_result(self):  # pylint: disable=invalid-name
         """Ensure validation fails for value outside of [0,1]."""

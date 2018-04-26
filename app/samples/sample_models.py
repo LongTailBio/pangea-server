@@ -11,6 +11,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
 from app.extensions import mongoDB
 from app.tool_results import all_tool_results
+from app.tool_results.modules import SampleToolResultModule
 
 
 class BaseSample(Document):
@@ -37,7 +38,8 @@ class BaseSample(Document):
 # Create actual Sample class based on modules present at runtime
 Sample = type('Sample', (BaseSample,), {
     module.name(): EmbeddedDocumentField(module.result_model())
-    for module in all_tool_results})
+    for module in all_tool_results
+    if issubclass(module, SampleToolResultModule)})
 
 
 class SampleSchema(BaseSchema):

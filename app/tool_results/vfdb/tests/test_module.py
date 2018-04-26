@@ -12,10 +12,10 @@ class TestVFDBModel(BaseToolResultTest):
         """Ensure VFDB tool result model is created correctly."""
 
         vfdbs = VFDBToolResult(**create_values())
-        self.generic_add_test(vfdbs, 'vfdb_quantify')
+        self.generic_add_sample_tool_test(vfdbs, 'vfdb_quantify')
 
     def test_upload_vfdb(self):
         """Ensure a raw Methyl tool result can be uploaded."""
 
-        self.generic_test_upload(create_values(),
-                                 'vfdb_quantify')
+        payload = create_values()
+        self.generic_test_upload_sample(payload, 'vfdb_quantify')
