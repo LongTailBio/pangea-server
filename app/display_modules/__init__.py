@@ -16,6 +16,7 @@ from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.display_modules.taxa_tree import TaxaTreeDisplayModule
 from app.display_modules.taxon_abundance import TaxonAbundanceDisplayModule
 from app.display_modules.virulence_factors import VirulenceFactorsDisplayModule
+from app.display_modules.volcano import VolcanoDisplayModule
 
 
 all_display_modules = [  # pylint: disable=invalid-name
@@ -35,4 +36,5 @@ all_display_modules = [  # pylint: disable=invalid-name
     TaxaTreeDisplayModule,
     TaxonAbundanceDisplayModule,
     VirulenceFactorsDisplayModule,
+    VolcanoDisplayModule,
 ]
