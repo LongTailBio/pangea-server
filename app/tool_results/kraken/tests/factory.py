@@ -17,17 +17,27 @@ PHYLA = ['acanthocephala', 'annelida', 'arthropoda', 'brachiopoda', 'bryozoa',
          'tardigrada', 'xenacoelomorpha']
 
 
+def create_taxa_pair(depth=None):
+    """Create taxa name and value for given depth."""
+    if depth is None:
+        depth = random.randint(1, 3)
+    entry_name = f'd__{random.choice(DOMAINS)}'
+    if depth >= 2:
+        entry_name = f'{entry_name}|k__{random.choice(KINGDOMS)}'
+    if depth >= 3:
+        entry_name = f'{entry_name}|p__{random.choice(PHYLA)}'
+    value = random.randint(0, 8e07)
+
+    return (entry_name, value)
+
+
 def create_taxa(taxa_count):
     """Create taxa dictionary."""
-    taxa = {}
-    while len(taxa) < taxa_count:
-        depth = random.randint(1, 3)
-        entry = f'd__{random.choices(DOMAINS)[0]}'
-        if depth >= 2:
-            entry = f'{entry}|k__{random.choices(KINGDOMS)[0]}'
-        if depth >= 3:
-            entry = f'{entry}|p__{random.choices(PHYLA)[0]}'
-        taxa[entry] = random.randint(0, 8e07)
+    # Make sure we have at least one root element to avoid divide-by-zero
+    # https://github.com/bchrobot/metagenscope-server/issues/76
+    taxa = dict((create_taxa_pair(depth=1),))
+    while len(taxa) < taxa_count - 1:
+        taxa.update((create_taxa_pair(),))
     return taxa
 
 
