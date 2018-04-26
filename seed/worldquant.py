@@ -4,6 +4,8 @@ from uuid import UUID, uuid4
 
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
+from app.display_modules.alpha_div.tests.factory import AlphaDivFactory
+from app.display_modules.beta_div.tests.factory import BetaDiversityFactory
 from app.display_modules.card_amrs.tests.factory import CARDGenesFactory
 from app.display_modules.functional_genes.tests.factory import FunctionalGenesFactory
 from app.display_modules.macrobes.tests.factory import MacrobeFactory
@@ -14,6 +16,7 @@ from app.display_modules.read_stats.tests.factory import ReadStatsFactory
 from app.display_modules.reads_classified.tests.factory import ReadsClassifiedFactory
 from app.display_modules.taxa_tree.tests.factory import TaxaTreeFactory
 from app.display_modules.virulence_factors.tests.factory import VFDBFactory
+from app.display_modules.volcano.tests.factory import VolcanoFactory
 
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
@@ -71,7 +74,9 @@ def create_saved_group(uuid=None):
     db.session.commit()
 
     # Add the results
+    analysis_result.alpha_diversity = wrap_result(AlphaDivFactory())
     analysis_result.average_genome_size = ags
+    analysis_result.beta_diversity = wrap_result(BetaDiversityFactory())
     analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
     analysis_result.functional_genes = wrap_result(FunctionalGenesFactory())
     analysis_result.hmp = hmp
@@ -84,6 +89,7 @@ def create_saved_group(uuid=None):
     analysis_result.sample_similarity = sample_similarity
     analysis_result.taxon_abundance = taxon_abundance
     analysis_result.virulence_factors = wrap_result(VFDBFactory())
+    analysis_result.volcano = wrap_result(VolcanoFactory())
     analysis_result.save()
 
     return sample_group
