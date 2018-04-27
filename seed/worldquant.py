@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.display_modules.alpha_div.tests.factory import AlphaDivFactory
+from app.display_modules.ancestry.tests.factory import AncestryFactory
 from app.display_modules.beta_div.tests.factory import BetaDiversityFactory
 from app.display_modules.card_amrs.tests.factory import CARDGenesFactory
 from app.display_modules.functional_genes.tests.factory import FunctionalGenesFactory
@@ -45,6 +46,7 @@ def create_saved_sample(index, uuid=None):
     analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
     analysis_result.methyltransferases = wrap_result(MethylsFactory())
     analysis_result.pathways = wrap_result(PathwayFactory())
+    analysis_result.putative_ancestry = wrap_result(AncestryFactory())
     analysis_result.virulence_factors = wrap_result(VFDBFactory())
     analysis_result.functional_genes = wrap_result(FunctionalGenesFactory())
 
@@ -76,6 +78,7 @@ def create_saved_group(uuid=None):
 
     # Add the results
     analysis_result.alpha_diversity = wrap_result(AlphaDivFactory())
+    analysis_result.putative_ancestry = wrap_result(AncestryFactory())
     analysis_result.average_genome_size = ags
     analysis_result.beta_diversity = wrap_result(BetaDiversityFactory())
     analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
