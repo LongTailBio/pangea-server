@@ -5,6 +5,8 @@ from app.display_modules.sample_similarity.wrangler import SampleSimilarityWrang
 from app.samples.sample_models import Sample
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.kraken.tests.factory import create_kraken
+from app.tool_results.krakenhll import KrakenHLLResultModule
+from app.tool_results.krakenhll.tests.factory import create_krakenhll
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
@@ -13,6 +15,7 @@ from tests.utils import add_sample_group
 
 
 KRAKEN_NAME = KrakenResultModule.name()
+KRAKENHLL_NAME = KrakenHLLResultModule.name()
 METAPHLAN2_NAME = Metaphlan2ResultModule.name()
 
 
@@ -29,6 +32,7 @@ class TestSampleSimilarityWrangler(BaseTestCase):
                 'name': f'Sample{i}',
                 'metadata': metadata,
                 KRAKEN_NAME: create_kraken(),
+                KRAKENHLL_NAME: create_krakenhll(),
                 METAPHLAN2_NAME: create_metaphlan2(),
             }
             return Sample(**sample_data).save()

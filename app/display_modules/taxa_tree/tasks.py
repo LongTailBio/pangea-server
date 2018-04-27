@@ -4,6 +4,7 @@ from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 
 from .models import TaxaTreeResult
 
@@ -82,9 +83,12 @@ def trees_from_sample(sample):
     metaphlan2 = reduce_taxa_list(metaphlan2['taxa'])
     kraken = sample[KrakenResultModule.name()]
     kraken = reduce_taxa_list(kraken['taxa'])
+    krakenhll = sample[KrakenHLLResultModule.name()]
+    krakenhll = reduce_taxa_list(krakenhll['taxa'])
     return {
         'kraken': kraken,
         'metaphlan2': metaphlan2,
+        'krakenhll': krakenhll,
     }
 
 

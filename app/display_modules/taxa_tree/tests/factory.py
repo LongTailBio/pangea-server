@@ -58,3 +58,8 @@ class TaxaTreeFactory(factory.mongoengine.MongoEngineFactory):
     def kraken(self):  # pylint: disable=no-self-use
         """Generate random kraken."""
         return generate_random_tree()
+
+    @factory.lazy_attribute
+    def krakenhll(self):  # pylint: disable=no-self-use
+        """Generate random krakenhll."""
+        return generate_random_tree()

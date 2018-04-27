@@ -6,6 +6,8 @@ from app.display_modules.taxon_abundance import TaxonAbundanceResult
 from app.display_modules.taxon_abundance.constants import MODULE_NAME
 from app.display_modules.taxon_abundance.wrangler import TaxonAbundanceWrangler
 from app.samples.sample_models import Sample
+from app.tool_results.krakenhll import KrakenHLLResultModule
+from app.tool_results.krakenhll.tests.factory import create_krakenhll
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.kraken.tests.factory import create_kraken
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
@@ -74,6 +76,7 @@ class TestTaxonAbundanceResult(BaseDisplayModuleTest):
                 'name': f'Sample{i}',
                 'metadata': {'foobar': f'baz{i}'},
                 KrakenResultModule.name(): create_kraken(),
+                KrakenHLLResultModule.name(): create_krakenhll(),
                 Metaphlan2ResultModule.name(): create_metaphlan2(),
             }).save()
 

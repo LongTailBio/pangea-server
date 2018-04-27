@@ -1,6 +1,7 @@
 """Taxon Tree display module."""
 
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.display_modules.display_module import DisplayModule
 
@@ -15,7 +16,7 @@ class TaxaTreeDisplayModule(DisplayModule):
     @staticmethod
     def required_tool_results():
         """Return a list of the necessary result modules for taxa tree."""
-        return [Metaphlan2ResultModule, KrakenResultModule]
+        return [Metaphlan2ResultModule, KrakenResultModule, KrakenHLLResultModule]
 
     @classmethod
     def name(cls):

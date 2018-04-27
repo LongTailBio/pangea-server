@@ -3,11 +3,13 @@
 from app.display_modules.conductor import DisplayModuleConductor
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from tests.base import BaseTestCase
 
 
 KRAKEN_NAME = KrakenResultModule.name()
+KRAKENHLL_NAME = KrakenHLLResultModule.name()
 METAPHLAN2_NAME = Metaphlan2ResultModule.name()
 
 
@@ -21,7 +23,7 @@ class TestDisplayModuleConductor(BaseTestCase):
 
     def test_get_valid_modules(self):
         """Ensure valid_modules is computed correctly."""
-        tools_present = set([KRAKEN_NAME, METAPHLAN2_NAME])
+        tools_present = set([KRAKEN_NAME, KRAKENHLL_NAME, METAPHLAN2_NAME])
         conductor = DisplayModuleConductor(KrakenResultModule)
         valid_modules = conductor.get_valid_modules(tools_present)
         self.assertIn(SampleSimilarityDisplayModule, valid_modules)

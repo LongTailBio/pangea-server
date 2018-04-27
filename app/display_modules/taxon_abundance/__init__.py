@@ -12,6 +12,7 @@ from app.display_modules.display_module import DisplayModule
 
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 
 from .constants import MODULE_NAME
 from .models import TaxonAbundanceResult
@@ -24,7 +25,11 @@ class TaxonAbundanceDisplayModule(DisplayModule):
     @staticmethod
     def required_tool_results():
         """Enumerate which ToolResult modules a taxon abundance sample must have."""
-        taxa_modules = [Metaphlan2ResultModule, KrakenResultModule]
+        taxa_modules = [
+            Metaphlan2ResultModule,
+            KrakenHLLResultModule,
+            KrakenResultModule,
+        ]
         return taxa_modules
 
     @classmethod

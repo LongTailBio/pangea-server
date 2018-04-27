@@ -36,8 +36,10 @@ class TaxaTreeResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-me
 
     metaphlan2 = mdb.MapField(field=mdb.DynamicField(), required=True)
     kraken = mdb.MapField(field=mdb.DynamicField(), required=True)
+    krakenhll = mdb.MapField(field=mdb.DynamicField(), required=True)
 
     def clean(self):
         """Check that model is correct."""
         validate_json_tree(self.metaphlan2)
         validate_json_tree(self.kraken)
+        validate_json_tree(self.krakenhll)

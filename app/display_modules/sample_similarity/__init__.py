@@ -13,6 +13,7 @@ points can be adjust to reflect the analyses of different tools.
 from app.display_modules.display_module import DisplayModule
 from app.display_modules.sample_similarity.constants import MODULE_NAME
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 # Re-export modules
@@ -26,7 +27,7 @@ class SampleSimilarityDisplayModule(DisplayModule):
     @staticmethod
     def required_tool_results():
         """Enumerate which ToolResult modules a sample must have."""
-        return [KrakenResultModule, Metaphlan2ResultModule]
+        return [KrakenResultModule, KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @classmethod
     def name(cls):

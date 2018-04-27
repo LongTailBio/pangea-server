@@ -6,6 +6,7 @@ from sklearn.manifold import TSNE
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .models import SampleSimilarityResult
@@ -127,26 +128,42 @@ def taxa_tool_tsne(samples, tool_name):
     return (tool, tsne_labeled)
 
 
-@celery.task()
-def sample_similarity_reducer(args, samples):
-    """Combine Sample Similarity components."""
-    categories = args[0]
-    kralen_tool, kraken_labeled = args[1]
-    metaphlan_tool, metaphlan_labeled = args[2]
-
+def update_data_records(samples, categories,
+                        kraken_labeled, krakenhll_labeled, metaphlan_labeled):
+    """Update data records."""
     data_records = []
     for sample in samples:
         sample_id = sample['name']
         data_record = {'SampleID': sample_id}
         data_record.update(kraken_labeled[sample_id])
+        data_record.update(krakenhll_labeled[sample_id])
         data_record.update(metaphlan_labeled[sample_id])
         for category_name in categories.keys():
             category_value = sample['metadata'].get(category_name, 'None')
             data_record[category_name] = category_value
         data_records.append(data_record)
+    return data_records
+
+
+@celery.task()
+def sample_similarity_reducer(args, samples):
+    """Combine Sample Similarity components."""
+    categories = args[0]
+    kraken_tool, kraken_labeled = args[1]
+    krakenhll_tool, krakenhll_labeled = args[2]
+    metaphlan_tool, metaphlan_labeled = args[3]
+
+    data_records = update_data_records(
+        samples,
+        categories,
+        kraken_labeled,
+        krakenhll_labeled,
+        metaphlan_labeled
+    )
 
     tools = {
-        KrakenResultModule.name(): kralen_tool,
+        KrakenResultModule.name(): kraken_tool,
+        KrakenHLLResultModule.name(): krakenhll_tool,
         Metaphlan2ResultModule.name(): metaphlan_tool,
     }
 

@@ -6,6 +6,7 @@ from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.kraken import KrakenResultModule
+from app.tool_results.krakenhll import KrakenHLLResultModule
 
 from .models import TaxonAbundanceResult
 
@@ -107,12 +108,18 @@ def make_taxa_table(samples, tool_name):
 def make_all_flows(samples):
     """Determine flows by tool."""
     flow_tbl = {}
-    tool_names = [Metaphlan2ResultModule.name(), KrakenResultModule.name()]
+    tool_names = [
+        Metaphlan2ResultModule.name(),
+        KrakenResultModule.name(),
+        KrakenHLLResultModule.name(),
+    ]
     for tool_name in tool_names:
         taxa_tbl = make_taxa_table(samples, tool_name)
         save_tool_name = 'kraken'
         if 'metaphlan2' in tool_name:
             save_tool_name = 'metaphlan2'
+        elif 'krakenhll' in tool_name:
+            save_tool_name = 'krakenhll'
 
         flow_tbl[save_tool_name] = make_flow(taxa_tbl)
 
