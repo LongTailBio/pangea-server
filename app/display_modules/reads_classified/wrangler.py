@@ -3,8 +3,8 @@
 from celery import chain
 
 from app.extensions import celery
-from app.display_modules.display_wrangler import DisplayModuleWrangler
-from app.display_modules.utils import jsonify, collate_samples, persist_result_helper
+from app.display_modules.display_wrangler import SharedWrangler
+from app.display_modules.utils import collate_samples, persist_result_helper
 
 from .constants import MODULE_NAME, TOOL_MODULE_NAME
 from .models import ReadsClassifiedResult
@@ -17,7 +17,7 @@ def persist_result(result_data, analysis_result_id, result_name):
     persist_result_helper(result, analysis_result_id, result_name)
 
 
-class ReadsClassifiedWrangler(DisplayModuleWrangler):
+class ReadsClassifiedWrangler(SharedWrangler):
     """Task for generating Reads Classified results."""
 
     @classmethod
@@ -31,18 +31,3 @@ class ReadsClassifiedWrangler(DisplayModuleWrangler):
         result = task_chain.delay()
 
         return result
-
-    @classmethod
-    def run_sample(cls, sample_id, sample):
-        """Gather and process a single sample."""
-        samples = [jsonify(sample)]
-        analysis_result_uuid = sample.analysis_result.pk
-
-        return cls.run_common(samples, analysis_result_uuid)
-
-    @classmethod
-    def run_sample_group(cls, sample_group, samples):
-        """Gather and process samples."""
-        analysis_result_uuid = sample_group.analysis_result_uuid
-
-        return cls.run_common(samples, analysis_result_uuid)
