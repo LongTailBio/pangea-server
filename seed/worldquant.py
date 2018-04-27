@@ -44,6 +44,7 @@ def create_saved_sample(index, uuid=None):
     analysis_result.taxa_tree = wrap_result(TaxaTreeFactory())
     analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
     analysis_result.methyltransferases = wrap_result(MethylsFactory())
+    analysis_result.pathways = wrap_result(PathwayFactory())
     analysis_result.virulence_factors = wrap_result(VFDBFactory())
     analysis_result.functional_genes = wrap_result(FunctionalGenesFactory())
 
