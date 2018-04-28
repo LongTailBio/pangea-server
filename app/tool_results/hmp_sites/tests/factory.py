@@ -12,6 +12,7 @@ def create_values():
         'oral': [random() for _ in range(randint(3, 10))],
         'urogenital_tract': [random() for _ in range(randint(3, 10))],
         'airways': [random() for _ in range(randint(3, 10))],
+        'gastrointestinal': [random() for _ in range(randint(3, 10))],
     }
 
 

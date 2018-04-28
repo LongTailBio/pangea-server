@@ -17,6 +17,7 @@ class HmpSitesResult(ToolResult):       # pylint: disable=too-few-public-methods
     oral = mongoDB.ListField(mongoDB.FloatField(), required=True)
     urogenital_tract = mongoDB.ListField(mongoDB.FloatField(), required=True)
     airways = mongoDB.ListField(mongoDB.FloatField(), required=True)
+    gastrointestinal = mongoDB.ListField(mongoDB.FloatField(), required=True)
 
     def clean(self):
         """Check that all vals are in range [0, 1] if not then error."""
@@ -31,14 +32,15 @@ class HmpSitesResult(ToolResult):       # pylint: disable=too-few-public-methods
         if not validate(self.skin,
                         self.oral,
                         self.urogenital_tract,
-                        self.airways):
+                        self.airways,
+                        self.gastrointestinal):
             msg = 'HMPSitesResult values in bad range'
             raise ValidationError(msg)
 
     @staticmethod
     def site_names():
         """Return the names of the body sites."""
-        return ['skin', 'oral', 'urogenital_tract', 'airways']
+        return ['skin', 'oral', 'urogenital_tract', 'airways', 'gastrointestinal']
 
 
 class HmpSitesResultModule(SampleToolResultModule):

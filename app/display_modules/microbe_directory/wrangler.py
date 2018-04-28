@@ -3,14 +3,14 @@
 from celery import chain
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
-from app.display_modules.utils import jsonify, collate_samples
-from app.tool_results.microbe_directory import (
-    MicrobeDirectoryToolResult,
-    MicrobeDirectoryResultModule,
-)
+from app.display_modules.utils import jsonify
 
 from .constants import MODULE_NAME
-from .tasks import microbe_directory_reducer, persist_result
+from .tasks import (
+    microbe_directory_reducer,
+    persist_result,
+    collate_microbe_directory
+)
 
 
 class MicrobeDirectoryWrangler(DisplayModuleWrangler):
@@ -19,10 +19,8 @@ class MicrobeDirectoryWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample(cls, sample_id, sample):
         """Gather single sample and process."""
-        tool_result_name = MicrobeDirectoryResultModule.name()
         samples = [jsonify(sample)]
-        collate_fields = list(MicrobeDirectoryToolResult._fields.keys())
-        collate_task = collate_samples.s(tool_result_name, collate_fields, samples)
+        collate_task = collate_microbe_directory.s(samples)
         reducer_task = microbe_directory_reducer.s()
         persist_task = persist_result.s(sample.analysis_result.pk,
                                         MODULE_NAME)
@@ -35,9 +33,7 @@ class MicrobeDirectoryWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample_group(cls, sample_group, samples):
         """Gather and process samples."""
-        tool_result_name = MicrobeDirectoryResultModule.name()
-        collate_fields = list(MicrobeDirectoryToolResult._fields.keys())
-        collate_task = collate_samples.s(tool_result_name, collate_fields, samples)
+        collate_task = collate_microbe_directory.s(samples)
         reducer_task = microbe_directory_reducer.s()
         persist_task = persist_result.s(sample_group.analysis_result_uuid, MODULE_NAME)
 
