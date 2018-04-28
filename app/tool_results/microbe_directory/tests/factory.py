@@ -1,22 +1,59 @@
 """Factory for generating Kraken result models for testing."""
 
-import random
+from random import random
 
 from app.tool_results.microbe_directory import MicrobeDirectoryToolResult
 
 
 def create_values():
     """Create microbe directory values."""
-    result = {}
-    for field in MicrobeDirectoryToolResult._fields:
-        field_value = [['NaN', random.random()]]
-        for i in range(random.randint(3, 6)):  # pylint: disable=unused-variable
-            # Create random numeric key
-            random_key = random.random() * 10
-            key = f'{random_key:.2f}'
-            field_value.append([key, random.random()])
-        result[field] = field_value
-    return result
+    return {
+        'gram_stain': {
+            'gram_positive': random(),
+            'gram_negative': random(),
+            'unknown': random(),
+        },
+        'microbiome_location': {
+            'human': random(),
+            'non_human': random(),
+            'unknown': random(),
+        },
+        'antimicrobial_susceptibility': {
+            'known_abx': random(),
+            'unknown': random(),
+        },
+        'optimal_temperature': {
+            '37c': random(),
+            'unknown': random(),
+        },
+        'extreme_environment': {
+            'mesophile': random(),
+            'unknown': random(),
+        },
+        'biofilm_forming': {
+            'yes': random(),
+            'unknown': random(),
+        },
+        'optimal_ph': {
+            'unknown': random(),
+        },
+        'animal_pathogen': {
+            'unknown': random(),
+        },
+        'spore_forming': {
+            'no': random(),
+            'unknown': random(),
+        },
+        'pathogenicity': {
+            'cogem_1': random(),
+            'cogem_2': random(),
+            'unknown': random(),
+        },
+        'plant_pathogen': {
+            'no': random(),
+            'unknown': random(),
+        }
+    }
 
 
 def create_microbe_directory():
