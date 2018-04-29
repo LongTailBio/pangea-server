@@ -33,7 +33,8 @@ def wrap_result(result):
 
 def create_saved_sample(index, uuid=None):
     """Create and save a Sample with all the fixings (plus gravy)."""
-    print(f'Creating sample #{index}')
+    if index % 10 == 0:
+        print(f'Creating sample #{index}')
 
     if uuid is None:
         uuid = UUID(f'00000000-0000-4000-8000-100000000{index:03}')
@@ -44,7 +45,9 @@ def create_saved_sample(index, uuid=None):
     analysis_result.reads_classified = wrap_result(load_reads_classified())
     analysis_result.taxa_tree = wrap_result(TaxaTreeFactory())
     analysis_result.card_amr_genes = wrap_result(CARDGenesFactory())
+    analysis_result.macrobe_abundance = wrap_result(MacrobeFactory())
     analysis_result.methyltransferases = wrap_result(MethylsFactory())
+    analysis_result.microbe_directory = wrap_result(MicrobeDirectoryFactory())
     analysis_result.pathways = wrap_result(PathwayFactory())
     analysis_result.putative_ancestry = wrap_result(AncestryFactory())
     analysis_result.virulence_factors = wrap_result(VFDBFactory())
