@@ -10,6 +10,7 @@ marshmallow==3.0.0b6
 psycopg2==2.7.4
 gunicorn==19.7.1
 pyjwt==1.5.3
+gevent==1.3a2
 
 Flask-Testing==0.7.1
 factory-boy==2.10.0
