@@ -70,3 +70,19 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('metadata', sample)
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
+
+    def test_get_sample_uuid_from_name(self):
+        """Ensure get sample uuid behaves correctly."""
+        sample_name = 'SMPL_01'
+        sample = add_sample(name=sample_name)
+        sample_uuid = str(sample.uuid)
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/samples/getid/{sample_name}',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(sample_uuid, data['data']['sample_uuid'])
+            self.assertEqual(sample_name, data['data']['sample_name'])

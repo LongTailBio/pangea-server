@@ -99,3 +99,19 @@ def add_sample_metadata(resp):  # pylint: disable=unused-argument
     except ValidationError as validation_error:
         current_app.logger.exception('Sample metadata could not be updated.')
         raise ParseError(f'Invalid Sample metadata payload: {str(validation_error)}')
+
+
+@samples_blueprint.route('/samples/getid/<sample_name>', methods=['GET'])
+def get_sample_uuid(sample_name):
+    """Return the UUID associated with a single sample."""
+    try:
+        sample = Sample.objects.get(name=sample_name)
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
+
+    sample_uuid = sample.uuid
+    result = {
+        'sample_name': sample_name,  # recapitulate for convenience
+        'sample_uuid': sample_uuid,
+    }
+    return result, 200
