@@ -43,10 +43,12 @@ def receive_sample_tool_upload(cls, resp, uuid):
         raise ParseError(str(validation_error))
 
     # Kick off middleware tasks
-    try:
-        SampleConductor(safe_uuid, cls).shake_that_baton()
-    except Exception:  # pylint: disable=broad-except
-        current_app.logger.exception('Exception while coordinating display modules.')
+    dryrun = request.args.get('dryrun', False)
+    if not dryrun:
+        try:
+            SampleConductor(safe_uuid, cls).shake_that_baton()
+        except Exception:  # pylint: disable=broad-except
+            current_app.logger.exception('Exception while coordinating display modules.')
 
     # Return payload here to avoid per-class JSON serialization
     return payload, 201
@@ -78,11 +80,13 @@ def receive_group_tool_upload(cls, resp, uuid):
         raise ParseError(str(validation_error))
 
     # Kick off middleware tasks
-    try:
-        GroupConductor(safe_uuid, cls).shake_that_baton()
-    except Exception as exc:  # pylint: disable=broad-except
-        current_app.logger.exception('Exception while coordinating display modules.')
-        current_app.logger.exception(exc)
+    dryrun = request.args.get('dryrun', False)
+    if not dryrun:
+        try:
+            GroupConductor(safe_uuid, cls).shake_that_baton()
+        except Exception as exc:  # pylint: disable=broad-except
+            current_app.logger.exception('Exception while coordinating display modules.')
+            current_app.logger.exception(exc)
 
     # Return payload here to avoid per-class JSON serialization
     return payload, 201
