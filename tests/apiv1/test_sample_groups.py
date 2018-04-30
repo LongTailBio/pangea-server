@@ -114,6 +114,27 @@ class TestSampleGroupModule(BaseTestCase):
             self.assertTrue(any(s['name'] == 'SMPL_00' for s in data['data']['samples']))
             self.assertTrue(any(s['name'] == 'SMPL_01' for s in data['data']['samples']))
 
+    def test_get_group_uuid_from_name(self):
+        """Ensure get sample uuid behaves correctly."""
+        sample_group_name = 'Sample Group One'
+        group = add_sample_group(name=sample_group_name)
+        sample_group_uuid = str(group.id)
+        sample00 = add_sample(name='SMPL_00')
+        sample01 = add_sample(name='SMPL_01')
+        group.samples = [sample00, sample01]
+        db.session.commit()
+
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/sample_groups/getid/{sample_group_name}',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(sample_group_uuid, data['data']['sample_group_uuid'])
+            self.assertEqual(sample_group_name, data['data']['sample_group_name'])
+
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database for middleware test."""
         def create_sample(i):

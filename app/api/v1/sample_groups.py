@@ -110,6 +110,22 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
         raise InternalError(str(integrity_error))
 
 
+@sample_groups_blueprint.route('/sample_groups/getid/<sample_group_name>', methods=['GET'])
+def get_sample_group_uuid(sample_group_name):
+    """Return the UUID associated with a single sample."""
+    try:
+        sample_group = SampleGroup.query.filter_by(name=sample_group_name).one()
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+    sample_group_uuid = sample_group.id
+    result = {
+        'sample_group_name': sample_group_name,  # recapitulate for convenience
+        'sample_group_uuid': sample_group_uuid,
+    }
+    return result, 200
+
+
 @sample_groups_blueprint.route('/sample_groups/<uuid>/middleware', methods=['POST'])
 def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     """Run display modules for sample group."""
