@@ -3,9 +3,9 @@
     "categories": [
       "human",
       "unknown",
-      "bacteria",
+      "bacterial",
       "viral",
-      "archaea"
+      "archaeal"
     ],
     "samples": [
       "D02",
@@ -309,7 +309,7 @@
         ]
       },
       {
-        "name": "bacteria",
+        "name": "bacterial",
         "data": [
           0.6247009170848492,
           0.9150549547549014,
@@ -511,7 +511,7 @@
         ]
       },
       {
-        "name": "archaea",
+        "name": "archaeal",
         "data": [
           0.0014702192855777653,
           0.0013656059668668368,

@@ -176,16 +176,16 @@ class TestAuthBlueprint(BaseTestCase):
         """Ensure logout fails for expired token."""
         with self.client:
             # Invalid token logout
-            time.sleep(4)
+            time.sleep(4.5)
             response = self.client.get(
                 '/api/v1/auth/logout',
                 headers=auth_headers
             )
             data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 401)
             self.assertTrue(data['status'] == 'error')
             self.assertTrue(
                 data['message'] == 'Signature expired. Please log in again.')
-            self.assertEqual(response.status_code, 401)
 
     def test_invalid_logout(self):
         """Ensure logout fails for invalid token."""
