@@ -1,14 +1,14 @@
 """Module for Microbe Directory results."""
 
 from app.tool_results.microbe_directory import MicrobeDirectoryResultModule
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME
 from .models import MicrobeDirectoryResult
 from .wrangler import MicrobeDirectoryWrangler
 
 
-class MicrobeDirectoryDisplayModule(DisplayModule):
+class MicrobeDirectoryDisplayModule(SampleToolDisplayModule):
     """Microbe Directory display module."""
 
     @staticmethod

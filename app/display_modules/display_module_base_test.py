@@ -50,14 +50,15 @@ class BaseDisplayModuleTest(BaseTestCase):
 
     def generic_run_group_test(self, sample_builder, wrangler, endpt, group_builder=None):
         """Check that we can run a wrangler on a set of samples."""
-        is_group_tool = group_builder is not None
-        if is_group_tool:
+        if group_builder is not None:
             sample_group = group_builder()
+            samples = []
         else:
             sample_group = add_sample_group(name='SampleGroup01')
-            sample_group.samples = [sample_builder(i) for i in range(6)]
+            samples = [sample_builder(i) for i in range(6)]
+            sample_group.samples = samples
         db.session.commit()
-        wrangler.help_run_sample_group(sample_group.id, endpt, is_group_tool).get()
+        wrangler.help_run_sample_group(sample_group, samples, endpt).get()
         analysis_result = sample_group.analysis_result
         self.assertIn(endpt, analysis_result)
         wrangled = getattr(analysis_result, endpt)

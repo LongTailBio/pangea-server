@@ -1,6 +1,6 @@
 """Methyls module."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.methyltransferases import MethylResultModule
 
 from .constants import MODULE_NAME
@@ -8,7 +8,7 @@ from .models import MethylResult
 from .wrangler import MethylWrangler
 
 
-class MethylsDisplayModule(DisplayModule):
+class MethylsDisplayModule(SampleToolDisplayModule):
     """Methyltransferase display module."""
 
     @staticmethod

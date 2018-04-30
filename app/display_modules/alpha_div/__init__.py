@@ -1,6 +1,6 @@
 """Module for alpha diversity results."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.alpha_diversity import AlphaDiversityResultModule
 
 from .models import AlphaDiversityResult
@@ -8,7 +8,7 @@ from .wrangler import AlphaDivWrangler
 from .constants import MODULE_NAME
 
 
-class AlphaDivDisplayModule(DisplayModule):
+class AlphaDivDisplayModule(SampleToolDisplayModule):
     """Alpha Diversity display module."""
 
     @staticmethod

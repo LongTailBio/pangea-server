@@ -1,14 +1,14 @@
 """Module for Ancestry results."""
 
 from app.tool_results.ancestry import AncestryResultModule
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME
 from .models import AncestryResult
 from .wrangler import AncestryWrangler
 
 
-class AncestryDisplayModule(DisplayModule):
+class AncestryDisplayModule(SampleToolDisplayModule):
     """Ancestry display module."""
 
     @staticmethod

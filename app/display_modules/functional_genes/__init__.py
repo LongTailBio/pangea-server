@@ -1,6 +1,6 @@
 """Virulence Factor module."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
 
 from .models import FunctionalGenesSampleDocument, FunctionalGenesResult
@@ -8,7 +8,7 @@ from .wrangler import FunctionalGenesWrangler
 from .constants import MODULE_NAME
 
 
-class FunctionalGenesDisplayModule(DisplayModule):
+class FunctionalGenesDisplayModule(SampleToolDisplayModule):
     """Virulence factors display module."""
 
     @staticmethod

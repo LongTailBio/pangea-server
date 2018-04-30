@@ -1,14 +1,14 @@
 """Module for Macrobe results."""
 
 from app.tool_results.macrobes import MacrobeResultModule
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME
 from .models import MacrobeResult
 from .wrangler import MacrobeWrangler
 
 
-class MacrobeDisplayModule(DisplayModule):
+class MacrobeDisplayModule(SampleToolDisplayModule):
     """Microbe Directory display module."""
 
     @staticmethod

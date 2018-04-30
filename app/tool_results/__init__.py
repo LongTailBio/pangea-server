@@ -1,4 +1,8 @@
+# pylint: disable=invalid-name
+
 """Modules for genomic analysis tool outputs."""
+
+from .modules import SampleToolResultModule, GroupToolResultModule
 
 from .alpha_diversity import AlphaDiversityResultModule
 from .ancestry import AncestryResultModule
@@ -21,7 +25,7 @@ from .shortbred import ShortbredResultModule
 from .vfdb import VFDBResultModule
 
 
-all_tool_results = [  # pylint: disable=invalid-name
+all_tool_results = [
     AlphaDiversityResultModule,
     AncestryResultModule,
     BetaDiversityResultModule,
@@ -42,3 +46,11 @@ all_tool_results = [  # pylint: disable=invalid-name
     ShortbredResultModule,
     VFDBResultModule,
 ]
+
+
+all_group_results = [tool for tool in all_tool_results
+                     if issubclass(tool, GroupToolResultModule)]
+
+
+all_sample_results = [tool for tool in all_tool_results
+                      if issubclass(tool, SampleToolResultModule)]

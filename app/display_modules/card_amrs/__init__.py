@@ -1,6 +1,6 @@
 """CARD Genes module."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.card_amrs import CARDAMRResultModule
 
 from .models import CARDGenesResult, CARDGenesSampleDocument
@@ -8,7 +8,7 @@ from .wrangler import CARDGenesWrangler
 from .constants import MODULE_NAME
 
 
-class CARDGenesDisplayModule(DisplayModule):
+class CARDGenesDisplayModule(SampleToolDisplayModule):
     """CARD Genes factors display module."""
 
     @staticmethod

@@ -1,6 +1,6 @@
 """Pathwaytransferase display module."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.humann2 import Humann2ResultModule
 
 from .constants import MODULE_NAME
@@ -8,7 +8,7 @@ from .models import PathwaySampleDocument, PathwayResult
 from .wrangler import PathwayWrangler
 
 
-class PathwaysDisplayModule(DisplayModule):
+class PathwaysDisplayModule(SampleToolDisplayModule):
     """Pathwaytransferase display module."""
 
     @staticmethod

@@ -3,14 +3,14 @@
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME
 from .models import TaxaTreeResult
 from .wrangler import TaxaTreeWrangler
 
 
-class TaxaTreeDisplayModule(DisplayModule):
+class TaxaTreeDisplayModule(SampleToolDisplayModule):
     """Read Stats display module."""
 
     @staticmethod

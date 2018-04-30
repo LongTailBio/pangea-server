@@ -5,7 +5,7 @@ This plot display the distribution of average genome sizes
 for different metadata attributes.
 """
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 # Re-export modules
@@ -13,7 +13,7 @@ from .ags_models import DistributionResult, AGSResult
 from .ags_wrangler import AGSWrangler
 
 
-class AGSDisplayModule(DisplayModule):
+class AGSDisplayModule(SampleToolDisplayModule):
     """AGS display module."""
 
     @classmethod

@@ -1,6 +1,6 @@
 """Module for Beta Diversity results."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import GroupToolDisplayModule
 from app.tool_results.beta_diversity import BetaDiversityResultModule
 
 from .constants import MODULE_NAME
@@ -8,7 +8,7 @@ from .models import BetaDiversityResult
 from .wrangler import BetaDiversityWrangler
 
 
-class BetaDiversityDisplayModule(DisplayModule):
+class BetaDiversityDisplayModule(GroupToolDisplayModule):
     """Tasks for generating Beta Diversity results."""
 
     @staticmethod

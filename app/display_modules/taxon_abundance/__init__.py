@@ -8,7 +8,7 @@ Hover over the plot to highlight connections. Thicker connections represent
 larger proportions of taxa in a given sample.
 """
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.kraken import KrakenResultModule
@@ -19,7 +19,7 @@ from .models import TaxonAbundanceResult
 from .wrangler import TaxonAbundanceWrangler
 
 
-class TaxonAbundanceDisplayModule(DisplayModule):
+class TaxonAbundanceDisplayModule(SampleToolDisplayModule):
     """Taxon Abundance display module."""
 
     @staticmethod

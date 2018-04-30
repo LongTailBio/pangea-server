@@ -46,7 +46,8 @@ def receive_sample_tool_upload(cls, resp, uuid):
     dryrun = request.args.get('dryrun', False)
     if not dryrun:
         try:
-            SampleConductor(safe_uuid, cls).shake_that_baton()
+            downstream_modules = SampleConductor.downstream_modules(cls)
+            SampleConductor(safe_uuid, downstream_modules).shake_that_baton()
         except Exception:  # pylint: disable=broad-except
             current_app.logger.exception('Exception while coordinating display modules.')
 
@@ -83,7 +84,8 @@ def receive_group_tool_upload(cls, resp, uuid):
     dryrun = request.args.get('dryrun', False)
     if not dryrun:
         try:
-            GroupConductor(safe_uuid, cls).shake_that_baton()
+            downstream_modules = GroupConductor.downstream_modules(cls)
+            GroupConductor(safe_uuid, downstream_modules).shake_that_baton()
         except Exception as exc:  # pylint: disable=broad-except
             current_app.logger.exception('Exception while coordinating display modules.')
             current_app.logger.exception(exc)

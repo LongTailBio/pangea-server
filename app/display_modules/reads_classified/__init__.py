@@ -4,7 +4,7 @@ Reads Classified Module.
 This chart shows the proportion of reads in each sample assigned to different groups.
 """
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.reads_classified import ReadsClassifiedResultModule
 
 # Re-export modules
@@ -13,7 +13,7 @@ from .wrangler import ReadsClassifiedWrangler
 from .constants import MODULE_NAME
 
 
-class ReadsClassifiedModule(DisplayModule):
+class ReadsClassifiedModule(SampleToolDisplayModule):
     """Reads Classified display module."""
 
     @staticmethod

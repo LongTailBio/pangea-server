@@ -14,7 +14,7 @@ and testable.
 """
 
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.display_modules.sample_similarity.constants import MODULE_NAME
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
@@ -25,7 +25,7 @@ from .models import VolcanoResult
 from .wrangler import VolcanoWrangler
 
 
-class VolcanoDisplayModule(DisplayModule):
+class VolcanoDisplayModule(SampleToolDisplayModule):
     """Sample Similarity display module."""
 
     @staticmethod

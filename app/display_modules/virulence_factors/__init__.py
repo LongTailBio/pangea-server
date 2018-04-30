@@ -1,6 +1,6 @@
 """Virulence Factor module."""
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.tool_results.vfdb import VFDBResultModule
 
 from .models import VFDBSampleDocument, VFDBResult
@@ -8,7 +8,7 @@ from .wrangler import VFDBWrangler
 from .constants import MODULE_NAME
 
 
-class VirulenceFactorsDisplayModule(DisplayModule):
+class VirulenceFactorsDisplayModule(SampleToolDisplayModule):
     """Virulence factors display module."""
 
     @staticmethod

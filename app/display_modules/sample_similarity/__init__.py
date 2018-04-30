@@ -10,7 +10,7 @@ The plot can be colored by different sample metadata and the position of the
 points can be adjust to reflect the analyses of different tools.
 """
 
-from app.display_modules.display_module import DisplayModule
+from app.display_modules.display_module import SampleToolDisplayModule
 from app.display_modules.sample_similarity.constants import MODULE_NAME
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
@@ -21,7 +21,7 @@ from .models import SampleSimilarityResult, ToolDocument
 from .wrangler import SampleSimilarityWrangler
 
 
-class SampleSimilarityDisplayModule(DisplayModule):
+class SampleSimilarityDisplayModule(SampleToolDisplayModule):
     """Sample Similarity display module."""
 
     @staticmethod
