@@ -3,7 +3,9 @@
 import json
 
 from app.samples.sample_models import Sample
+from app.tool_results.reads_classified import MODULE_NAME
 from app.tool_results.reads_classified.tests.constants import TEST_READS
+
 from tests.base import BaseTestCase
 from tests.utils import with_user
 
@@ -18,7 +20,7 @@ class TestReadsClassifiedUploads(BaseTestCase):
         sample_uuid = str(sample.uuid)
         with self.client:
             response = self.client.post(
-                f'/api/v1/samples/{sample_uuid}/reads_classified',
+                f'/api/v1/samples/{sample_uuid}/{MODULE_NAME}',
                 headers=auth_headers,
                 data=json.dumps(TEST_READS),
                 content_type='application/json',
@@ -34,4 +36,4 @@ class TestReadsClassifiedUploads(BaseTestCase):
 
         # Reload object to ensure HMP Sites result was stored properly
         sample = Sample.objects.get(uuid=sample_uuid)
-        self.assertTrue(sample.reads_classified)
+        self.assertTrue(hasattr(sample, MODULE_NAME))

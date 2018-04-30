@@ -1,3 +1,3 @@
 """Constants for read stats tool result."""
 
-MODULE_NAME = 'reads_classified'
+MODULE_NAME = 'read_classification_proportions'
