@@ -71,3 +71,31 @@ def get_single_sample(sample_uuid):
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
+
+
+@samples_blueprint.route('/samples/metadata', methods=['POST'])
+@authenticate
+def add_sample_metadata(resp):  # pylint: disable=unused-argument
+    """Update metadata for sample."""
+    try:
+        post_data = request.get_json()
+        sample_name = post_data['sample_name']
+        metadata = post_data['metadata']
+    except TypeError:
+        raise ParseError('Missing Sample metadata payload.')
+    except KeyError:
+        raise ParseError('Invalid Sample metadata payload.')
+
+    try:
+        sample = Sample.objects.get(name=sample_name)
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
+
+    try:
+        sample.metadata = metadata
+        sample.save()
+        result = sample_schema.dump(sample).data
+        return result, 200
+    except ValidationError as validation_error:
+        current_app.logger.exception('Sample metadata could not be updated.')
+        raise ParseError(f'Invalid Sample metadata payload: {str(validation_error)}')
