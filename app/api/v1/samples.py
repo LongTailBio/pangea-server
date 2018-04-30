@@ -8,9 +8,11 @@ from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.extensions import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
-from app.extensions import db
+from app.display_modules import sample_display_modules
+from app.display_modules.conductor import SampleConductor
 from app.samples.sample_models import Sample, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_helpers import authenticate
@@ -115,3 +117,25 @@ def get_sample_uuid(sample_name):
         'sample_uuid': sample_uuid,
     }
     return result, 200
+
+
+@samples_blueprint.route('/samples/<uuid>/middleware', methods=['POST'])
+def run_sample_display_modules(uuid):
+    """Run display modules for samples."""
+    try:
+        safe_uuid = UUID(uuid)
+        _ = Sample.objects.get(uuid=safe_uuid)
+    except ValueError:
+        raise ParseError('Invalid UUID provided.')
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
+
+    for module in sample_display_modules:
+        try:
+            SampleConductor(safe_uuid, display_modules=[module], downstream_groups=False)
+        except Exception:  # pylint: disable=broad-except
+            current_app.logger.exception('Exception while coordinating display modules.')
+
+    result = {'message': 'Started middleware'}
+
+    return result, 202

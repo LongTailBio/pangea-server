@@ -3,6 +3,11 @@
 import json
 from uuid import UUID, uuid4
 
+from app import db
+from app.samples.sample_models import Sample
+from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
+from app.tool_results.ancestry.tests.factory import create_ancestry
+
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user
 
@@ -86,3 +91,50 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('success', data['status'])
             self.assertEqual(sample_uuid, data['data']['sample_uuid'])
             self.assertEqual(sample_name, data['data']['sample_name'])
+
+    def prepare_middleware_test(self):  # pylint: disable=no-self-use
+        """Prepare database forsample  middleware test."""
+        data = create_ancestry()
+        args = {
+            'name': 'AncestrySample',
+            'metadata': {'foobar': 'baz'},
+            TOOL_MODULE_NAME: data,
+        }
+        sample = Sample(**args).save()
+        db.session.commit()
+
+        return sample
+
+    @with_user
+    def test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
+        """Ensure all middleware can be kicked off for sample."""
+        sample = self.prepare_middleware_test()
+
+        with self.client:
+            response = self.client.post(
+                f'/api/v1/samples/{str(sample.uuid)}/middleware',
+                headers=auth_headers,
+                content_type='application/json',
+            )
+            self.assertEqual(response.status_code, 202)
+            data = json.loads(response.data.decode())
+            self.assertEqual(data['data']['message'], 'Started middleware')
+
+    @with_user
+    def test_kick_off_single_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
+        """Ensure single middleware can be kicked off for sample."""
+        sample = self.prepare_middleware_test()
+
+        with self.client:
+            response = self.client.post(
+                f'/api/v1/samples/{str(sample.uuid)}/middleware',
+                headers=auth_headers,
+                content_type='application/json',
+                data=json.dumps({
+                    'tools': ['ancestry_summary'],
+                }),
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 202)
+            self.assertIn('success', data['status'])
+            self.assertEqual(data['data']['message'], 'Started middleware')

@@ -9,10 +9,14 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
+from app.display_modules import all_display_modules
+from app.display_modules.conductor import GroupConductor
 from app.extensions import db
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, sample_schema
 from app.users.user_helpers import authenticate
+
+# from .utils import kick_off_middleware
 
 
 sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disable=invalid-name
@@ -104,3 +108,25 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
         current_app.logger.exception('Samples could not be added to Sample Group.')
         db.session.rollback()
         raise InternalError(str(integrity_error))
+
+
+@sample_groups_blueprint.route('/sample_groups/<uuid>/middleware', methods=['POST'])
+def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
+    """Run display modules for sample group."""
+    try:
+        safe_uuid = UUID(uuid)
+        _ = SampleGroup.query.filter_by(id=safe_uuid).first()
+    except ValueError:
+        raise ParseError('Invalid UUID provided.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist.')
+
+    for module in all_display_modules:
+        try:
+            GroupConductor(safe_uuid, display_modules=[module])
+        except Exception:  # pylint: disable=broad-except
+            current_app.logger.exception('Exception while coordinating display modules.')
+
+    result = {'message': 'Started middleware'}
+
+    return result, 202

@@ -19,6 +19,8 @@ from app.display_modules.taxon_abundance import TaxonAbundanceDisplayModule
 from app.display_modules.virulence_factors import VirulenceFactorsDisplayModule
 from app.display_modules.volcano import VolcanoDisplayModule
 
+from .display_module import SampleToolDisplayModule, GroupToolDisplayModule
+
 
 all_display_modules = [  # pylint: disable=invalid-name
     AGSDisplayModule,
@@ -40,3 +42,10 @@ all_display_modules = [  # pylint: disable=invalid-name
     VirulenceFactorsDisplayModule,
     VolcanoDisplayModule,
 ]
+
+
+sample_display_modules = [module for module in all_display_modules  # pylint: disable=invalid-name
+                          if issubclass(module, SampleToolDisplayModule)]
+
+group_display_modules = [module for module in all_display_modules  # pylint: disable=invalid-name
+                         if issubclass(module, GroupToolDisplayModule)]

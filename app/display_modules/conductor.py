@@ -2,7 +2,7 @@
 
 from flask import current_app
 
-from app.display_modules import all_display_modules
+from app.display_modules import all_display_modules, sample_display_modules
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_group_results
@@ -38,7 +38,8 @@ class DisplayModuleConductor:
 class SampleConductor(DisplayModuleConductor):
     """Orchestrates Display Module generation based on SampleToolResult changes."""
 
-    def __init__(self, sample_id, display_modules, downstream_groups=True):
+    def __init__(self, sample_id, display_modules=sample_display_modules,
+                 downstream_groups=True):
         """
         Initialize the Conductor.
 
@@ -142,7 +143,8 @@ class GroupConductor(DisplayModuleConductor):
         - Manual kick-off of a set of display modules for a sample group
     """
 
-    def __init__(self, sample_group_uuid, display_modules):
+    def __init__(self, sample_group_uuid,               # pylint:disable=dangerous-default-value
+                 display_modules=all_display_modules):
         """
         Initialize the Conductor.
 
