@@ -23,7 +23,7 @@ def get_abund_tbl(sample_dict):
     for sname, path_tbl in sample_dict.items():
         abund_dict[sname] = {}
         for path_name, vals in path_tbl.items():
-            abund_dict[sname][path_name] = vals['abundance']
+            abund_dict[sname][path_name] = np.log10(vals['abundance'] + 1)
 
     # Columns are samples, rows are pathways, vals are abundances
     abund_tbl = pd.DataFrame(abund_dict).fillna(0)
