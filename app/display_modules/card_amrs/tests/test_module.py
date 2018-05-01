@@ -1,6 +1,6 @@
 """Test suite for CARD Genes diplay module."""
 
-from app.display_modules.card_amrs.wrangler import CARDGenesWrangler
+from app.display_modules.card_amrs import CARDGenesDisplayModule
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.card_amrs import CARDGenesResult
 from app.display_modules.card_amrs.constants import MODULE_NAME
@@ -41,5 +41,4 @@ class TestCARDGenesModule(BaseDisplayModuleTest):
             return Sample(**args).save()
 
         self.generic_run_group_test(create_sample,
-                                    CARDGenesWrangler,
-                                    MODULE_NAME)
+                                    CARDGenesDisplayModule)

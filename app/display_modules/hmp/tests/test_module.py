@@ -4,7 +4,7 @@ from mongoengine import ValidationError
 
 from app.analysis_results.analysis_result_models import AnalysisResultWrapper, AnalysisResultMeta
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.hmp.wrangler import HMPWrangler
+from app.display_modules.hmp import HMPDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.hmp.models import HMPResult
 from app.display_modules.hmp.constants import MODULE_NAME
@@ -52,5 +52,4 @@ class TestHMPResult(BaseDisplayModuleTest):
                           hmp_site_dists=data).save()
 
         self.generic_run_group_test(create_sample,
-                                    HMPWrangler,
-                                    MODULE_NAME)
+                                    HMPDisplayModule)

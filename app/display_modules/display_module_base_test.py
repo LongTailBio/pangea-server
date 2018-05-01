@@ -38,18 +38,23 @@ class BaseDisplayModuleTest(BaseTestCase):
         self.assertTrue(result.uuid)
         self.assertTrue(getattr(result, endpt))
 
-    def generic_run_sample_test(self, sample_kwargs, wrangler, endpt):
+    def generic_run_sample_test(self, sample_kwargs, module):
         """Check that we can run a wrangler on a single samples."""
+        wrangler = module.get_wrangler()
+        endpt = module.name()
         sample = add_sample(name='Sample01', sample_kwargs=sample_kwargs)
         db.session.commit()
-        wrangler.help_run_sample(sample.id, endpt).get()
+        wrangler.help_run_sample(sample, module).get()
+        sample.reload()
         analysis_result = sample.analysis_result.fetch()
         self.assertIn(endpt, analysis_result)
         wrangled_sample = getattr(analysis_result, endpt)
         self.assertEqual(wrangled_sample.status, 'S')
 
-    def generic_run_group_test(self, sample_builder, wrangler, endpt, group_builder=None):
+    def generic_run_group_test(self, sample_builder, module, group_builder=None):
         """Check that we can run a wrangler on a set of samples."""
+        wrangler = module.get_wrangler()
+        endpt = module.name()
         if group_builder is not None:
             sample_group = group_builder()
             samples = []
@@ -58,7 +63,7 @@ class BaseDisplayModuleTest(BaseTestCase):
             samples = [sample_builder(i) for i in range(6)]
             sample_group.samples = samples
         db.session.commit()
-        wrangler.help_run_sample_group(sample_group, samples, endpt).get()
+        wrangler.help_run_sample_group(sample_group, samples, module).get()
         analysis_result = sample_group.analysis_result
         self.assertIn(endpt, analysis_result)
         wrangled = getattr(analysis_result, endpt)

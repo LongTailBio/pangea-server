@@ -39,7 +39,7 @@ def receive_sample_tool_upload(cls, resp, uuid):
 
     try:
         payload = request.get_json()
-        tool_result = cls.make_result_model(payload)
+        tool_result = cls.make_result_model(payload).save()
         setattr(sample, cls.name(), tool_result)
         sample.save()
     except ValidationError as validation_error:

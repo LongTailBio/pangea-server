@@ -26,4 +26,4 @@ def create_values():
 def create_vfdb():
     """Create VFDBlToolResult with randomized field data."""
     packed_data = create_values()
-    return VFDBToolResult(**packed_data)
+    return VFDBToolResult(**packed_data).save()

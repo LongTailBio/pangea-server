@@ -1,6 +1,6 @@
 """Test suite for VFDB diplay module."""
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.virulence_factors.wrangler import VFDBWrangler
+from app.display_modules.virulence_factors import VirulenceFactorsDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.virulence_factors import VFDBResult
 from app.display_modules.virulence_factors.constants import MODULE_NAME
@@ -36,5 +36,4 @@ class TestVFDBModule(BaseDisplayModuleTest):
                           vfdb_quantify=create_vfdb()).save()
 
         self.generic_run_group_test(create_sample,
-                                    VFDBWrangler,
-                                    MODULE_NAME)
+                                    VirulenceFactorsDisplayModule)

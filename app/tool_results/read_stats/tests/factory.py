@@ -42,4 +42,4 @@ def create_values():
 def create_read_stats():
     """Create ReadStatsResult with randomized field data."""
     packed_data = create_values()
-    return ReadStatsToolResult(**packed_data)
+    return ReadStatsToolResult(**packed_data).save()

@@ -14,10 +14,11 @@ class TestKrakenModel(BaseTestCase):
 
     def test_add_kraken_result(self):
         """Ensure Kraken result model is created correctly."""
-        sample_data = {'name': 'SMPL_01', KRAKEN_NAME: KrakenResult(taxa=TEST_TAXA)}
+        tool_result = KrakenResult(taxa=TEST_TAXA).save()
+        sample_data = {'name': 'SMPL_01', KRAKEN_NAME: tool_result}
         sample = Sample(**sample_data).save()
         self.assertTrue(hasattr(sample, KRAKEN_NAME))
-        tool_result = getattr(sample, KRAKEN_NAME)
+        tool_result = getattr(sample, KRAKEN_NAME).fetch()
         self.assertEqual(len(tool_result.taxa), 6)
         self.assertEqual(tool_result.taxa['d__Viruses'], 1733)
         self.assertEqual(tool_result.taxa['d__Bacteria'], 7396285)

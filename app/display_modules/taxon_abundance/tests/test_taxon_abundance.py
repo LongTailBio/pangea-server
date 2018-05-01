@@ -4,7 +4,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta, Anal
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.taxon_abundance import TaxonAbundanceResult
 from app.display_modules.taxon_abundance.constants import MODULE_NAME
-from app.display_modules.taxon_abundance.wrangler import TaxonAbundanceWrangler
+from app.display_modules.taxon_abundance import TaxonAbundanceDisplayModule
 from app.samples.sample_models import Sample
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.krakenhll.tests.factory import create_krakenhll
@@ -81,5 +81,4 @@ class TestTaxonAbundanceResult(BaseDisplayModuleTest):
             }).save()
 
         self.generic_run_group_test(create_sample,
-                                    TaxonAbundanceWrangler,
-                                    MODULE_NAME)
+                                    TaxonAbundanceDisplayModule)

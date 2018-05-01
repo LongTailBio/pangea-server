@@ -1,7 +1,7 @@
 """Test suite for Reads Classified display module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.reads_classified.wrangler import ReadsClassifiedWrangler
+from app.display_modules.reads_classified import ReadsClassifiedModule
 from app.display_modules.reads_classified.models import ReadsClassifiedResult
 from app.display_modules.reads_classified.constants import MODULE_NAME, TOOL_MODULE_NAME
 from app.display_modules.reads_classified.tests.factory import ReadsClassifiedFactory
@@ -34,7 +34,7 @@ class TestReadsClassifiedModule(BaseDisplayModuleTest):
         kwargs = {
             TOOL_MODULE_NAME: create_read_stats(),
         }
-        self.generic_run_sample_test(kwargs, ReadsClassifiedWrangler, MODULE_NAME)
+        self.generic_run_sample_test(kwargs, ReadsClassifiedModule)
 
     def test_run_reads_classified_sample_group(self):  # pylint: disable=invalid-name
         """Ensure ReadsClassified run_sample_group produces correct results."""
@@ -48,5 +48,4 @@ class TestReadsClassifiedModule(BaseDisplayModuleTest):
             return Sample(**args).save()
 
         self.generic_run_group_test(create_sample,
-                                    ReadsClassifiedWrangler,
-                                    MODULE_NAME)
+                                    ReadsClassifiedModule)

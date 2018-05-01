@@ -1,6 +1,7 @@
 """Test suite for Sample Similarity Wrangler."""
 
 from app import db
+from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.display_modules.sample_similarity.wrangler import SampleSimilarityWrangler
 from app.samples.sample_models import Sample
 from app.tool_results.kraken import KrakenResultModule
@@ -43,7 +44,7 @@ class TestSampleSimilarityWrangler(BaseTestCase):
         db.session.commit()
         SampleSimilarityWrangler.help_run_sample_group(sample_group,
                                                        samples,
-                                                       'sample_similarity').get()
+                                                       SampleSimilarityDisplayModule).get()
         analysis_result = sample_group.analysis_result
         self.assertIn('sample_similarity', analysis_result)
         sample_similarity = analysis_result.sample_similarity

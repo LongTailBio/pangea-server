@@ -1,8 +1,5 @@
 """The base Display Module Wrangler module."""
 
-from app.display_modules.utils import jsonify
-from app.samples.sample_models import Sample
-
 
 class DisplayModuleWrangler:
     """The base Display Module Wrangler module."""
@@ -13,11 +10,12 @@ class DisplayModuleWrangler:
         pass
 
     @classmethod
-    def help_run_sample(cls, sample_id, module_name):
+    def help_run_sample(cls, sample, module):
         """Gather single sample and process."""
-        sample = Sample.objects.get(uuid=sample_id)
-        sample.analysis_result.fetch().set_module_status(module_name, 'W')
-        return cls.run_sample(sample_id, sample)
+        sample.analysis_result.fetch().set_module_status(module.name(), 'W')
+        tool_names = [tool.name() for tool in module.required_tool_results()]
+        safe_sample = sample.fetch_safe(tool_names)
+        return cls.run_sample(sample.uuid, safe_sample)
 
     @classmethod
     def run_sample_group(cls, sample_group, samples):
@@ -25,10 +23,12 @@ class DisplayModuleWrangler:
         pass
 
     @classmethod
-    def help_run_sample_group(cls, sample_group, samples, module_name):
+    def help_run_sample_group(cls, sample_group, samples, module):
         """Gather group of samples and process."""
-        sample_group.analysis_result.set_module_status(module_name, 'W')
-        return cls.run_sample_group(sample_group, samples)
+        sample_group.analysis_result.set_module_status(module.name(), 'W')
+        tool_names = [tool.name() for tool in module.required_tool_results()]
+        safe_samples = [sample.fetch_safe(tool_names) for sample in samples]
+        return cls.run_sample_group(sample_group, safe_samples)
 
 
 class SharedWrangler(DisplayModuleWrangler):
@@ -42,10 +42,9 @@ class SharedWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample(cls, sample_id, sample):
         """Gather and process a single sample."""
-        samples = [jsonify(sample)]
-        analysis_result_uuid = sample.analysis_result.pk
+        analysis_result_uuid = sample['analysis_result']
 
-        return cls.run_common(samples, analysis_result_uuid)
+        return cls.run_common([sample], analysis_result_uuid)
 
     @classmethod
     def run_sample_group(cls, sample_group, samples):

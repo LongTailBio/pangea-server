@@ -1,6 +1,6 @@
 """Test suite for Pathway display module."""
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.pathways.wrangler import PathwayWrangler
+from app.display_modules.pathways import PathwaysDisplayModule
 from app.display_modules.pathways.models import PathwayResult
 from app.display_modules.pathways.constants import MODULE_NAME
 from app.display_modules.pathways.tests.factory import (
@@ -39,5 +39,4 @@ class TestPathwaysModule(BaseDisplayModuleTest):
                           humann2_functional_profiling=data).save()
 
         self.generic_run_group_test(create_sample,
-                                    PathwayWrangler,
-                                    MODULE_NAME)
+                                    PathwaysDisplayModule)

@@ -26,4 +26,4 @@ def create_values():
 def create_humann2_normalize():
     """Create Huamnn2NormalizeToolResult with randomized field data."""
     packed_data = create_values()
-    return Humann2NormalizeToolResult(**packed_data)
+    return Humann2NormalizeToolResult(**packed_data).save()

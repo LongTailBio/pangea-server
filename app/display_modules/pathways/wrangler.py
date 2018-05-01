@@ -16,8 +16,7 @@ class PathwayWrangler(DisplayModuleWrangler):
     def run_sample(cls, sample_id, sample):
         """Gather single sample and process."""
         samples = [jsonify(sample)]
-        persist_task = persist_result.s(sample.analysis_result.pk,
-                                        MODULE_NAME)
+        persist_task = persist_result.s(sample['analysis_result'], MODULE_NAME)
         task_chain = chain(filter_humann2_pathways.s(samples),
                            persist_task)
         result = task_chain.delay()

@@ -14,11 +14,10 @@ class TestMicrobeCensusResultModel(BaseTestCase):
 
     def test_add_hmp_sites_result(self):
         """Ensure Microbe Census result model is created correctly."""
-        microbe_census = MicrobeCensusResult(**TEST_CENSUS)
+        microbe_census = MicrobeCensusResult(**TEST_CENSUS).save()
         sample = Sample(name='SMPL_01', microbe_census=microbe_census).save()
         self.assertTrue(sample.microbe_census)
-        tool_result = sample.microbe_census
-        self.assertEqual(len(tool_result), 3)
+        tool_result = sample.microbe_census.fetch()
         self.assertEqual(tool_result['average_genome_size'], 3)
         self.assertEqual(tool_result['total_bases'], 5)
         self.assertEqual(tool_result['genome_equivalents'], 250)
@@ -28,13 +27,11 @@ class TestMicrobeCensusResultModel(BaseTestCase):
         partial_microbe_census = dict(TEST_CENSUS)
         partial_microbe_census.pop('average_genome_size', None)
         microbe_census = MicrobeCensusResult(**partial_microbe_census)
-        sample = Sample(name='SMPL_01', microbe_census=microbe_census)
-        self.assertRaises(ValidationError, sample.save)
+        self.assertRaises(ValidationError, microbe_census.save)
 
     def test_add_negative_value(self):
         """Ensure validation fails for negative values."""
         bad_microbe_census = dict(TEST_CENSUS)
         bad_microbe_census['average_genome_size'] = -3
         microbe_census = MicrobeCensusResult(**bad_microbe_census)
-        sample = Sample(name='SMPL_01', microbe_census=microbe_census)
-        self.assertRaises(ValidationError, sample.save)
+        self.assertRaises(ValidationError, microbe_census.save)

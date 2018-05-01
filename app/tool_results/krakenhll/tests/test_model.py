@@ -14,10 +14,11 @@ class TestKrakenHLLModel(BaseTestCase):
 
     def test_add_kraken_result(self):
         """Ensure KrakenHLL result model is created correctly."""
-        sample_data = {'name': 'SMPL_01', KRAKENHLL_NAME: KrakenHLLResult(taxa=TEST_TAXA)}
+        tool_result = KrakenHLLResult(taxa=TEST_TAXA).save()
+        sample_data = {'name': 'SMPL_01', KRAKENHLL_NAME: tool_result}
         sample = Sample(**sample_data).save()
         self.assertTrue(hasattr(sample, KRAKENHLL_NAME))
-        my_tool_result = getattr(sample, KRAKENHLL_NAME)
+        my_tool_result = getattr(sample, KRAKENHLL_NAME).fetch()
         self.assertEqual(len(my_tool_result.taxa), 6)
         self.assertEqual(my_tool_result.taxa['d__Viruses'], 1733)
         self.assertEqual(my_tool_result.taxa['d__Bacteria'], 7396285)

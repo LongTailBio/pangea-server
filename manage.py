@@ -21,9 +21,11 @@ from flask_script import Manager
 from flask_migrate import MigrateCommand, upgrade
 
 from app import create_app, db
+from app.mongo import drop_mongo_collections
 from app.users.user_models import User
 from app.organizations.organization_models import Organization
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.tool_results.models import ToolResult, GroupToolResult
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
@@ -85,8 +87,7 @@ def recreate_db():
     upgrade()
 
     # Empty Mongo database
-    AnalysisResultMeta.drop_collection()
-    Sample.drop_collection()
+    drop_mongo_collections()
 
 
 @manager.command

@@ -1,7 +1,7 @@
 """Test suite for Functional Genes diplay module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.functional_genes.wrangler import FunctionalGenesWrangler
+from app.display_modules.functional_genes import FunctionalGenesDisplayModule
 from app.display_modules.functional_genes import FunctionalGenesResult
 from app.display_modules.functional_genes.constants import MODULE_NAME, TOOL_MODULE_NAME
 from app.display_modules.functional_genes.tests.factory import FunctionalGenesFactory
@@ -39,5 +39,4 @@ class TestFunctionalGenesModule(BaseDisplayModuleTest):
             return Sample(**args).save()
 
         self.generic_run_group_test(create_sample,
-                                    FunctionalGenesWrangler,
-                                    MODULE_NAME)
+                                    FunctionalGenesDisplayModule)

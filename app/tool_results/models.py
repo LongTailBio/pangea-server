@@ -5,7 +5,7 @@
 from app.extensions import mongoDB
 
 
-class ToolResult(mongoDB.EmbeddedDocument):
+class ToolResult(mongoDB.Document):
     """Base mongo result class."""
 
     # Turns out there isn't much in common between SampleToolResult types...

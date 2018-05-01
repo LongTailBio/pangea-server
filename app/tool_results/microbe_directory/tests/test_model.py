@@ -14,6 +14,6 @@ class TestMicrobeDirectoryModel(BaseTestCase):
     def test_add_microbe_directory(self):
         """Ensure Microbe Directory result model is created correctly."""
 
-        microbe_directory = MicrobeDirectoryToolResult(**TEST_DIRECTORY)
+        microbe_directory = MicrobeDirectoryToolResult(**TEST_DIRECTORY).save()
         sample = Sample(name='SMPL_01', microbe_directory_annotate=microbe_directory).save()
         self.assertTrue(sample.microbe_directory_annotate)

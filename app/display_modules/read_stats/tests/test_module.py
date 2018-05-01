@@ -1,7 +1,7 @@
 """Test suite for ReadStats display module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.read_stats.wrangler import ReadStatsWrangler
+from app.display_modules.read_stats import ReadStatsDisplayModule
 from app.display_modules.read_stats.models import ReadStatsResult
 from app.display_modules.read_stats.constants import MODULE_NAME
 from app.display_modules.read_stats.tests.factory import ReadStatsFactory
@@ -40,5 +40,4 @@ class TestReadStatsModule(BaseDisplayModuleTest):
                           read_stats=data).save()
 
         self.generic_run_group_test(create_sample,
-                                    ReadStatsWrangler,
-                                    MODULE_NAME)
+                                    ReadStatsDisplayModule)

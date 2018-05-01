@@ -15,10 +15,11 @@ class TestMetaphlan2Model(BaseTestCase):
 
     def test_add_metaphlan2_result(self):
         """Ensure Metaphlan 2 result model is created correctly."""
-        sample_data = {'name': 'SMPL_01', METAPHLAN2_NAME: Metaphlan2Result(taxa=TEST_TAXA)}
+        tool_result = Metaphlan2Result(taxa=TEST_TAXA).save()
+        sample_data = {'name': 'SMPL_01', METAPHLAN2_NAME: tool_result}
         sample = Sample(**sample_data).save()
         self.assertTrue(hasattr(sample, METAPHLAN2_NAME))
-        metaphlan_result = getattr(sample, METAPHLAN2_NAME)
+        metaphlan_result = getattr(sample, METAPHLAN2_NAME).fetch()
         self.assertEqual(len(metaphlan_result.taxa), 6)
         self.assertEqual(metaphlan_result.taxa['d__Viruses'], 1733)
         self.assertEqual(metaphlan_result.taxa['d__Bacteria'], 7396285)

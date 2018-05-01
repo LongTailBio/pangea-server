@@ -1,7 +1,7 @@
 """Test suite for Microbe Directory diplay module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.microbe_directory.wrangler import MicrobeDirectoryWrangler
+from app.display_modules.microbe_directory import MicrobeDirectoryDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.microbe_directory.models import MicrobeDirectoryResult
 from app.display_modules.microbe_directory.constants import MODULE_NAME
@@ -40,5 +40,4 @@ class TestMicrobeDirectoryModule(BaseDisplayModuleTest):
                           microbe_directory_annotate=data).save()
 
         self.generic_run_group_test(create_sample,
-                                    MicrobeDirectoryWrangler,
-                                    MODULE_NAME)
+                                    MicrobeDirectoryDisplayModule)

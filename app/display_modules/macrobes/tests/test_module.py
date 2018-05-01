@@ -1,7 +1,7 @@
 """Test suite for Macrobe display module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.macrobes.wrangler import MacrobeWrangler
+from app.display_modules.macrobes import MacrobeDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.macrobes.models import MacrobeResult
 from app.display_modules.macrobes.constants import MODULE_NAME
@@ -41,5 +41,4 @@ class TestMacrobeModule(BaseDisplayModuleTest):
             }).save()
 
         self.generic_run_group_test(create_sample,
-                                    MacrobeWrangler,
-                                    MODULE_NAME)
+                                    MacrobeDisplayModule)

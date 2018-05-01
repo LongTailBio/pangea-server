@@ -65,4 +65,4 @@ def create_ranks():
 def create_beta_diversity():
     """Return a beta diversity result with simulated data."""
     ranks = create_ranks()
-    return BetaDiversityToolResult(data=ranks)
+    return BetaDiversityToolResult(data=ranks).save()

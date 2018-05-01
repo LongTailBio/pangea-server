@@ -13,6 +13,7 @@ class BaseToolResultTest(BaseTestCase):
 
     def generic_add_sample_tool_test(self, result, tool_result_name):  # pylint: disable=invalid-name
         """Ensure tool result model is created correctly."""
+        result.save()
         sample = Sample(name='SMPL_01',
                         **{tool_result_name: result}).save()
         self.assertTrue(getattr(sample, tool_result_name))

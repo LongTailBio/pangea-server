@@ -12,15 +12,14 @@ class TestReadsClassifiedModel(BaseTestCase):
 
     def test_add_reads_classified_result(self):  # pylint: disable=invalid-name
         """Ensure Reads Classified result model is created correctly."""
-        reads_classified = ReadsClassifiedToolResult(**TEST_READS)
+        reads_classified = ReadsClassifiedToolResult(**TEST_READS).save()
         packed_data = {
             'name': 'SMPL_01',
             MODULE_NAME: reads_classified,
         }
         sample = Sample(**packed_data).save()
         self.assertTrue(hasattr(sample, MODULE_NAME))
-        tool_result = getattr(sample, MODULE_NAME)
-        self.assertEqual(len(tool_result), 9)
+        tool_result = getattr(sample, MODULE_NAME).fetch()
         self.assertEqual(tool_result['viral'], 100)
         self.assertEqual(tool_result['archaeal'], 200)
         self.assertEqual(tool_result['bacterial'], 600)
@@ -36,15 +35,14 @@ class TestReadsClassifiedModel(BaseTestCase):
         partial_reads = dict(TEST_READS)
         partial_reads.pop('host', None)
         partial_reads['unknown'] = 100
-        reads_classified = ReadsClassifiedToolResult(**partial_reads)
+        reads_classified = ReadsClassifiedToolResult(**partial_reads).save()
         packed_data = {
             'name': 'SMPL_01',
             MODULE_NAME: reads_classified,
         }
         sample = Sample(**packed_data).save()
         self.assertTrue(hasattr(sample, MODULE_NAME))
-        tool_result = getattr(sample, MODULE_NAME)
-        self.assertEqual(len(tool_result), 9)
+        tool_result = getattr(sample, MODULE_NAME).fetch()
         self.assertEqual(tool_result['viral'], 100)
         self.assertEqual(tool_result['archaeal'], 200)
         self.assertEqual(tool_result['bacterial'], 600)

@@ -23,4 +23,4 @@ def create_values(dropout=0.25):
 def create_ancestry():
     """Create AncestryToolResult with randomized field data."""
     packed_data = create_values()
-    return AncestryToolResult(**packed_data)
+    return AncestryToolResult(**packed_data).save()

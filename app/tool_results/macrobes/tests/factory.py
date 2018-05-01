@@ -27,4 +27,4 @@ def create_values():
 def create_macrobe():
     """Create VFDBlToolResult with randomized field data."""
     packed_data = create_values()
-    return MacrobeToolResult(**packed_data)
+    return MacrobeToolResult(**packed_data).save()

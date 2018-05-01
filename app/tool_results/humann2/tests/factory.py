@@ -25,4 +25,4 @@ def create_values():
 def create_humann2():
     """Create Humann2Result with randomized field data."""
     packed_data = create_values()
-    return Humann2Result(**packed_data)
+    return Humann2Result(**packed_data).save()

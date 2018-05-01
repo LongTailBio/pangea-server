@@ -26,4 +26,4 @@ def create_values():
 def create_card_amr():
     """Create CARD AMR Alignment ToolResult with randomized field data."""
     packed_data = create_values()
-    return CARDAMRToolResult(**packed_data)
+    return CARDAMRToolResult(**packed_data).save()

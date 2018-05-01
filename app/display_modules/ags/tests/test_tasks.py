@@ -30,7 +30,7 @@ class TestAverageGenomeSizeTasks(BaseTestCase):
                           metadata=metadata,
                           microbe_census=create_microbe_census())
 
-        samples = [create_sample(i) for i in range(15)]
+        samples = [create_sample(i).fetch_safe() for i in range(15)]
         result = ags_distributions.delay(samples).get()
         self.assertIn('foo', result)
         self.assertIn('bar0', result['foo'])

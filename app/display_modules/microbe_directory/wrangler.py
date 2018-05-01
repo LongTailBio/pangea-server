@@ -3,7 +3,6 @@
 from celery import chain
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
-from app.display_modules.utils import jsonify
 
 from .constants import MODULE_NAME
 from .tasks import (
@@ -19,11 +18,11 @@ class MicrobeDirectoryWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample(cls, sample_id, sample):
         """Gather single sample and process."""
-        samples = [jsonify(sample)]
+        samples = [sample]
         collate_task = collate_microbe_directory.s(samples)
         reducer_task = microbe_directory_reducer.s()
-        persist_task = persist_result.s(sample.analysis_result.pk,
-                                        MODULE_NAME)
+        analysis_result_uuid = sample['analysis_result']
+        persist_task = persist_result.s(analysis_result_uuid, MODULE_NAME)
 
         task_chain = chain(collate_task, reducer_task, persist_task)
         result = task_chain.delay()

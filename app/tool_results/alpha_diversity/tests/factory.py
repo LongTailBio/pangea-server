@@ -66,4 +66,4 @@ def create_values():
 def create_alpha_diversity():
     """Return an alpha diversity result with simulated data."""
     packed_data = create_values()
-    return AlphaDiversityToolResult(**packed_data)
+    return AlphaDiversityToolResult(**packed_data).save()

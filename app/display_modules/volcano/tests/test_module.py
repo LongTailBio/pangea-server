@@ -3,7 +3,7 @@
 from random import randint
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.volcano.wrangler import VolcanoWrangler
+from app.display_modules.volcano import VolcanoDisplayModule
 from app.display_modules.volcano.models import VolcanoResult
 from app.display_modules.volcano.constants import MODULE_NAME
 from app.display_modules.volcano.tests.factory import VolcanoFactory
@@ -57,5 +57,4 @@ class TestVolcanoModule(BaseDisplayModuleTest):
             return Sample(**args).save()
 
         self.generic_run_group_test(create_sample,
-                                    VolcanoWrangler,
-                                    MODULE_NAME)
+                                    VolcanoDisplayModule)

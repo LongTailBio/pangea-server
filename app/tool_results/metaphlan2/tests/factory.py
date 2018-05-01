@@ -7,4 +7,4 @@ from app.tool_results.metaphlan2 import Metaphlan2Result
 def create_metaphlan2(taxa_count=10):
     """Create Metaphlan2Result with specified number of taxa."""
     taxa = create_taxa(taxa_count)
-    return Metaphlan2Result(taxa=taxa)
+    return Metaphlan2Result(taxa=taxa).save()

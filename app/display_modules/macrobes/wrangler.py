@@ -42,7 +42,7 @@ class MacrobeWrangler(DisplayModuleWrangler):
         """Gather single sample and process."""
         samples = [jsonify(sample)]
         collate_task = collate_macrobes.s(samples)
-        persist_task = persist_result.s(sample.analysis_result.pk, MODULE_NAME)
+        persist_task = persist_result.s(sample['analysis_result'], MODULE_NAME)
 
         task_chain = chain(collate_task, persist_task)
         result = task_chain.delay()

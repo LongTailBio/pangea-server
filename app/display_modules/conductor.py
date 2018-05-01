@@ -113,10 +113,9 @@ class SampleConductor(DisplayModuleConductor):
             if filtered_samples:
                 current_app.logger.info(f'Filtered samples: {len(filtered_samples)}')
                 # Pass off middleware execution to Wrangler
-                safe_samples = jsonify(filtered_samples)
                 module.get_wrangler().help_run_sample_group(sample_group=sample_group,
-                                                            samples=safe_samples,
-                                                            module_name=module_name)
+                                                            samples=filtered_samples,
+                                                            module=module)
             else:
                 current_app.logger.info(f'Attempted to run {module_name} sample group '
                                         'without at least two samples')
@@ -134,9 +133,7 @@ class SampleConductor(DisplayModuleConductor):
         valid_modules = self.get_valid_modules(tools_present)
         for module in valid_modules:
             # Pass off middleware execution to Wrangler
-            module_name = module.name()
-            module.get_wrangler().help_run_sample(sample_id=sample.uuid,
-                                                  module_name=module_name)
+            module.get_wrangler().help_run_sample(sample_id=sample, module=module)
 
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""
@@ -200,7 +197,7 @@ class GroupConductor(DisplayModuleConductor):
             # Pass off middleware execution to Wrangler
             module.get_wrangler().help_run_sample_group(sample_group=sample_group,
                                                         samples=[],
-                                                        module_name=module.name())
+                                                        module=module)
 
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""

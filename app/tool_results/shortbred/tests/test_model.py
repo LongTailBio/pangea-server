@@ -15,11 +15,12 @@ class TestShortbredResultModel(BaseTestCase):
 
     def test_add_shortbred_result(self):
         """Ensure Shortbred result model is created correctly."""
+        tool_result = ShortbredResult(abundances=TEST_ABUNDANCES).save()
         sample_data = {'name': 'SMPL_01',
-                       SHORTBRED_NAME: ShortbredResult(abundances=TEST_ABUNDANCES)}
+                       SHORTBRED_NAME: tool_result}
         sample = Sample(**sample_data).save()
         self.assertTrue(hasattr(sample, SHORTBRED_NAME))
-        tool_result = getattr(sample, SHORTBRED_NAME)
+        tool_result = getattr(sample, SHORTBRED_NAME).fetch()
         abundances = tool_result.abundances
         self.assertEqual(len(abundances), 6)
         self.assertEqual(abundances['AAA98484'], 3.996805816740154)

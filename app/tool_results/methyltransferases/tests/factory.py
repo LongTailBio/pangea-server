@@ -27,4 +27,4 @@ def create_values():
 def create_methyls():
     """Create MethylToolResult with randomized field data."""
     packed_data = create_values()
-    return MethylToolResult(**packed_data)
+    return MethylToolResult(**packed_data).save()

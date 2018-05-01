@@ -1,6 +1,6 @@
 """Test suite for Methyls diplay module."""
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.methyls.wrangler import MethylWrangler
+from app.display_modules.methyls import MethylsDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.methyls import MethylResult
 from app.display_modules.methyls.tests.factory import MethylsFactory
@@ -35,5 +35,4 @@ class TestMethylsModule(BaseDisplayModuleTest):
                           align_to_methyltransferases=create_methyls()).save()
 
         self.generic_run_group_test(create_sample,
-                                    MethylWrangler,
-                                    'methyltransferases')
+                                    MethylsDisplayModule)

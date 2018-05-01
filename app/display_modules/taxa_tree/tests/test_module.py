@@ -1,7 +1,7 @@
 """Test suite for Taxa Tree display module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.taxa_tree.wrangler import TaxaTreeWrangler
+from app.display_modules.taxa_tree import TaxaTreeDisplayModule
 from app.display_modules.taxa_tree.models import TaxaTreeResult
 from app.display_modules.taxa_tree.constants import MODULE_NAME
 from app.tool_results.kraken import KrakenResultModule
@@ -40,4 +40,4 @@ class TestTaxaTreeModule(BaseDisplayModuleTest):
             KrakenHLLResultModule.name(): create_krakenhll(),
             Metaphlan2ResultModule.name(): create_metaphlan2(),
         }
-        self.generic_run_sample_test(kwargs, TaxaTreeWrangler, MODULE_NAME)
+        self.generic_run_sample_test(kwargs, TaxaTreeDisplayModule)

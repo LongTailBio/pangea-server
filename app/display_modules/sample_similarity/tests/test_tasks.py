@@ -75,7 +75,7 @@ class TestSampleSimilarityTasks(BaseTestCase):
             sample_data = {'name': f'SMPL_{i}', KRAKEN_NAME: create_kraken()}
             return Sample(**sample_data)
 
-        samples = [create_sample(i) for i in range(3)]
+        samples = [create_sample(i).fetch_safe() for i in range(3)]
         tool, tsne_labeled = taxa_tool_tsne(samples, KRAKEN_NAME)
         self.assertEqual(f'{KRAKEN_NAME} tsne x', tool['x_label'])
         self.assertEqual(f'{KRAKEN_NAME} tsne y', tool['y_label'])

@@ -1,6 +1,6 @@
 """Test suite for Beta Diversity display module."""
 
-from app.display_modules.beta_div.wrangler import BetaDiversityWrangler
+from app.display_modules.beta_div import BetaDiversityDisplayModule
 from app.display_modules.beta_div.models import BetaDiversityResult
 from app.display_modules.beta_div import MODULE_NAME
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
@@ -39,6 +39,5 @@ class TestBetaDivModule(BaseDisplayModuleTest):
             return sample_group
 
         self.generic_run_group_test(None,
-                                    BetaDiversityWrangler,
-                                    MODULE_NAME,
+                                    BetaDiversityDisplayModule,
                                     group_builder=create_sample_group)

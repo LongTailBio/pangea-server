@@ -19,4 +19,4 @@ def create_values():
 def create_hmp_sites():
     """Create HmpSitesResult with randomized fields."""
     packed_data = create_values()
-    return HmpSitesResult(**packed_data)
+    return HmpSitesResult(**packed_data).save()

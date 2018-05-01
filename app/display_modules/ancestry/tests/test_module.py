@@ -1,7 +1,7 @@
 """Test suite for Ancestry diplay module."""
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.ancestry.wrangler import AncestryWrangler
+from app.display_modules.ancestry import AncestryDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.ancestry.models import AncestryResult
 from app.display_modules.ancestry.constants import MODULE_NAME, TOOL_MODULE_NAME
@@ -34,7 +34,7 @@ class TestAncestryModule(BaseDisplayModuleTest):
         kwargs = {
             TOOL_MODULE_NAME: create_ancestry(),
         }
-        self.generic_run_sample_test(kwargs, AncestryWrangler, MODULE_NAME)
+        self.generic_run_sample_test(kwargs, AncestryDisplayModule)
 
     def test_run_ancestry_sample_group(self):  # pylint: disable=invalid-name
         """Ensure Ancestry run_sample_group produces correct results."""
@@ -50,5 +50,4 @@ class TestAncestryModule(BaseDisplayModuleTest):
             return Sample(**args).save()
 
         self.generic_run_group_test(create_sample,
-                                    AncestryWrangler,
-                                    MODULE_NAME)
+                                    AncestryDisplayModule)

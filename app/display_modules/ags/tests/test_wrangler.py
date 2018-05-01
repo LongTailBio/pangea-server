@@ -1,6 +1,7 @@
 """Test suite for Average Genome Size Wrangler."""
 
 from app import db
+from app.display_modules.ags import AGSDisplayModule
 from app.display_modules.ags.ags_wrangler import AGSWrangler
 from app.samples.sample_models import Sample
 from app.tool_results.microbe_census.tests.factory import create_microbe_census
@@ -26,7 +27,7 @@ class TestAverageGenomeSizeWrangler(BaseTestCase):
         samples = [create_sample(i) for i in range(10)]
         sample_group.samples = samples
         db.session.commit()
-        AGSWrangler.help_run_sample_group(sample_group, samples, 'average_genome_size').get()
+        AGSWrangler.help_run_sample_group(sample_group, samples, AGSDisplayModule).get()
         analysis_result = sample_group.analysis_result
         self.assertIn('average_genome_size', analysis_result)
         average_genome_size = analysis_result.average_genome_size

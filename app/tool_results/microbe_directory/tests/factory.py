@@ -59,4 +59,4 @@ def create_values():
 def create_microbe_directory():
     """Create MicrobeDirectoryToolResult with randomized field data."""
     packed_data = create_values()
-    return MicrobeDirectoryToolResult(**packed_data)
+    return MicrobeDirectoryToolResult(**packed_data).save()

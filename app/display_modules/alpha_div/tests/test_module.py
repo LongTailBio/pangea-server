@@ -2,7 +2,7 @@
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.alpha_div import (
-    AlphaDivWrangler,
+    AlphaDivDisplayModule,
     AlphaDiversityResult,
     MODULE_NAME,
 )
@@ -44,5 +44,4 @@ class TestAlphaDivModule(BaseDisplayModuleTest):
                           alpha_diversity_stats=data).save()
 
         self.generic_run_group_test(create_sample,
-                                    AlphaDivWrangler,
-                                    MODULE_NAME)
+                                    AlphaDivDisplayModule)
