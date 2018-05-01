@@ -11,6 +11,8 @@ from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .models import VolcanoResult
 
+MIN_VEC_LEN = 10
+
 
 def clean_vector(vec):
     """Clean a taxa vec."""
@@ -63,7 +65,7 @@ def get_nlps(tool_df, cases, controls):
         except ValueError:
             return 0
         pval *= 2  # correct for two sided
-        assert pval <= 1.0
+        assert (pval <= 1.0) and (pval > 0), f'cases: {col_cases}\ncontrols: {col_controls}'
         pvals.append(pval)
         nlp = -np.log10(pval)
         return nlp
@@ -113,8 +115,11 @@ def filter_nans(points):
 def handle_one_tool_category(category_name, category_value,
                              samples, tool_name, dataframe_key):
     """Return the JSON for a ToolCategoryDocument."""
-    tool_df = make_dataframe(samples, tool_name, dataframe_key)
     cases, controls = get_cases(category_name, category_value, samples)
+    if (len(cases) < MIN_VEC_LEN) or (len(controls) < MIN_VEC_LEN):
+        return None
+
+    tool_df = make_dataframe(samples, tool_name, dataframe_key)
     lfcs, case_means = get_lfcs(tool_df, cases, controls)
     nlps, pvals = get_nlps(tool_df, cases, controls)
 

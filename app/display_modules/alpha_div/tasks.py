@@ -56,7 +56,7 @@ def handle_distribution_subtable(tbl, samples,                    # pylint: disa
     flattened_vals = []
     for cat_val, metric_tbl in upper_tbl.items():
         flattened_vals.append({
-            'metrics': primary_metrics,
+            'metrics': list(primary_metrics),
             'category_value': cat_val,
             'by_metric': metric_tbl,
         })
