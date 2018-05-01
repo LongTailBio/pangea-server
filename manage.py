@@ -1,7 +1,7 @@
 """Command line tools for Flask server app."""
 
 from gevent import monkey
-monkey.patch_all()
+monkey.patch_socket()
 
 import unittest
 import coverage

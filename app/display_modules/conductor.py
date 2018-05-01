@@ -192,5 +192,5 @@ class GroupConductor(DisplayModuleConductor):
 
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""
-        sample_group = SampleGroup.objects.get(id=self.sample_group_uuid)
+        sample_group = SampleGroup.query.filter_by(id=self.sample_group_uuid).one()
         self.direct_sample_group(sample_group)
