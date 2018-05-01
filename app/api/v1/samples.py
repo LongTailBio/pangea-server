@@ -132,7 +132,9 @@ def run_sample_display_modules(uuid):
 
     for module in sample_display_modules:
         try:
-            SampleConductor(safe_uuid, display_modules=[module], downstream_groups=False)
+            SampleConductor(safe_uuid,
+                            display_modules=[module],
+                            downstream_groups=False).shake_that_baton()
         except Exception:  # pylint: disable=broad-except
             current_app.logger.exception('Exception while coordinating display modules.')
 

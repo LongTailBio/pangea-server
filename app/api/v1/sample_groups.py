@@ -139,7 +139,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
 
     for module in all_display_modules:
         try:
-            GroupConductor(safe_uuid, display_modules=[module])
+            GroupConductor(safe_uuid, display_modules=[module]).shake_that_baton()
         except Exception:  # pylint: disable=broad-except
             current_app.logger.exception('Exception while coordinating display modules.')
 
