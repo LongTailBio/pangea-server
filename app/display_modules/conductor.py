@@ -3,7 +3,6 @@
 from flask import current_app
 
 from app.display_modules import all_display_modules, sample_display_modules
-from app.display_modules.utils import jsonify
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_group_results
