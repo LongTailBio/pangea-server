@@ -66,9 +66,9 @@ def scrub_category_val(category_val):
     if not isinstance(category_val, str):
         category_val = str(category_val)
         if category_val.lower() == 'nan':
-            category_val = 'undefined'
+            category_val = 'NaN'
     if not category_val:
-        category_val = 'undefined'
+        category_val = 'NaN'
     return category_val
 
 

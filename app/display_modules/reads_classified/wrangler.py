@@ -23,7 +23,7 @@ class ReadsClassifiedWrangler(SharedWrangler):
     @classmethod
     def run_common(cls, samples, analysis_result_uuid):
         """Execute common run instructions."""
-        collate_fields = ['total', 'viral', 'archaeal', 'bacterial', 'host',
+        collate_fields = ['viral', 'archaeal', 'bacterial', 'host',
                           'nonhost_macrobial', 'fungal', 'nonfungal_eukaryotic',
                           'unknown']
         collate_task = collate_samples.s(TOOL_MODULE_NAME, collate_fields, samples)

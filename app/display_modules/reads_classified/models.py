@@ -6,7 +6,6 @@ from app.extensions import mongoDB as mdb
 class SingleReadsClassifiedResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Reads Classified for one sample."""
 
-    total = mdb.FloatField(required=True, default=0)
     viral = mdb.FloatField(required=True, default=0)
     archaeal = mdb.FloatField(required=True, default=0)
     bacterial = mdb.FloatField(required=True, default=0)

@@ -89,13 +89,13 @@ def make_alpha_distributions(categories, samples):
                 'by_category_name': tbl[tool_name][taxa_rank],
             }
         tbl[tool_name] = {
-            'taxa_ranks': ADivRes.taxa_ranks(),
+            'taxa_ranks': [el for el in ADivRes.taxa_ranks()],
             'by_taxa_rank': tbl[tool_name],
         }
     tbl = {
         'by_tool': tbl,
         'categories': categories,
-        'tool_names': ADivRes.tool_names(),
+        'tool_names': [el for el in ADivRes.tool_names()],
     }
     return tbl
 

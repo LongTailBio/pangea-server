@@ -7,6 +7,13 @@ from app.display_modules.reads_classified.models import ReadsClassifiedResult
 from app.tool_results.reads_classified.tests.factory import create_values
 
 
+def create_vals_no_total():
+    """Create a reads classified proportion without total."""
+    return {key: val
+            for key, val in create_values().items()
+            if key != 'total'}
+
+
 class ReadsClassifiedFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for Analysis Result's Read Stats."""
 
@@ -20,5 +27,5 @@ class ReadsClassifiedFactory(factory.mongoengine.MongoEngineFactory):
         """Generate random samples."""
         samples = {}
         for i in range(10):
-            samples[f'Sample{i}'] = create_values()
+            samples[f'Sample{i}'] = create_vals_no_total()
         return samples

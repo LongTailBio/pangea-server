@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.manifold import TSNE
 
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import persist_result_helper, scrub_category_val
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
@@ -141,6 +141,7 @@ def update_data_records(samples, categories,
         data_record.update(metaphlan_labeled[sample_id])
         for category_name in categories.keys():
             category_value = sample['metadata'].get(category_name, 'None')
+            category_value = scrub_category_val(category_value)
             data_record[category_name] = category_value
         data_records.append(data_record)
     return data_records

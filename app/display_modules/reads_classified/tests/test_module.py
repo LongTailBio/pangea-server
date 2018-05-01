@@ -4,12 +4,12 @@ from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.reads_classified import ReadsClassifiedModule
 from app.display_modules.reads_classified.models import ReadsClassifiedResult
 from app.display_modules.reads_classified.constants import MODULE_NAME, TOOL_MODULE_NAME
-from app.display_modules.reads_classified.tests.factory import ReadsClassifiedFactory
-from app.samples.sample_models import Sample
-from app.tool_results.reads_classified.tests.factory import (
-    create_read_stats,
-    create_values
+from app.display_modules.reads_classified.tests.factory import (
+    ReadsClassifiedFactory,
+    create_vals_no_total
 )
+from app.samples.sample_models import Sample
+from app.tool_results.reads_classified.tests.factory import create_read_stats
 
 
 class TestReadsClassifiedModule(BaseDisplayModuleTest):
@@ -23,8 +23,8 @@ class TestReadsClassifiedModule(BaseDisplayModuleTest):
     def test_add_reads_classified(self):
         """Ensure ReadsClassified model is created correctly."""
         samples = {
-            'test_sample_1': create_values(),
-            'test_sample_2': create_values(),
+            'test_sample_1': create_vals_no_total(),
+            'test_sample_2': create_vals_no_total(),
         }
         read_class_result = ReadsClassifiedResult(samples=samples)
         self.generic_adder_test(read_class_result, MODULE_NAME)
