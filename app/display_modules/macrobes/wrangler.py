@@ -4,7 +4,7 @@ from celery import chain
 from pandas import DataFrame
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
-from app.display_modules.utils import jsonify, persist_result_helper
+from app.display_modules.utils import persist_result_helper
 from app.extensions import celery
 from app.tool_results.macrobes import MacrobeResultModule
 
@@ -40,7 +40,7 @@ class MacrobeWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample(cls, sample_id, sample):
         """Gather single sample and process."""
-        samples = [jsonify(sample)]
+        samples = [sample]
         collate_task = collate_macrobes.s(samples)
         persist_task = persist_result.s(sample['analysis_result'], MODULE_NAME)
 
