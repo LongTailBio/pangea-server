@@ -42,7 +42,7 @@ def make_distributions(categories, samples):
 
 
 @celery.task
-def reducer_task(args):
+def reducer_task(*args):
     """Return an HMP result model from components."""
     distributions = args[0]
     categories = args[1]

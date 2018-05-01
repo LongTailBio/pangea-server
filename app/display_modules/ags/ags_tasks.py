@@ -31,7 +31,7 @@ def ags_distributions(samples):
 
 
 @celery.task()
-def reducer_task(args):
+def reducer_task(*args):
     """Combine AGS component calculations."""
     categories = args[0]
     ags_dists = args[1]

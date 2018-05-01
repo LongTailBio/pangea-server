@@ -43,7 +43,7 @@ def handle_distribution_subtable(tbl, samples,                    # pylint: disa
             try:
                 val = primary_table[second_metric]
             except KeyError:  # occurs when there is only one value
-                val = primary_table.values()[0]
+                val = [val for val in primary_table.values()][0]
             metric_tbl[primary_metric].append(val)
 
     for primary_metric in primary_metrics:

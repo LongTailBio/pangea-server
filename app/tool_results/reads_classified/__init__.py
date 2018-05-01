@@ -10,15 +10,15 @@ from .constants import MODULE_NAME
 class ReadsClassifiedToolResult(ToolResult):  # pylint: disable=too-few-public-methods
     """Reads Classified tool's result type."""
 
-    total = mongoDB.IntField(required=True, default=0)
-    viral = mongoDB.IntField(required=True, default=0)
-    archaeal = mongoDB.IntField(required=True, default=0)
-    bacterial = mongoDB.IntField(required=True, default=0)
-    host = mongoDB.IntField(required=True, default=0)
-    nonhost_macrobial = mongoDB.IntField(required=True, default=0)
-    fungal = mongoDB.IntField(required=True, default=0)
-    nonfungal_eukaryotic = mongoDB.IntField(required=True, default=0)
-    unknown = mongoDB.IntField(required=True, default=0)
+    total = mongoDB.FloatField(required=True, default=0)
+    viral = mongoDB.FloatField(required=True, default=0)
+    archaeal = mongoDB.FloatField(required=True, default=0)
+    bacterial = mongoDB.FloatField(required=True, default=0)
+    host = mongoDB.FloatField(required=True, default=0)
+    nonhost_macrobial = mongoDB.FloatField(required=True, default=0)
+    fungal = mongoDB.FloatField(required=True, default=0)
+    nonfungal_eukaryotic = mongoDB.FloatField(required=True, default=0)
+    unknown = mongoDB.FloatField(required=True, default=0)
 
 
 class ReadsClassifiedResultModule(SampleToolResultModule):
