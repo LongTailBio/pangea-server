@@ -7,7 +7,8 @@ from mongoengine.errors import ValidationError
 from numpy import percentile
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.extensions import celery, celery_logger
+from app.extensions import celery, celery_logger, persist_result_lock
+from app.utils import lock_function
 
 
 def scrub_object(obj):
@@ -31,6 +32,7 @@ def jsonify(mongo_doc):
     return clean_dict
 
 
+@lock_function(persist_result_lock)
 def persist_result_helper(result, analysis_result_id, result_name):
     """Persist results to an Analysis Result model."""
     analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_id)

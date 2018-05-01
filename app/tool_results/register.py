@@ -9,14 +9,17 @@ from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.display_modules.conductor import SampleConductor, GroupConductor
+from app.extensions import sample_upload_lock
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_models import User
 from app.users.user_helpers import authenticate
+from app.utils import lock_function
 
 from .modules import SampleToolResultModule, GroupToolResultModule
 
 
+@lock_function(sample_upload_lock)
 def receive_sample_tool_upload(cls, resp, uuid):
     """Define handler for receiving uploads of analysis tool results."""
     try:

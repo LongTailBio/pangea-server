@@ -2,6 +2,8 @@
 
 """App extensions defined here to avoid cyclic imports."""
 
+from multiprocessing import Lock
+
 from celery import Celery
 from celery.utils.log import get_task_logger
 
@@ -11,6 +13,8 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 
 
+sample_upload_lock = Lock()
+persist_result_lock = Lock()
 mongoDB = MongoEngine()
 db = SQLAlchemy()
 migrate = Migrate()
