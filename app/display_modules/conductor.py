@@ -132,7 +132,7 @@ class SampleConductor(DisplayModuleConductor):
         valid_modules = self.get_valid_modules(tools_present)
         for module in valid_modules:
             # Pass off middleware execution to Wrangler
-            module.get_wrangler().help_run_sample(sample_id=sample, module=module)
+            module.get_wrangler().help_run_sample(sample=sample, module=module)
 
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""
