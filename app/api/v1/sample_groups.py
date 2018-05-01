@@ -13,7 +13,7 @@ from app.display_modules import all_display_modules
 from app.display_modules.conductor import SampleConductor
 from app.extensions import db
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
-from app.samples.sample_models import Sample, sample_schema
+from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
 
 # from .utils import kick_off_middleware
@@ -73,7 +73,7 @@ def get_samples_for_group(group_uuid):
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
         samples = sample_group.samples
         current_app.logger.info(f'Found {len(samples)} samples for group {group_uuid}')
-        result = sample_schema.dump(samples, many=True).data
+        result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True).data
         return result, 200
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')

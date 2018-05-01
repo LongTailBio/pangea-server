@@ -3,7 +3,7 @@
 from numpy import percentile
 
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import persist_result_helper, scrub_category_val
 from app.tool_results.alpha_diversity import AlphaDiversityToolResult
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
@@ -35,6 +35,7 @@ def handle_distribution_subtable(tbl, samples,                    # pylint: disa
 
     for sample in samples:
         cat_val = sample['metadata'][cat_name]
+        cat_val = scrub_category_val(cat_val)
         metric_tbl = upper_tbl[cat_val]
         value_tbl = sample['alpha_diversity_stats'][tool_name][taxa_rank]
 

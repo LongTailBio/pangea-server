@@ -61,6 +61,17 @@ def boxplot(values):
     return result
 
 
+def scrub_category_val(category_val):
+    """Make sure that category val is a string with positive length."""
+    if not isinstance(category_val, str):
+        category_val = str(category_val)
+        if category_val.lower() == 'nan':
+            category_val = 'undefined'
+    if not category_val:
+        category_val = 'undefined'
+    return category_val
+
+
 @celery.task()
 def categories_from_metadata(samples, min_size=2):
     """
@@ -90,12 +101,7 @@ def categories_from_metadata(samples, min_size=2):
             if prop not in categories:
                 categories[prop] = set([])
             category_val = metadata[prop]
-            if not isinstance(category_val, str):
-                category_val = str(category_val)
-                if category_val.lower() == 'nan':
-                    category_val = 'undefined'
-            if not category_val:
-                category_val = 'undefined'
+            category_val = scrub_category_val(category_val)
             categories[prop].add(category_val)
 
     # Filter for minimum number of values

@@ -3,7 +3,7 @@
 from numpy import percentile
 
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import persist_result_helper, scrub_category_val
 from app.tool_results.hmp_sites import HmpSitesResultModule
 
 from .models import HMPResult
@@ -32,7 +32,9 @@ def make_distributions(categories, samples):
         table = {category_value: [] for category_value in category_values}
         for sample in samples:
             hmp_result = sample[tool_name]
-            table[sample['metadata'][category_name]].append(hmp_result)
+            sample_cat_val = sample['metadata'][category_name]
+            sample_cat_val = scrub_category_val(sample_cat_val)
+            table[sample_cat_val].append(hmp_result)
         distributions[category_name] = [
             {'name': category_value,
              'data': make_dist_table(hmp_results, site_names)}

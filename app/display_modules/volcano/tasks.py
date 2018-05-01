@@ -126,6 +126,8 @@ def handle_one_tool_category(category_name, category_value,
     }
     scatter_plot = pd.DataFrame(scatter_values).to_dict(orient='records')
     scatter_plot = filter_nans(scatter_plot)
+    if not scatter_plot:
+        return None
 
     out = {
         'scatter_plot': scatter_plot,
@@ -148,13 +150,15 @@ def make_volcanos(categories, samples):
         for category_name, category_values in categories.items():
             tool_tbl[category_name] = {}
             for category_value in category_values:
-                tool_tbl[category_name][category_value] = handle_one_tool_category(
+                scatter_plot = handle_one_tool_category(
                     category_name,
                     category_value,
                     samples,
                     tool_name,
                     dataframe_key,
                 )
+                if scatter_plot is not None:
+                    tool_tbl[category_name][category_value] = scatter_plot
     return out
 
 
