@@ -3,6 +3,7 @@
 from flask import current_app
 
 from app.display_modules import all_display_modules, sample_display_modules
+from app.display_modules.utils import jsonify
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_group_results
@@ -112,8 +113,9 @@ class SampleConductor(DisplayModuleConductor):
             if filtered_samples:
                 current_app.logger.info(f'Filtered samples: {len(filtered_samples)}')
                 # Pass off middleware execution to Wrangler
+                safe_samples = jsonify(filtered_samples)
                 module.get_wrangler().help_run_sample_group(sample_group=sample_group,
-                                                            samples=filtered_samples,
+                                                            samples=safe_samples,
                                                             module_name=module_name)
             else:
                 current_app.logger.info(f'Attempted to run {module_name} sample group '
