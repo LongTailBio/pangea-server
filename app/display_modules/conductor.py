@@ -183,7 +183,9 @@ class GroupConductor(DisplayModuleConductor):
     def direct_sample_group(self, sample_group):
         """Kick off computation for a sample group's relevant DisplayModules."""
         # These should only ever be GroupToolDisplayModule
+        current_app.logger.info('In direct_sample_group')
         filtered_modules = self.filter_modules(self.display_modules, sample_group)
+        current_app.logger.info(f'filtered_modules: {filtered_modules}')
         for module in filtered_modules:
             # Pass off middleware execution to Wrangler
             module.get_wrangler().help_run_sample_group(sample_group=sample_group,

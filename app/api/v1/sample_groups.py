@@ -72,6 +72,7 @@ def get_samples_for_group(group_uuid):
         sample_group_id = UUID(group_uuid)
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
         samples = sample_group.samples
+        current_app.logger.info(f'Found {len(samples)} samples for group {group_uuid}')
         result = sample_schema.dump(samples, many=True).data
         return result, 200
     except ValueError:
