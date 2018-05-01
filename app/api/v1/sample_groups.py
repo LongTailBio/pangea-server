@@ -10,7 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.display_modules import all_display_modules
-from app.display_modules.conductor import GroupConductor
+from app.display_modules.conductor import SampleConductor
 from app.extensions import db
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, sample_schema
@@ -132,7 +132,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     """Run display modules for sample group."""
     try:
         safe_uuid = UUID(uuid)
-        _ = SampleGroup.query.filter_by(id=safe_uuid).first()
+        group = SampleGroup.query.filter_by(id=safe_uuid).first()
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except NoResultFound:
@@ -140,7 +140,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
 
     for module in all_display_modules:
         try:
-            GroupConductor(safe_uuid, display_modules=[module]).shake_that_baton()
+            SampleConductor('', display_modules=[module]).direct_sample_group(group)
         except Exception:  # pylint: disable=broad-except
             current_app.logger.exception('Exception while coordinating display modules.')
 

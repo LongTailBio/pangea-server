@@ -99,8 +99,10 @@ class SampleConductor(DisplayModuleConductor):
         # These should only ever be SampleToolDisplayModule
         for module in self.display_modules:
             module_name = module.name()
+            current_app.logger.info(f'Checking module: {module_name}')
             filtered_samples = self.filtered_samples(samples, module)
             if filtered_samples:
+                current_app.logger.info(f'Filtered samples: {len(filtered_samples)}')
                 # Pass off middleware execution to Wrangler
                 module.get_wrangler().help_run_sample_group(sample_group=sample_group,
                                                             samples=filtered_samples,
@@ -183,9 +185,7 @@ class GroupConductor(DisplayModuleConductor):
     def direct_sample_group(self, sample_group):
         """Kick off computation for a sample group's relevant DisplayModules."""
         # These should only ever be GroupToolDisplayModule
-        current_app.logger.info('In direct_sample_group')
         filtered_modules = self.filter_modules(self.display_modules, sample_group)
-        current_app.logger.info(f'filtered_modules: {filtered_modules}')
         for module in filtered_modules:
             # Pass off middleware execution to Wrangler
             module.get_wrangler().help_run_sample_group(sample_group=sample_group,
@@ -194,5 +194,5 @@ class GroupConductor(DisplayModuleConductor):
 
     def shake_that_baton(self):
         """Begin the orchestration of middleware tasks."""
-        sample_group = SampleGroup.query.filter_by(id=self.sample_group_uuid).one()
+        sample_group = SampleGroup.objects.get(id=self.sample_group_uuid)
         self.direct_sample_group(sample_group)
