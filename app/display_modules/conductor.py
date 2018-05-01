@@ -80,15 +80,23 @@ class SampleConductor(DisplayModuleConductor):
 
     def filtered_samples(self, samples, module):  # pylint:disable=no-self-use
         """Filter list of samples to only those supporting the given module."""
+        current_app.logger.info('Filtering samples')
+
         dependencies = set([tool.name() for tool in module.required_tool_results()])
+
+        current_app.logger.info(f'Dependencies: {dependencies}')
 
         def test_sample(sample):
             """Test a single sample to see if it has all tools required by the display module."""
+            current_app.logger.info(f'Testing sample: {sample.name}')
             tools_present = set(sample.tool_result_names)
+            current_app.logger.info(f'Tools present: {tools_present}')
             is_valid = dependencies <= tools_present
+            current_app.logger.info(f'Is valid: {is_valid}')
             return is_valid
 
         result = [sample for sample in samples if test_sample(sample)]
+        current_app.logger.info(f'result: {result}')
         return result
 
     def direct_sample_group(self, sample_group):
