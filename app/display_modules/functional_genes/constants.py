@@ -6,4 +6,4 @@ from app.tool_results.humann2_normalize.constants import MODULE_NAME as TOOL_MOD
 
 
 MODULE_NAME = 'functional_genes'
-TOP_N = 100
+TOP_N = 50
