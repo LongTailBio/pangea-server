@@ -6,7 +6,7 @@ from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import jsonify, categories_from_metadata
 
 from .constants import MODULE_NAME
-from .tasks import make_distributions, reducer_task, persist_result
+from .tasks import make_distributions, persist_result
 
 
 class HMPWrangler(DisplayModuleWrangler):
@@ -21,7 +21,7 @@ class HMPWrangler(DisplayModuleWrangler):
         persist_task = persist_result.s(sample.analysis_result.pk,
                                         MODULE_NAME)
 
-        task_chain = chain(categories_task, distribution_task, reducer_task.s(), persist_task)
+        task_chain = chain(categories_task, distribution_task, persist_task)
         result = task_chain.delay()
 
         return result
@@ -36,7 +36,6 @@ class HMPWrangler(DisplayModuleWrangler):
         task_chain = chain(
             categories_task,
             distribution_task,
-            reducer_task.s(),
             persist_task,
         )
         result = task_chain.delay()

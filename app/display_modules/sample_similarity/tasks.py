@@ -10,6 +10,7 @@ from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .models import SampleSimilarityResult
+from .constants import MODULE_NAME
 
 
 def get_clean_samples(sample_dict, no_zero_features=True, zero_threshold=0.00001):
@@ -176,7 +177,7 @@ def sample_similarity_reducer(args, samples):
 
 
 @celery.task(name='sample_similarity.persist_result')
-def persist_result(result_data, analysis_result_id, result_name):
+def persist_result(result_data, analysis_result_id):
     """Persist Sample Similarity results."""
     result = SampleSimilarityResult(**result_data)
-    persist_result_helper(result, analysis_result_id, result_name)
+    persist_result_helper(result, analysis_result_id, MODULE_NAME)

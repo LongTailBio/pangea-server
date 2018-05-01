@@ -38,16 +38,6 @@ def make_distributions(categories, samples):
              'data': make_dist_table(hmp_results, site_names)}
             for category_value, hmp_results in table.items()]
 
-    return distributions, categories, site_names
-
-
-@celery.task
-def reducer_task(*args):
-    """Return an HMP result model from components."""
-    distributions = args[0]
-    categories = args[1]
-    site_names = args[2]
-
     result_data = {
         'categories': categories,
         'sites': site_names,

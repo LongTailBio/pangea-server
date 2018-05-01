@@ -8,7 +8,6 @@ from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
-from .constants import MODULE_NAME
 from .tasks import taxa_tool_tsne, sample_similarity_reducer, persist_result
 
 
@@ -19,8 +18,7 @@ class SampleSimilarityWrangler(DisplayModuleWrangler):
     def run_sample_group(cls, sample_group, samples):
         """Gather samples and process."""
         reducer = sample_similarity_reducer.s(samples)
-        persist_task = persist_result.s(sample_group.analysis_result_uuid,
-                                        MODULE_NAME)
+        persist_task = persist_result.s(sample_group.analysis_result_uuid)
 
         categories_task = categories_from_metadata.s(samples)
         kraken_task = taxa_tool_tsne.s(samples, KrakenResultModule.name())

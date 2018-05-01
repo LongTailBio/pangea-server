@@ -21,7 +21,7 @@ def get_ranks(*tkns):
         rank = tkn.strip()[0].lower()
         if rank == 'd':
             rank = 'k'
-        assert rank in TAXA_RANKS
+        assert rank in TAXA_RANKS, rank + ' ' + tkn.strip()
         out.append(rank)
     return out
 

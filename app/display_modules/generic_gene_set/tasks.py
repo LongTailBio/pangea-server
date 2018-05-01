@@ -15,8 +15,8 @@ def transform_sample(vfdb_tool_result, gene_names):
             rpkm, rpkmg = vals['rpkm'], vals['rpkmg']
         except KeyError:
             rpkm, rpkmg = 0, 0
-        out['rpkm'][gene_name] = rpkm
-        out['rpkmg'][gene_name] = rpkmg
+        out['rpkm'][gene_name] = np.log10(rpkm + 1)
+        out['rpkmg'][gene_name] = np.log10(rpkmg + 1)
     return out
 
 
