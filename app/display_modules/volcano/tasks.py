@@ -148,10 +148,9 @@ def make_volcanos(categories, samples):
         KrakenResultModule.name(): 'taxa',
         Metaphlan2ResultModule.name(): 'taxa',
     }
-    out = {'categories': categories, 'tools': {}}
+    out = {'categories': {}, 'tools': {}}
     for tool_name, dataframe_key in dataframe_keys.items():
-        out['tools'][tool_name] = {'tool_categories': {}}
-        tool_tbl = out['tools'][tool_name]['tool_categories']
+        tool_tbl = {}  # out['tools'][tool_name]['tool_categories']
         for category_name, category_values in categories.items():
             if '.' in category_name or '$' in category_name:
                 continue
@@ -166,7 +165,13 @@ def make_volcanos(categories, samples):
                     dataframe_key,
                 )
                 if scatter_plot is not None:
+                    try:
+                        out['categories'][category_name].append(category_value)
+                    except KeyError:
+                        out['categories'][category_name] = [category_value]
                     tool_tbl[category_name][category_value] = scatter_plot
+        if tool_tbl:
+            out['tools'][tool_name] = {'tool_categories': tool_tbl}
     return out
 
 
