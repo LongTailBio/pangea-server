@@ -153,6 +153,8 @@ def make_volcanos(categories, samples):
         out['tools'][tool_name] = {'tool_categories': {}}
         tool_tbl = out['tools'][tool_name]['tool_categories']
         for category_name, category_values in categories.items():
+            if '.' in category_name or '$' in category_name:
+                continue
             tool_tbl[category_name] = {}
             for category_value in category_values:
                 category_value = scrub_category_val(category_value)
