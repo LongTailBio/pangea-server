@@ -23,7 +23,8 @@ def collate_macrobes(samples, reverse):
             for macrobe_name, val in sample[MacrobeResultModule.name()]['macrobes'].items()
         }
     sample_tbl = DataFrame.from_dict(sample_dict, orient='index').fillna(0)
-    sample_tbl = (sample_tbl - sample_tbl.mean()) / sample_tbl.std(ddof=0)  # z score normalize
+    if len(samples) > 1:
+        sample_tbl = (sample_tbl - sample_tbl.mean()) / sample_tbl.std(ddof=0)  # z score normalize
     if reverse:
         sample_dict = {'samples': sample_tbl.to_dict()}
     else:
