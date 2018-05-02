@@ -13,7 +13,7 @@ from .models import MacrobeResult
 
 
 @celery.task()
-def collate_macrobes(samples):
+def collate_macrobes(samples, reverse):
     """Group a macrobes from a set of samples."""
     sample_dict = {}
     for sample in samples:
@@ -24,7 +24,11 @@ def collate_macrobes(samples):
         }
     sample_tbl = DataFrame.from_dict(sample_dict, orient='index').fillna(0)
     sample_tbl = (sample_tbl - sample_tbl.mean()) / sample_tbl.std(ddof=0)  # z score normalize
-    return {'samples': sample_tbl.to_dict()}
+    if reverse:
+        sample_dict = {'samples': sample_tbl.to_dict()}
+    else:
+        sample_dict = {'samples': sample_tbl.to_dict(orient='index')}
+    return sample_dict
 
 
 @celery.task(name='macrobe_abundance.persist_result')
@@ -41,7 +45,7 @@ class MacrobeWrangler(DisplayModuleWrangler):
     def run_sample(cls, sample_id, sample):
         """Gather single sample and process."""
         samples = [sample]
-        collate_task = collate_macrobes.s(samples)
+        collate_task = collate_macrobes.s(samples, False)
         persist_task = persist_result.s(sample['analysis_result'], MODULE_NAME)
 
         task_chain = chain(collate_task, persist_task)
@@ -52,7 +56,7 @@ class MacrobeWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample_group(cls, sample_group, samples):
         """Gather and process samples."""
-        collate_task = collate_macrobes.s(samples)
+        collate_task = collate_macrobes.s(samples, True)
         persist_task = persist_result.s(sample_group.analysis_result_uuid, MODULE_NAME)
 
         task_chain = chain(collate_task, persist_task)

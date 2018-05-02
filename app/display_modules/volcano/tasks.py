@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
 
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import persist_result_helper, scrub_category_val
 from app.extensions import celery
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
@@ -155,6 +155,7 @@ def make_volcanos(categories, samples):
         for category_name, category_values in categories.items():
             tool_tbl[category_name] = {}
             for category_value in category_values:
+                category_value = scrub_category_val(category_value)
                 scatter_plot = handle_one_tool_category(
                     category_name,
                     category_value,
