@@ -20,7 +20,7 @@ class GenericGeneWrangler(DisplayModuleWrangler):
         filter_task = filter_gene_results.s(samples,
                                             cls.tool_result_name,
                                             top_n)
-        persist_signature = persist_task.s(sample.analysis_result.pk,
+        persist_signature = persist_task.s(sample['analysis_result'],
                                            cls.result_name)
         task_chain = chain(filter_task, persist_signature)
         result = task_chain.delay()
