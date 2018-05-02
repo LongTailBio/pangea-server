@@ -72,7 +72,6 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('success', data['status'])
             sample = data['data']['sample']
             self.assertIn('SMPL_01', sample['name'])
-            self.assertIn('metadata', sample)
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 

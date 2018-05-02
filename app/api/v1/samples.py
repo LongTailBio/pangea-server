@@ -13,7 +13,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.display_modules import sample_display_modules
 from app.display_modules.conductor import SampleConductor
-from app.samples.sample_models import Sample, sample_schema
+from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_helpers import authenticate
 
@@ -67,7 +67,8 @@ def get_single_sample(sample_uuid):
     try:
         uuid = UUID(sample_uuid)
         sample = Sample.objects.get(uuid=uuid)
-        result = sample_schema.dump(sample).data
+        fields = ('uuid', 'name', 'analysis_result_uuid', 'created_at')
+        result = SampleSchema(only=fields).dump(sample).data
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
