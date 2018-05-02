@@ -1,3 +1,5 @@
+# pylint:disable=unused-import
+
 """Constants for Volcano display module."""
 
-MODULE_NAME = 'volcano'
+from app.analysis_results.constants import VOLCANO_NAME as MODULE_NAME

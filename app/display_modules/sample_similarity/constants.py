@@ -1,3 +1,5 @@
+# pylint:disable=unused-import
+
 """Constants for Sample Similarity display module."""
 
-MODULE_NAME = 'sample_similarity'
+from app.analysis_results.constants import SAMPLE_SIMILARITY_NAME as MODULE_NAME

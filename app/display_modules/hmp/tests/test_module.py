@@ -2,7 +2,7 @@
 
 from mongoengine import ValidationError
 
-from app.analysis_results.analysis_result_models import AnalysisResultWrapper, AnalysisResultMeta
+from app.analysis_results.analysis_result_models import AnalysisResultWrapper
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.hmp import HMPDisplayModule
 from app.samples.sample_models import Sample
@@ -38,8 +38,7 @@ class TestHMPResult(BaseDisplayModuleTest):
                         sites=fake_sites(),
                         data={})
         wrapper = AnalysisResultWrapper(data=hmp)
-        result = AnalysisResultMeta(hmp=wrapper)
-        self.assertRaises(ValidationError, result.save)
+        self.assertRaises(ValidationError, wrapper.save)
 
     def test_run_hmp_sample_group(self):  # pylint: disable=invalid-name
         """Ensure hmp run_sample_group produces correct results."""

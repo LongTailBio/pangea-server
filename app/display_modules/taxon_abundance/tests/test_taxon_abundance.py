@@ -51,7 +51,7 @@ class TestTaxonAbundanceResult(BaseDisplayModuleTest):
                 'metaphlan2': flow_model()
             }
         })
-        wrapper = AnalysisResultWrapper(data=taxon_abundance)
+        wrapper = AnalysisResultWrapper(data=taxon_abundance).save()
         result = AnalysisResultMeta(taxon_abundance=wrapper).save()
         self.assertTrue(result.id)
         self.assertTrue(result.taxon_abundance)

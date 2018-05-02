@@ -91,6 +91,20 @@ def recreate_db():
 
 
 @manager.command
+def seed_users():
+    """Seed just the users for the database."""
+    bchrobot = User(username='bchrobot',
+                    email='benjamin.blair.chrobot@gmail.com',
+                    password='Foobar22')
+    dcdanko = User(username='dcdanko',
+                   email='dcd3001@med.cornell.edu',
+                   password='Foobar22')
+    db.add(bchrobot)
+    db.add(dcdanko)
+    db.session.commit()
+
+
+@manager.command
 def seed_db():
     """Seed the database."""
     bchrobot = User(username='bchrobot',

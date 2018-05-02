@@ -11,6 +11,7 @@ from app.tool_results.microbe_census import MicrobeCensusResultModule
 # Re-export modules
 from .ags_models import DistributionResult, AGSResult
 from .ags_wrangler import AGSWrangler
+from .constants import MODULE_NAME
 
 
 class AGSDisplayModule(SampleToolDisplayModule):
@@ -19,7 +20,7 @@ class AGSDisplayModule(SampleToolDisplayModule):
     @classmethod
     def name(cls):
         """Return unique id string."""
-        return 'average_genome_size'
+        return MODULE_NAME
 
     @classmethod
     def get_result_model(cls):

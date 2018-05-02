@@ -25,7 +25,7 @@ class TestAverageGenomeSizeResult(BaseTestCase):
     def test_add_ags(self):
         """Ensure Average Genome Size model is created correctly."""
         ags = AGSResult(categories=CATEGORIES, distributions=DISTRIBUTIONS)
-        wrapper = AnalysisResultWrapper(data=ags)
+        wrapper = AnalysisResultWrapper(data=ags).save()
         result = AnalysisResultMeta(average_genome_size=wrapper).save()
         self.assertTrue(result.id)
         self.assertTrue(result.average_genome_size)
@@ -38,5 +38,4 @@ class TestAverageGenomeSizeResult(BaseTestCase):
         unordered_distributions['foo']['bar'] = bad_distribution
         ags = AGSResult(categories=CATEGORIES, distributions=unordered_distributions)
         wrapper = AnalysisResultWrapper(data=ags)
-        result = AnalysisResultMeta(average_genome_size=wrapper)
-        self.assertRaises(ValidationError, result.save)
+        self.assertRaises(ValidationError, wrapper.save)

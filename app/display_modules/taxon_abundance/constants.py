@@ -1,3 +1,5 @@
+# pylint:disable=unused-import
+
 """Constants for taxon abundance module."""
 
-MODULE_NAME = 'taxon_abundance'
+from app.analysis_results.constants import TAXON_ABUNDANCE_NAME as MODULE_NAME

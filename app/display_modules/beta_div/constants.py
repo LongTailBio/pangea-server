@@ -1,3 +1,5 @@
+# pylint:disable=unused-import
+
 """Constants for Beta Diversity display module."""
 
-MODULE_NAME = 'beta_diversity'
+from app.analysis_results.constants import BETA_DIV_NAME as MODULE_NAME

@@ -14,7 +14,7 @@ class TestAGSModule(BaseTestCase):
     def test_get_ags(self):
         """Ensure getting a single AGS result works correctly."""
         average_genome_size = AGSFactory()
-        wrapper = AnalysisResultWrapper(data=average_genome_size, status='S')
+        wrapper = AnalysisResultWrapper(data=average_genome_size, status='S').save()
         analysis_result = AnalysisResultMeta(average_genome_size=wrapper).save()
         with self.client:
             response = self.client.get(
@@ -34,7 +34,7 @@ class TestAGSModule(BaseTestCase):
     def test_get_pending_average_genome_size(self):  # pylint: disable=invalid-name
         """Ensure getting a pending AGS behaves correctly."""
         average_genome_size = AGSFactory()
-        wrapper = AnalysisResultWrapper(data=average_genome_size)
+        wrapper = AnalysisResultWrapper(data=average_genome_size).save()
         analysis_result = AnalysisResultMeta(average_genome_size=wrapper).save()
         with self.client:
             response = self.client.get(

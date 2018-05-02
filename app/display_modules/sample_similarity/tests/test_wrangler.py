@@ -47,5 +47,5 @@ class TestSampleSimilarityWrangler(BaseTestCase):
                                                        SampleSimilarityDisplayModule).get()
         analysis_result = sample_group.analysis_result
         self.assertIn('sample_similarity', analysis_result)
-        sample_similarity = analysis_result.sample_similarity
+        sample_similarity = analysis_result.sample_similarity.fetch()
         self.assertEqual(sample_similarity.status, 'S')
