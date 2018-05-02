@@ -42,7 +42,7 @@ class TestDisplayModuleUtilityTasks(BaseTestCase):
 
     def test_persist_result_helper(self):
         """Ensure persist_result_helper works as intended."""
-        wrapper = AnalysisResultWrapper().save()
+        wrapper = AnalysisResultWrapper()
         analysis_result = AnalysisResultMeta(sample_similarity=wrapper).save()
         sample_similarity = create_mvp_sample_similarity()
 
@@ -51,9 +51,8 @@ class TestDisplayModuleUtilityTasks(BaseTestCase):
                               'sample_similarity')
         analysis_result.reload()
         self.assertIn('sample_similarity', analysis_result)
-        wrapper = getattr(analysis_result, 'sample_similarity').fetch()
-        self.assertIn('status', wrapper)
-        self.assertEqual('S', wrapper.status)
+        self.assertIn('status', analysis_result['sample_similarity'])
+        self.assertEqual('S', analysis_result['sample_similarity']['status'])
 
     def test_collate_samples(self):
         """Ensure collate_samples task works."""

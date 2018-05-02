@@ -30,5 +30,5 @@ class TestAverageGenomeSizeWrangler(BaseTestCase):
         AGSWrangler.help_run_sample_group(sample_group, samples, AGSDisplayModule).get()
         analysis_result = sample_group.analysis_result
         self.assertIn('average_genome_size', analysis_result)
-        average_genome_size = analysis_result.average_genome_size.fetch()
+        average_genome_size = analysis_result.average_genome_size
         self.assertEqual(average_genome_size.status, 'S')

@@ -1,8 +1,4 @@
-# pylint:disable=unused-import
-
 """Constants for Virulence Factors module."""
 
-from app.analysis_results.constants import VFDB_NAME as MODULE_NAME
-
-
+MODULE_NAME = 'virulence_factors'
 TOP_N = 50

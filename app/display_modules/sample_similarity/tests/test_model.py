@@ -19,7 +19,7 @@ class TestSampleSimilarityResult(BaseTestCase):
         sample_similarity_result = SampleSimilarityResult(categories=CATEGORIES,
                                                           tools=TOOLS,
                                                           data_records=DATA_RECORDS)
-        wrapper = AnalysisResultWrapper(data=sample_similarity_result).save()
+        wrapper = AnalysisResultWrapper(data=sample_similarity_result)
         result = AnalysisResultMeta(sample_similarity=wrapper).save()
         self.assertTrue(result.id)
         self.assertTrue(result.sample_similarity)
@@ -36,7 +36,8 @@ class TestSampleSimilarityResult(BaseTestCase):
                                                           tools={},
                                                           data_records=data_records)
         wrapper = AnalysisResultWrapper(data=sample_similarity_result)
-        self.assertRaises(ValidationError, wrapper.save)
+        result = AnalysisResultMeta(sample_similarity=wrapper)
+        self.assertRaises(ValidationError, result.save)
 
     def test_add_malformed_tool(self):
         """Ensure saving model fails if sample similarity tool is malformed."""
@@ -55,7 +56,8 @@ class TestSampleSimilarityResult(BaseTestCase):
                                                           tools=tools,
                                                           data_records=data_records)
         wrapper = AnalysisResultWrapper(data=sample_similarity_result)
-        self.assertRaises(ValidationError, wrapper.save)
+        result = AnalysisResultMeta(sample_similarity=wrapper)
+        self.assertRaises(ValidationError, result.save)
 
     def test_add_missing_tool_x_value(self):
         """Ensure saving model fails if sample similarity record is missing x value."""
@@ -75,7 +77,8 @@ class TestSampleSimilarityResult(BaseTestCase):
                                                           tools=tools,
                                                           data_records=data_records)
         wrapper = AnalysisResultWrapper(data=sample_similarity_result)
-        self.assertRaises(ValidationError, wrapper.save)
+        result = AnalysisResultMeta(sample_similarity=wrapper)
+        self.assertRaises(ValidationError, result.save)
 
     def test_add_missing_tool_y_value(self):
         """Ensure saving model fails if sample similarity record is missing y value."""
@@ -96,4 +99,5 @@ class TestSampleSimilarityResult(BaseTestCase):
                                                           tools=tools,
                                                           data_records=data_records)
         wrapper = AnalysisResultWrapper(data=sample_similarity_result)
-        self.assertRaises(ValidationError, wrapper.save)
+        result = AnalysisResultMeta(sample_similarity=wrapper)
+        self.assertRaises(ValidationError, result.save)

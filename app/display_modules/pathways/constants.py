@@ -1,8 +1,4 @@
-# pylint:disable=unused-import
-
 """Constant values for pathways."""
 
-from app.analysis_results.constants import PATHWAYS_NAME as MODULE_NAME
-
-
+MODULE_NAME = 'pathways'
 TOP_N = 50

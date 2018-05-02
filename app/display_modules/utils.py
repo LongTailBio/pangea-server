@@ -36,11 +36,10 @@ def jsonify(mongo_doc):
 def persist_result_helper(result, analysis_result_id, result_name):
     """Persist results to an Analysis Result model."""
     analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_id)
-    wrapper = getattr(analysis_result, result_name).fetch()
+    wrapper = getattr(analysis_result, result_name)
     try:
         wrapper.data = result
         wrapper.status = 'S'
-        wrapper.save()
         analysis_result.save()
     except ValidationError:
         contents = pformat(jsonify(result))
@@ -48,7 +47,6 @@ def persist_result_helper(result, analysis_result_id, result_name):
 
         wrapper.data = None
         wrapper.status = 'E'
-        wrapper.save()
         analysis_result.save()
 
 

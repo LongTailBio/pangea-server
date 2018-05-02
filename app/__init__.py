@@ -19,7 +19,6 @@ from app.api.v1.sample_groups import sample_groups_blueprint
 from app.api.v1.users import users_blueprint
 from app.config import app_config
 from app.display_modules import all_display_modules
-from app.display_modules.register import register_display_module
 from app.extensions import mongoDB, db, migrate, bcrypt, celery
 from app.tool_results import all_tool_results
 from app.tool_results.register import register_tool_result
@@ -86,7 +85,7 @@ def register_display_modules(app):
     """Register each Display Module."""
     display_modules_blueprint = Blueprint('display_modules', __name__)
     for module in all_display_modules:
-        register_display_module(module, display_modules_blueprint)
+        module.register_api_call(display_modules_blueprint)
     app.register_blueprint(display_modules_blueprint, url_prefix=URL_PREFIX)
 
 

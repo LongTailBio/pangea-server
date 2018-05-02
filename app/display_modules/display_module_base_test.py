@@ -16,7 +16,7 @@ class BaseDisplayModuleTest(BaseTestCase):
 
     def generic_getter_test(self, data, endpt, verify_fields=('samples',)):
         """Check that we can get an analysis result."""
-        wrapper = AnalysisResultWrapper(data=data, status='S').save()
+        wrapper = AnalysisResultWrapper(data=data, status='S')
         analysis_result = AnalysisResultMeta(**{endpt: wrapper}).save()
         with self.client:
             response = self.client.get(
@@ -33,7 +33,7 @@ class BaseDisplayModuleTest(BaseTestCase):
 
     def generic_adder_test(self, data, endpt):
         """Check that we can add an analysis result."""
-        wrapper = AnalysisResultWrapper(data=data).save()
+        wrapper = AnalysisResultWrapper(data=data)
         result = AnalysisResultMeta(**{endpt: wrapper}).save()
         self.assertTrue(result.uuid)
         self.assertTrue(getattr(result, endpt))
@@ -48,7 +48,7 @@ class BaseDisplayModuleTest(BaseTestCase):
         sample.reload()
         analysis_result = sample.analysis_result.fetch()
         self.assertIn(endpt, analysis_result)
-        wrangled_sample = getattr(analysis_result, endpt).fetch()
+        wrangled_sample = getattr(analysis_result, endpt)
         self.assertEqual(wrangled_sample.status, 'S')
 
     def generic_run_group_test(self, sample_builder, module, group_builder=None):
@@ -66,5 +66,5 @@ class BaseDisplayModuleTest(BaseTestCase):
         wrangler.help_run_sample_group(sample_group, samples, module).get()
         analysis_result = sample_group.analysis_result
         self.assertIn(endpt, analysis_result)
-        wrangled = getattr(analysis_result, endpt).fetch()
+        wrangled = getattr(analysis_result, endpt)
         self.assertEqual(wrangled.status, 'S')

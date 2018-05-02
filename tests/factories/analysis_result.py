@@ -95,6 +95,7 @@ class AnalysisResultMetaFactory(factory.mongoengine.MongoEngineFactory):
 
         model = AnalysisResultMeta
 
+    sample_group_id = None
     sample_similarity = factory.SubFactory(SampleSimilarityWrapperFactory)
 
     class Params:
