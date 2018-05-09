@@ -1,6 +1,10 @@
 # Environments - Extended
 .env-local
 
+# Pytest
+
+.pytest_cache/
+
 # Created by https://www.gitignore.io/api/macos,python,windows
 
 ### macOS ###

@@ -1,20 +1,5 @@
 """Command line tools for Flask server app."""
 
-import pytest
-import coverage
-
-
-COV = coverage.coverage(
-    branch=True,
-    include='app/*',
-    omit=[
-        'tests/*',
-        '*/test_*.py',
-        '*/tests/*',
-    ]
-)
-COV.start()
-
 from uuid import UUID
 
 from flask_script import Manager
@@ -37,26 +22,6 @@ manager.add_command('db', MigrateCommand)
 # These must be imported AFTER Mongo connection has been established during app creation
 from seed import abrf_analysis_result, uw_analysis_result, reads_classified
 from seed.fuzz import create_saved_group
-
-
-@manager.command
-def test():
-    """Run the tests without code coverage."""
-    return pytest.main([])
-
-
-@manager.command
-def cov():
-    """Run the unit tests with coverage."""
-    result = pytest.main([])
-    if result == 0:
-        COV.stop()
-        COV.save()
-        print('Coverage Summary:')
-        COV.report()
-        COV.html_report()
-        COV.erase()
-    return result
 
 
 @manager.command

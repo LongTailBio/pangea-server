@@ -19,6 +19,7 @@ pylint-quotes==0.1.7
 pycodestyle==2.3.1
 pydocstyle==2.1.1
 pytest==3.5.1
+pytest-cov==2.5.1
 coverage==4.5.1
 
 celery[redis]==4.1.0

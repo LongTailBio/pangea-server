@@ -62,7 +62,7 @@ jobs:
           name: Run application tests
           command: |
             . venv/bin/activate
-            python manage.py cov
+            make cov
 
       - store_artifacts:
           path: htmlcov

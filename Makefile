@@ -51,8 +51,8 @@ lint:
 	pycodestyle app tests seed worker --max-line-length=120 && \
 	pydocstyle app tests seed worker
 
-test: lint
-	python manage.py test
+test:
+	pytest
 
-cov: lint
-	python manage.py cov
+cov:
+	pytest --cov-config .coveragerc --cov=app
