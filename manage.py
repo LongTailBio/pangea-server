@@ -1,6 +1,6 @@
 """Command line tools for Flask server app."""
 
-import unittest
+import pytest
 import coverage
 
 
@@ -42,29 +42,21 @@ from seed.fuzz import create_saved_group
 @manager.command
 def test():
     """Run the tests without code coverage."""
-    tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
-    tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
-    result = unittest.TextTestRunner(verbosity=2).run(tests)
-    if result.wasSuccessful():
-        return 0
-    return 1
+    return pytest.main([])
 
 
 @manager.command
 def cov():
     """Run the unit tests with coverage."""
-    tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
-    tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
-    result = unittest.TextTestRunner(verbosity=2).run(tests)
-    if result.wasSuccessful():
+    result = pytest.main([])
+    if result == 0:
         COV.stop()
         COV.save()
         print('Coverage Summary:')
         COV.report()
         COV.html_report()
         COV.erase()
-        return 0
-    return 1
+    return result
 
 
 @manager.command
