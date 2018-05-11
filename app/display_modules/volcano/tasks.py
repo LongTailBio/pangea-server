@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
 
-from app.display_modules.utils import persist_result_helper, scrub_category_val
+from app.display_modules.utils import persist_result_helper
 from app.extensions import celery
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
