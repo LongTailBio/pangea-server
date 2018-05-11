@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 0.9.0 - 2018-05-11
+## [0.9.0] - 2018-05-11
 ### Added
 - Basic Docker configuration.
 - PostgreSQL Docker and SQLAlchemy configuration.
