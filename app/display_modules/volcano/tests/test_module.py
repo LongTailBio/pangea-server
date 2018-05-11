@@ -56,5 +56,4 @@ class TestVolcanoModule(BaseDisplayModuleTest):
             }
             return Sample(**args).save()
 
-        self.generic_run_group_test(create_sample,
-                                    VolcanoDisplayModule)
+        self.generic_run_group_test(create_sample, VolcanoDisplayModule, nsamples=40)
