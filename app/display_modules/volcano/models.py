@@ -37,6 +37,6 @@ class VolcanoResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-met
     """Volcano document type."""
 
     # Categories dict is of the form: {<category_name>: [<category_value>, ...]}
-    categories = mdb.MapField(field=StringList)
+    categories = mdb.MapField(field=StringList, required=True)
     # Tools dict is of the form: {<tool_name>: <ToolDocument>}
-    tools = mdb.MapField(field=EmbeddedDoc(ToolDocument))
+    tools = mdb.MapField(field=EmbeddedDoc(ToolDocument), required=True)
