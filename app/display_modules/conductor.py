@@ -84,6 +84,7 @@ class SampleConductor(DisplayModuleConductor):
 
         dependencies = set([tool.name() for tool in module.required_tool_results()])
 
+        current_app.logger.info(f'Module: {module.name()}')
         current_app.logger.info(f'Dependencies: {dependencies}')
 
         def test_sample(sample):
