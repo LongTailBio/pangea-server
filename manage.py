@@ -100,8 +100,8 @@ def seed_users():
     dcdanko = User(username='dcdanko',
                    email='dcd3001@med.cornell.edu',
                    password='Foobar22')
-    db.add(bchrobot)
-    db.add(dcdanko)
+    db.session.add(bchrobot)
+    db.session.add(dcdanko)
     db.session.commit()
 
 
