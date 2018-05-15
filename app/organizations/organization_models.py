@@ -49,6 +49,7 @@ class Organization(db.Model):
                    server_default=db.text('uuid_generate_v4()'))
     name = db.Column(db.String(128), unique=True, nullable=False)
     admin_email = db.Column(db.String(128), nullable=False)
+    access_scheme = db.Column(db.String(128), default='public', nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
     # Use association proxy to skip association object for most cases
@@ -66,10 +67,12 @@ class Organization(db.Model):
         backref='organization',
         lazy='dynamic')
 
-    def __init__(self, name, admin_email, created_at=datetime.datetime.utcnow()):
+    def __init__(self, name, admin_email, access_scheme='public',
+                 created_at=datetime.datetime.utcnow()):
         """Initialize MetaGenScope Organization model."""
         self.name = name
         self.admin_email = admin_email
+        self.access_scheme = access_scheme
         self.created_at = created_at
 
     def add_admin(self, admin_user):

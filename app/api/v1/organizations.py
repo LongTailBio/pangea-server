@@ -4,13 +4,16 @@ from uuid import UUID
 
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import ParseError, NotFound, PermissionDenied
+from sqlalchemy import asc, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db
-from app.organizations.organization_models import Organization, organization_schema
+from app.organizations.organization_models import (
+    Organization, OrganizationMembership, organization_schema
+)
 from app.users.user_models import User, user_schema
 from app.users.user_helpers import authenticate
 from app.sample_groups.sample_group_models import sample_group_schema
@@ -20,7 +23,7 @@ organizations_blueprint = Blueprint('organizations', __name__)  # pylint: disabl
 
 
 @organizations_blueprint.route('/organizations', methods=['POST'])
-@authenticate
+@authenticate()
 def add_organization(resp):  # pylint: disable=unused-argument
     """Add organization."""
     try:
@@ -37,7 +40,10 @@ def add_organization(resp):  # pylint: disable=unused-argument
         raise InvalidRequest('An organization with that name already exists.')
 
     try:
-        db.session.add(Organization(name=name, admin_email=admin_email))
+        packed_params = {'name': name, 'admin_email': admin_email}
+        if 'access_scheme' in post_data:
+            packed_params['access_scheme'] = post_data['access_scheme']
+        db.session.add(Organization(**packed_params))
         db.session.commit()
         result = {'message': f'{name} was added!'}
         return result, 201
@@ -82,7 +88,7 @@ def get_organization_users(organization_uuid):
 
 
 @organizations_blueprint.route('/organizations/<organization_uuid>/users', methods=['POST'])
-@authenticate
+@authenticate()
 def add_organization_user(resp, organization_uuid):     # pylint: disable=too-many-return-statements
     """Add user to organization."""
     try:
@@ -144,8 +150,21 @@ def get_organization_sample_groups(organization_uuid, page=1):
 
 
 @organizations_blueprint.route('/organizations', methods=['GET'])
-def get_all_organizations():
+@authenticate(required=False)
+def get_all_organizations(auth_user_id):
     """Get all organizations."""
-    organizations = Organization.query.all()
+    if not auth_user_id:
+        organizations = Organization.query.filter_by(access_scheme='public').all()
+        result = organization_schema.dump(organizations, many=True).data
+        return result, 200
+
+    organizations = db.session.query(Organization) \
+        .outerjoin(OrganizationMembership) \
+        .outerjoin(User) \
+        .filter(or_(Organization.access_scheme == 'public',
+                    User.id == auth_user_id)) \
+        .order_by(asc(Organization.created_at)) \
+        .all()
+
     result = organization_schema.dump(organizations, many=True).data
     return result, 200

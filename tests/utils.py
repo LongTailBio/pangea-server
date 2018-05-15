@@ -25,9 +25,11 @@ def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
     return user
 
 
-def add_organization(name, admin_email, created_at=datetime.datetime.utcnow()):
+def add_organization(name, admin_email, access_scheme='public',
+                     created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding organization."""
-    organization = Organization(name=name, admin_email=admin_email, created_at=created_at)
+    organization = Organization(name=name, admin_email=admin_email,
+                                access_scheme=access_scheme, created_at=created_at)
     db.session.add(organization)
     db.session.commit()
     return organization
