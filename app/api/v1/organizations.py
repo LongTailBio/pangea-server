@@ -158,8 +158,8 @@ def get_all_organizations(auth_user_id):
     organizations = db.session.query(Organization) \
         .outerjoin(OrganizationMembership) \
         .outerjoin(User) \
-        .filter(or_(Organization.access_scheme=='public',
-                    User.id==auth_user_id)) \
+        .filter(or_(Organization.access_scheme == 'public',
+                    User.id == auth_user_id)) \
         .order_by(asc(Organization.created_at)) \
         .all()
 
