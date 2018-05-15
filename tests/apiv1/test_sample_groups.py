@@ -61,8 +61,8 @@ class TestSampleGroupModule(BaseTestCase):
         db.session.commit()
         response = self.create_group_for_organization(auth_headers, organization.id)
         data = json.loads(response.data.decode())
-        sample_group_id = data['data']['sample_group']['uuid']
         self.assertEqual(response.status_code, 201)
+        sample_group_id = data['data']['sample_group']['uuid']
 
         organization_groups = organization.sample_groups
         sample_group_ids = [group.id for group in organization_groups]
@@ -75,7 +75,7 @@ class TestSampleGroupModule(BaseTestCase):
         """
         organization = add_organization('Organization', 'admin@organization.org')
         response = self.create_group_for_organization(auth_headers, organization.id)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     @with_user
     def test_add_samples_to_group(self, auth_headers, *_):
