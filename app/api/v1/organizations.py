@@ -40,7 +40,10 @@ def add_organization(resp):  # pylint: disable=unused-argument
         raise InvalidRequest('An organization with that name already exists.')
 
     try:
-        db.session.add(Organization(name=name, admin_email=admin_email))
+        packed_params = {'name': name, 'admin_email': admin_email}
+        if 'access_scheme' in post_data:
+            packed_params['access_scheme'] = post_data['access_scheme']
+        db.session.add(Organization(**packed_params))
         db.session.commit()
         result = {'message': f'{name} was added!'}
         return result, 201
