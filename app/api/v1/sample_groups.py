@@ -41,6 +41,7 @@ def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
 
     organization = None
     if 'organization_uuid' in post_data:
+        organization_uuid = post_data['organization_uuid']
         try:
             organization = Organization.query.filter_by(id=organization_uuid).one()
         except NoResultFound:
