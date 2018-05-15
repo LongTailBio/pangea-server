@@ -50,7 +50,6 @@ def persist_result_helper(result, analysis_result_id, result_name):
         wrapper.status = 'E'
         wrapper.save()
         analysis_result.save()
-        raise
 
 
 def boxplot(values):
