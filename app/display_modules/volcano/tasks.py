@@ -11,7 +11,7 @@ from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .models import VolcanoResult
 
-MIN_VEC_LEN = 10
+MIN_VEC_LEN = 4
 
 
 def clean_vector(vec):
@@ -149,6 +149,7 @@ def store_scatter_plot(out, tool_name, cat_name, cat_value, scatter_plot):
         tool_tbl = out['tools'][tool_name]['tool_categories']
     except KeyError:
         out['tools'][tool_name] = {'tool_categories': {}}
+        tool_tbl = out['tools'][tool_name]['tool_categories']
 
     try:
         out['categories'][cat_name].append(cat_value)
