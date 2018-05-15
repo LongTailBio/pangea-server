@@ -7,6 +7,8 @@ import time
 from uuid import uuid4
 
 from app import db
+from app.organizations.organization_models import Organization
+
 from tests.base import BaseTestCase
 from tests.utils import add_user, add_organization, add_sample_group, with_user
 
@@ -51,7 +53,7 @@ class TestOrganizationModule(BaseTestCase):
             self.assertEqual(response.status_code, 201)
             self.assertIn('MetaGenScope was added!', data['data']['message'])
             self.assertIn('success', data['status'])
-        
+
         organization = Organization.query.filter_by(name=organization_name).one()
         self.assertEqual(organization.access_scheme, 'private')
 
