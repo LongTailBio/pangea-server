@@ -47,7 +47,7 @@ def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
         except NoResultFound:
             raise NotFound('Sample Group does not exist')
 
-        user_ids = [str(user.id) for user in organization.users]
+        user_ids = [user.id for user in organization.users]
         if auth_user_uuid not in user_ids:
             raise PermissionDenied('You do not have permission to that organization.')
 

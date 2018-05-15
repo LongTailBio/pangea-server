@@ -1,6 +1,7 @@
 """Test suite for Sample Group module."""
 
 import json
+from uuid import UUID
 
 from app import db
 from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
@@ -62,7 +63,7 @@ class TestSampleGroupModule(BaseTestCase):
         response = self.create_group_for_organization(auth_headers, organization.id)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 201)
-        sample_group_id = data['data']['sample_group']['uuid']
+        sample_group_id = UUID(data['data']['sample_group']['uuid'])
 
         organization_groups = organization.sample_groups
         sample_group_ids = [group.id for group in organization_groups]
