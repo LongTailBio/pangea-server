@@ -23,7 +23,7 @@ sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disabl
 
 
 @sample_groups_blueprint.route('/sample_groups', methods=['POST'])
-@authenticate
+@authenticate()
 def add_sample_group(resp):  # pylint: disable=unused-argument
     """Add sample group."""
     try:
@@ -82,7 +82,7 @@ def get_samples_for_group(group_uuid):
 
 
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>/samples', methods=['POST'])
-@authenticate
+@authenticate()
 def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
     """Add samples to a sample group."""
     try:

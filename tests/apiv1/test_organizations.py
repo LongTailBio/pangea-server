@@ -1,6 +1,8 @@
 """Test suite for Organization module."""
 
+import datetime
 import json
+import time
 
 from uuid import uuid4
 
@@ -195,10 +197,13 @@ class TestOrganizationModule(BaseTestCase):
 
     @with_user
     def test_authorized_private_organization(self, auth_headers, login_user):
-        """Ensure private organizatons do not show up in public list."""
-        add_organization('Public Organization', 'admin@public.org')
+        """Ensure private organizatons show up in authorized user's list."""
+        add_organization('Public Organization', 'admin@public.org',
+                         created_at=datetime.datetime.utcnow())
+        time.sleep(0.3)
         private_org = add_organization('Private Organization', 'admin@private.org',
-                                       access_scheme='private')
+                                       access_scheme='private',
+                                       created_at=datetime.datetime.utcnow())
         private_org.users.append(login_user)
         db.session.commit()
         with self.client:

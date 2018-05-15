@@ -104,7 +104,7 @@ def register_tool_result(cls, router):
     endpoint_url = cls.endpoint()
     endpoint_name = f'post_{cls.name()}'
 
-    @authenticate
+    @authenticate()
     def view_function(resp, uuid):
         """Wrap receive_upload to provide class."""
         if issubclass(cls, SampleToolResultModule):
