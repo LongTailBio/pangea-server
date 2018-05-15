@@ -47,7 +47,7 @@ class TestSampleGroupModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=group_name,
-                    organization_uuid=organization_uuid,
+                    organization_uuid=str(organization_uuid),
                 )),
                 content_type='application/json',
             )
