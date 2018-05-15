@@ -70,12 +70,12 @@ class TestSampleGroupModule(BaseTestCase):
 
     @with_user
     def test_unauthorized_add_group_with_organization(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure a new sample group cannot be added to an organization to the user is not part of."""
+        """
+        Ensure a new sample group cannot be added to an organization to the user is not part of.
+        """
         organization = add_organization('Organization', 'admin@organization.org')
         response = self.create_group_for_organization(auth_headers, organization.id)
-        data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 401)
-
 
     @with_user
     def test_add_samples_to_group(self, auth_headers, *_):
