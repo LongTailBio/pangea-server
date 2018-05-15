@@ -32,6 +32,29 @@ class TestOrganizationModule(BaseTestCase):
             self.assertIn('MetaGenScope was added!', data['data']['message'])
             self.assertIn('success', data['status'])
 
+    @with_user
+    def test_add_private_organization(self, auth_headers, *_):
+        """Ensure a new organization can be added to the database."""
+        organization_name = 'MetaGenScope'
+        with self.client:
+            response = self.client.post(
+                '/api/v1/organizations',
+                headers=auth_headers,
+                data=json.dumps(dict(
+                    name=organization_name,
+                    admin_email='admin@metagenscope.com',
+                    access_scheme='private',
+                )),
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 201)
+            self.assertIn('MetaGenScope was added!', data['data']['message'])
+            self.assertIn('success', data['status'])
+        
+        organization = Organization.query.filter_by(name=organization_name).one()
+        self.assertEqual(organization.access_scheme, 'private')
+
     # pylint: disable=invalid-name
     @with_user
     def test_add_organization_invalid_json(self, auth_headers, *_):
