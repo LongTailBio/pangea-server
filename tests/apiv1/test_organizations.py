@@ -178,6 +178,42 @@ class TestOrganizationModule(BaseTestCase):
             self.assertTrue('created_at' in data['data']['organizations'][1])
             self.assertIn('success', data['status'])
 
+    def test_private_organization(self):
+        """Ensure private organizatons do not show up in public list."""
+        add_organization('Public Organization', 'admin@public.org')
+        add_organization('Private Organization', 'admin@private.org', access_scheme='private')
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/organizations',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(len(data['data']['organizations']), 1)
+            self.assertIn('Public Organization', data['data']['organizations'][0]['name'])
+
+    @with_user
+    def test_authorized_private_organization(self, auth_headers, login_user):
+        """Ensure private organizatons do not show up in public list."""
+        add_organization('Public Organization', 'admin@public.org')
+        private_org = add_organization('Private Organization', 'admin@private.org',
+                                       access_scheme='private')
+        private_org.users.append(login_user)
+        db.session.commit()
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/organizations',
+                content_type='application/json',
+                headers=auth_headers,
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(len(data['data']['organizations']), 2)
+            self.assertIn('Public Organization', data['data']['organizations'][0]['name'])
+            self.assertIn('Private Organization', data['data']['organizations'][1]['name'])
+
     @with_user
     def test_add_user_to_organiztion(self, auth_headers, login_user):
         """Ensure user can be added to organization by admin user."""
