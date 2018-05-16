@@ -3,7 +3,7 @@
 from uuid import UUID
 
 from flask import Blueprint, current_app, request
-from flask_api.exceptions import ParseError, NotFound
+from flask_api.exceptions import ParseError, NotFound, PermissionDenied
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -12,6 +12,7 @@ from app.api.exceptions import InvalidRequest, InternalError
 from app.display_modules import all_display_modules
 from app.display_modules.conductor import SampleConductor
 from app.extensions import db
+from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
@@ -24,7 +25,7 @@ sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disabl
 
 @sample_groups_blueprint.route('/sample_groups', methods=['POST'])
 @authenticate()
-def add_sample_group(resp):  # pylint: disable=unused-argument
+def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
     """Add sample group."""
     try:
         post_data = request.get_json()
@@ -38,10 +39,24 @@ def add_sample_group(resp):  # pylint: disable=unused-argument
     if sample_group is not None:
         raise InvalidRequest('Sample Group with that name already exists.')
 
+    organization = None
+    if 'organization_uuid' in post_data:
+        organization_uuid = post_data['organization_uuid']
+        try:
+            organization = Organization.query.filter_by(id=organization_uuid).one()
+        except NoResultFound:
+            raise NotFound('Sample Group does not exist')
+
+        user_ids = [user.id for user in organization.users]
+        if auth_user_uuid not in user_ids:
+            raise PermissionDenied('You do not have permission to that organization.')
+
     try:
         analysis_result = AnalysisResultMeta().save()
         sample_group = SampleGroup(name=name, analysis_result=analysis_result)
         db.session.add(sample_group)
+        if organization:
+            organization.sample_groups.append(sample_group)
         db.session.commit()
         result = sample_group_schema.dump(sample_group).data
         return result, 201

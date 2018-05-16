@@ -16,7 +16,7 @@ from app.organizations.organization_models import (
 )
 from app.users.user_models import User, user_schema
 from app.users.user_helpers import authenticate
-from app.sample_groups.sample_group_models import sample_group_schema
+from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 
 
 organizations_blueprint = Blueprint('organizations', __name__)  # pylint: disable=invalid-name
@@ -124,6 +124,48 @@ def add_organization_user(resp, organization_uuid):     # pylint: disable=too-ma
         return result, 200
     except IntegrityError as integrity_error:
         current_app.logger.exception('IntegrityError encountered.')
+        db.session.rollback()
+        raise InternalError(str(integrity_error))
+
+
+@organizations_blueprint.route('/organizations/<organization_uuid>/sample_groups',
+                               methods=['POST'])
+@authenticate()
+def add_organization_sample_group(resp, organization_uuid):
+    """Add sample group to organization."""
+    try:
+        organization_id = UUID(organization_uuid)
+        organization = Organization.query.filter_by(id=organization_id).one()
+    except ValueError:
+        raise ParseError('Invalid organization UUID.')
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
+
+    auth_user = User.query.filter_by(id=resp).first()
+    if not auth_user or auth_user not in organization.users:
+        message = 'You do not have permission to add a sample group to that organization.'
+        raise PermissionDenied(message)
+
+    try:
+        post_data = request.get_json()
+        sample_group_uuid = UUID(post_data['sample_group_uuid'])
+        sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    except TypeError:
+        raise ParseError('Missing sample group payload.')
+    except KeyError:
+        raise ParseError('Invalid sample group payload.')
+    except ValueError:
+        raise ParseError('Invalid sample group UUID.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+    try:
+        organization.sample_groups.append(sample_group)
+        db.session.commit()
+        result = {'message': f'${sample_group.name} added to ${organization.name}'}
+        return result, 200
+    except IntegrityError as integrity_error:
+        current_app.logger.exception('IntegrityError encountered while saving organization.')
         db.session.rollback()
         raise InternalError(str(integrity_error))
 
