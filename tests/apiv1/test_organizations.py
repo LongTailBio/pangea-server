@@ -304,3 +304,47 @@ class TestOrganizationModule(BaseTestCase):
             self.assertIn('You do not have permission to add a user to that group.',
                           data['message'])
             self.assertIn('error', data['status'])
+
+    def add_group_to_organization(self, auth_headers, group_uuid, organization_uuid):
+        """Add sample group to organization."""
+        with self.client:
+            response = self.client.post(
+                f'/api/v1/organizations/{str(organization_uuid)}/sample_groups',
+                headers=auth_headers,
+                data=json.dumps(dict(
+                    group_uuid=str(group_uuid),
+                )),
+                content_type='application/json',
+            )
+            return response
+
+    @with_user
+    def test_add_group_to_organiztion(self, auth_headers, login_user):
+        """Ensure sample group can be added to organization by member."""
+        sample_group = add_sample_group('The Most Sampled of Groups')
+        organization = add_organization('Test Organization', 'admin@test.org')
+        organization.users.append(login_user)
+        db.session.commit()
+
+        response = self.add_group_to_organization(auth_headers,
+                                                  sample_group.id,
+                                                  organization.id)
+
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('success', data['status'])
+        self.assertIn(sample_group, organization.sample_groups)
+
+    @with_user
+    def test_unauthorized_add_group_to_organiztion(self, auth_headers, *_):
+        """Ensure sample group can be added to organization by member."""
+        sample_group = add_sample_group('The Most Sampled of Groups')
+        organization = add_organization('Test Organization', 'admin@test.org')
+
+        response = self.add_group_to_organization(auth_headers,
+                                                  sample_group.id,
+                                                  organization.id)
+
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 403)
+        self.assertIn('error', data['status'])
