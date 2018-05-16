@@ -47,14 +47,14 @@ class TestVolcanoModule(BaseDisplayModuleTest):
         """Ensure Volcano run_sample_group produces correct results."""
         def create_sample(i):
             """Create unique sample for index i."""
+            j = randint(1, 3)
             args = {
                 'name': f'Sample{i}',
-                'metadata': {'foobar': f'baz{i}'},
+                'metadata': {'foobar': f'baz{j}'},
                 CARDAMRResultModule.name(): create_card_amr(),
                 KrakenResultModule.name(): create_kraken(),
                 Metaphlan2ResultModule.name(): create_metaphlan2(),
             }
             return Sample(**args).save()
 
-        self.generic_run_group_test(create_sample,
-                                    VolcanoDisplayModule)
+        self.generic_run_group_test(create_sample, VolcanoDisplayModule, nsamples=40)

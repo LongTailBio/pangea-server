@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
 
-from app.display_modules.utils import persist_result_helper, scrub_category_val
+from app.display_modules.utils import persist_result_helper
 from app.extensions import celery
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .models import VolcanoResult
 
-MIN_VEC_LEN = 10
+MIN_VEC_LEN = 4
 
 
 def clean_vector(vec):
@@ -141,6 +141,26 @@ def handle_one_tool_category(category_name, category_value,
     return out
 
 
+def store_scatter_plot(out, tool_name, cat_name, cat_value, scatter_plot):
+    """Store a scatter plot to out, if appropriate."""
+    if scatter_plot is None:
+        return
+    try:
+        tool_tbl = out['tools'][tool_name]['tool_categories']
+    except KeyError:
+        out['tools'][tool_name] = {'tool_categories': {}}
+        tool_tbl = out['tools'][tool_name]['tool_categories']
+
+    try:
+        out['categories'][cat_name].append(cat_value)
+    except KeyError:
+        out['categories'][cat_name] = [cat_value]
+    try:
+        tool_tbl[cat_name][cat_value] = scatter_plot
+    except KeyError:
+        tool_tbl[cat_name] = {cat_value: scatter_plot}
+
+
 @celery.task()
 def make_volcanos(categories, samples):
     """Return the JSON for a VolcanoResult."""
@@ -148,14 +168,10 @@ def make_volcanos(categories, samples):
         KrakenResultModule.name(): 'taxa',
         Metaphlan2ResultModule.name(): 'taxa',
     }
-    out = {'categories': categories, 'tools': {}}
+    out = {'categories': {}, 'tools': {}}
     for tool_name, dataframe_key in dataframe_keys.items():
-        out['tools'][tool_name] = {'tool_categories': {}}
-        tool_tbl = out['tools'][tool_name]['tool_categories']
         for category_name, category_values in categories.items():
-            tool_tbl[category_name] = {}
             for category_value in category_values:
-                category_value = scrub_category_val(category_value)
                 scatter_plot = handle_one_tool_category(
                     category_name,
                     category_value,
@@ -163,8 +179,7 @@ def make_volcanos(categories, samples):
                     tool_name,
                     dataframe_key,
                 )
-                if scatter_plot is not None:
-                    tool_tbl[category_name][category_value] = scatter_plot
+                store_scatter_plot(out, tool_name, category_name, category_value, scatter_plot)
     return out
 
 
