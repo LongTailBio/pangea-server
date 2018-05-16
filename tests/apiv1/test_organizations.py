@@ -312,7 +312,7 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations/{str(organization_uuid)}/sample_groups',
                 headers=auth_headers,
                 data=json.dumps(dict(
-                    group_uuid=str(group_uuid),
+                    sample_group_uuid=str(group_uuid),
                 )),
                 content_type='application/json',
             )
