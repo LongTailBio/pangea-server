@@ -109,7 +109,7 @@ def add_organization_user(resp, organization_uuid):     # pylint: disable=too-ma
 
     auth_user = User.query.filter_by(id=resp).first()
     if not auth_user or auth_user not in organization.admin_users:
-        if len(organization.users) or auth_user.emal != admin_email:
+        if len(organization.users) or auth_user.email != admin_email:
             message = 'You do not have permission to add a user to that group.'
             raise PermissionDenied(message)
 
