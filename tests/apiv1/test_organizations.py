@@ -17,7 +17,7 @@ class TestOrganizationModule(BaseTestCase):
     """Tests for the Organizations module."""
 
     @with_user
-    def test_add_organization(self, auth_headers, *_):
+    def test_add_organization(self, auth_headers, login_user):
         """Ensure a new organization can be added to the database."""
         with self.client:
             response = self.client.post(
@@ -31,8 +31,12 @@ class TestOrganizationModule(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
-            self.assertIn('MetaGenScope was added!', data['data']['message'])
             self.assertIn('success', data['status'])
+            self.assertIn('organization', data['data'])
+
+            organization_uuid = data['data']['organization']['uuid']
+            organization = Organization.query.filter_by(id=organization_uuid).first()
+            self.assertIn(login_user, organization.admin_users)
 
     @with_user
     def test_add_private_organization(self, auth_headers, *_):
@@ -51,8 +55,8 @@ class TestOrganizationModule(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
-            self.assertIn('MetaGenScope was added!', data['data']['message'])
             self.assertIn('success', data['status'])
+            self.assertIn('organization', data['data'])
 
         organization = Organization.query.filter_by(name=organization_name).one()
         self.assertEqual(organization.access_scheme, 'private')

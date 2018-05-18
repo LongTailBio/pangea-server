@@ -48,7 +48,7 @@ def add_organization(resp):  # pylint: disable=unused-argument
         organization.add_admin(auth_user)
         db.session.add(organization)
         db.session.commit()
-        result = {'message': f'{name} was added!'}
+        result = organization_schema.dump(organization).data
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('There was a problem adding an organization.')
