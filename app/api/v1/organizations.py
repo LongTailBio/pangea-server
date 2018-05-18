@@ -73,6 +73,21 @@ def get_single_organization(organization_uuid):
     return result, 200
 
 
+@organizations_blueprint.route('/organizations/getid/<organization_name>', methods=['GET'])
+def get_organization_uuid(organization_name):
+    """Return the UUID associated with a single organization."""
+    try:
+        organization = Organization.query.filter_by(name=organization_name).one()
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
+
+    result = {
+        'organization_name': organization.name,  # recapitulate for convenience
+        'organization_uuid': organization.id,
+    }
+    return result, 200
+
+
 @organizations_blueprint.route('/organizations/<organization_uuid>/users', methods=['GET'])
 def get_organization_users(organization_uuid):
     """Get single organization's users."""
