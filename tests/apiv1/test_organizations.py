@@ -135,6 +135,23 @@ class TestOrganizationModule(BaseTestCase):
             self.assertIn('error', data['status'])
             self.assertIn('Invalid organization UUID.', data['message'])
 
+    def test_get_uuid_from_name(self):
+        """Ensure get organization UUID behaves correctly."""
+        organization_name = 'Sample Group One'
+        organization = add_organization(name=organization_name, admin_email='admin@test.org')
+        organization_uuid = str(organization.id)
+
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/organizations/getid/{organization_name}',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(organization_uuid, data['data']['organization_uuid'])
+            self.assertEqual(organization_name, data['data']['organization_name'])
+
     def test_single_organization_users(self):
         """Ensure getting users for an organization behaves correctly."""
         user = add_user('test', 'test@test.com', 'test')
