@@ -39,13 +39,16 @@ def add_organization(resp):  # pylint: disable=unused-argument
     if organization is not None:
         raise InvalidRequest('An organization with that name already exists.')
 
+    auth_user = User.query.filter_by(id=resp).first()
     try:
         packed_params = {'name': name, 'admin_email': admin_email}
         if 'access_scheme' in post_data:
             packed_params['access_scheme'] = post_data['access_scheme']
-        db.session.add(Organization(**packed_params))
+        organization = Organization(**packed_params)
+        organization.add_admin(auth_user)
+        db.session.add(organization)
         db.session.commit()
-        result = {'message': f'{name} was added!'}
+        result = organization_schema.dump(organization).data
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('There was a problem adding an organization.')
@@ -109,9 +112,8 @@ def add_organization_user(resp, organization_uuid):     # pylint: disable=too-ma
 
     auth_user = User.query.filter_by(id=resp).first()
     if not auth_user or auth_user not in organization.admin_users:
-        if len(organization.users) or auth_user.email != admin_email:
-            message = 'You do not have permission to add a user to that group.'
-            raise PermissionDenied(message)
+        message = 'You do not have permission to add a user to that group.'
+        raise PermissionDenied(message)
 
     user = User.query.filter_by(id=user_id).first()
     if not user:
