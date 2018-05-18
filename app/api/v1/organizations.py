@@ -39,15 +39,15 @@ def add_organization(resp):  # pylint: disable=unused-argument
     if organization is not None:
         raise InvalidRequest('An organization with that name already exists.')
 
-    auth_user = User.query.filter_by(id=resp).first()
+    auth_user = User.query.filter_by(id=resp).one()
     try:
         packed_params = {'name': name, 'admin_email': admin_email}
         if 'access_scheme' in post_data:
             packed_params['access_scheme'] = post_data['access_scheme']
         organization = Organization(**packed_params)
-        organization.add_admin(auth_user)
         db.session.add(organization)
         db.session.commit()
+        organization.add_admin(auth_user)
         result = organization_schema.dump(organization).data
         return result, 201
     except IntegrityError as integrity_error:
