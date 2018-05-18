@@ -77,9 +77,11 @@ class Organization(db.Model):
 
     def add_admin(self, admin_user):
         """Add admin user to organization."""
-        membership = OrganizationMembership.query.filter_by(user=admin_user).first()
+        membership = OrganizationMembership.query.filter_by(organization=self,
+                                                            user=admin_user).first()
         if not membership:
             membership = OrganizationMembership(organization=self, user=admin_user)
+            db.session.add(membership)
         membership.role = 'admin'
         db.session.commit()
 
