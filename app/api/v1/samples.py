@@ -26,7 +26,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
     """Add sample."""
     try:
         post_data = request.get_json()
-        sample_group_uuid = post_data['sample_group_uuid']
+        library_uuid = post_data['library_uuid']
         sample_name = post_data['name']
     except TypeError:
         raise ParseError('Missing Sample creation payload.')
@@ -34,7 +34,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
         raise ParseError('Invalid Sample creation payload.')
 
     try:
-        sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+        library = SampleGroup.query.filter_by(id=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Sample Group does not exist!')
 
@@ -44,10 +44,11 @@ def add_sample(resp):  # pylint: disable=unused-argument
 
     try:
         analysis_result = AnalysisResultMeta().save()
-        sample = Sample(name=sample_name,
+        sample = Sample(library_uuid=library_uuid,
+                        name=sample_name,
                         analysis_result=analysis_result,
                         metadata={'name': sample_name}).save()
-        sample_group.sample_ids.append(sample.uuid)
+        library.sample_ids.append(sample.uuid)
         db.session.commit()
         result = sample_schema.dump(sample).data
         return result, 201
