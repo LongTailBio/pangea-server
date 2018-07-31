@@ -75,6 +75,21 @@ def get_single_sample(sample_uuid):
         raise NotFound('Sample does not exist.')
 
 
+@samples_blueprint.route('/samples/<sample_uuid>/metadata', methods=['GET'])
+def get_single_sample_metadata(sample_uuid):
+    """Get single sample metadata."""
+    try:
+        uuid = UUID(sample_uuid)
+        sample = Sample.objects.get(uuid=uuid)
+        fields = ('uuid', 'name', 'metadata')
+        result = SampleSchema(only=fields).dump(sample).data
+        return result, 200
+    except ValueError:
+        raise ParseError('Invalid UUID provided.')
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
+
+
 @samples_blueprint.route('/samples/metadata', methods=['POST'])
 @authenticate()
 def add_sample_metadata(resp):  # pylint: disable=unused-argument
