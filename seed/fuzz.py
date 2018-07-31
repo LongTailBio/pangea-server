@@ -1,5 +1,6 @@
 """Create and save a Sample Group with all the fixings (plus gravy)."""
 
+from random import choice
 from uuid import uuid4
 
 from analysis_packages.ags.tests.factory import AGSFactory
@@ -20,6 +21,16 @@ from analysis_packages.virulence_factors.tests.factory import VFDBFactory
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.sample_groups.sample_group_models import SampleGroup
+
+
+def generate_metadata():
+    """Generate pseduo-random metadata."""
+    result = {
+        'location': choice(['house', 'car', 'subway', 'treehouse']),
+        'color': choice(['red', 'green', 'blue']),
+        'time': choice(['morning', 'evening', 'afternoon', 'night']),
+    }
+    return result
 
 
 def wrap_result(result):

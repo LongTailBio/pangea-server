@@ -22,7 +22,7 @@ manager.add_command('db', MigrateCommand)
 
 # These must be imported AFTER Mongo connection has been established during app creation
 from seed import abrf_analysis_result, uw_analysis_result, reads_classified
-from seed.fuzz import create_saved_group
+from seed.fuzz import generate_metadata, create_saved_group
 
 
 @manager.command
@@ -72,10 +72,12 @@ def seed_db():
 
     abrf_analysis_result_01 = AnalysisResultMeta(reads_classified=reads_classified).save()
     abrf_sample_01 = Sample(name='SomethingUnique_A',
-                            analysis_result=abrf_analysis_result_01).save()
+                            analysis_result=abrf_analysis_result_01,
+                            metadata=generate_metadata()).save()
     abrf_analysis_result_02 = AnalysisResultMeta(reads_classified=reads_classified).save()
     abrf_sample_02 = Sample(name='SomethingUnique_B',
-                            analysis_result=abrf_analysis_result_02).save()
+                            analysis_result=abrf_analysis_result_02,
+                            metadata=generate_metadata()).save()
     abrf_analysis_result.save()
 
     abrf_uuid = UUID('00000000-0000-4000-8000-000000000000')
