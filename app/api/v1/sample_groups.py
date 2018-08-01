@@ -1,9 +1,11 @@
 """Sample Group API endpoint definitions."""
 
 from uuid import UUID
+from csv import DictReader
 
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import ParseError, NotFound, PermissionDenied
+from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -15,6 +17,7 @@ from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
+from app.utils import XLSDictReader
 
 
 sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disable=invalid-name
@@ -189,3 +192,71 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     result = {'middleware': analysis_names}
 
     return result, 202
+
+
+@sample_groups_blueprint.route('/libraries/<library_uuid>/metadata', methods=['POST'])
+@authenticate()
+def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-many-branches,too-many-locals
+    """Upload metadata for a library."""
+    try:
+        library_id = UUID(library_uuid)
+        # Enforce is_library
+        _ = SampleGroup.query.filter_by(id=library_id).one()
+    except ValueError:
+        raise ParseError('Invalid Library UUID.')
+    except NoResultFound:
+        raise NotFound('Library does not exist')
+
+    try:
+        metadata_file = request.files['metadata']
+    except KeyError:
+        raise ParseError('Missing metadata file attachment.')
+
+    if metadata_file.filename == '':
+        raise ParseError('Missing metadata file attachment.')
+
+    try:
+        extension = metadata_file.filename.split('.')[1]
+    except KeyError:
+        raise ParseError('Metadata file missing extension.')
+
+    if extension == 'csv':
+        metadata = DictReader(metadata_file)
+    elif 'xls' in extension:
+        metadata = XLSDictReader(metadata_file)
+    else:
+        raise ParseError('Missing valid metadata file attachment.')
+
+    sample_name_col = metadata.fieldnames[0]
+    updates = {}
+
+    for row in metadata:
+        sample_name = row[sample_name_col]
+
+        new_metadata = {key: value for key, value in row.items()
+                        if key is not sample_name_col}
+        updates[sample_name] = new_metadata
+
+    # MongoDB has no transactions so we must do as much as we can upfront to
+    # avoid errors; ensure all samples at least exist
+    missing_samples = []
+    for sample_name in updates:
+        try:
+            sample = Sample.objects.get(name=sample_name, library_uuid=library_id)
+            # Searching by UUID directly will be faster in the actual update phase
+            updates[sample.uuid] = updates.pop(sample_name)
+        except DoesNotExist:
+            missing_samples.append(sample_name)
+    if missing_samples:
+        raise InvalidRequest((f'The following samples do not exist in Library '
+                              f'{library_id}: {missing_samples}'))
+
+    # Actually perform the updates
+    for sample_uuid, new_metadata in updates.items():
+        try:
+            sample = Sample.objects.get(uuid=sample_uuid)
+            sample.metadata = new_metadata
+            sample.save()
+        except ValidationError as validation_error:
+            current_app.logger.exception('Sample metadata could not be updated.')
+            raise ParseError(f'Metadata upload failed partway through: {str(validation_error)}')
