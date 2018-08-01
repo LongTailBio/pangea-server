@@ -2,7 +2,7 @@
 
 import json
 from unittest import mock
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -246,6 +246,7 @@ class TestSampleGroupModule(BaseTestCase):
             """Create unique sample for index i."""
             data = create_ancestry()
             args = {
+                'library_uuid': uuid4(),
                 'name': f'AncestrySample{i}',
                 'metadata': {'foobar': f'baz{i}'},
                 TOOL_MODULE_NAME: data,

@@ -1,6 +1,7 @@
 """Test suite for AnalysisModule utility tasks."""
 
 from unittest import TestCase
+from uuid import uuid4
 
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.kraken.tests.factory import create_result as create_kraken
@@ -26,8 +27,9 @@ class TestDisplayModuleUtilityTasks(TestCase):
         metadata2 = {
             'valid_category': 'baz',
         }
-        sample1 = {'name': 'Sample01', 'metadata': metadata1}
-        sample2 = {'name': 'Sample02', 'metadata': metadata2}
+        sample1 = {'name': 'Sample01', 'library_uuid': uuid4(), 'metadata': metadata1}
+        sample2 = {'name': 'Sample02', 'library_uuid': uuid4(), 'metadata': metadata2}
+
         result = categories_from_metadata([sample1, sample2])
         self.assertEqual(1, len(result.keys()))
         self.assertNotIn('invalid_category', result)
@@ -37,8 +39,16 @@ class TestDisplayModuleUtilityTasks(TestCase):
 
     def test_collate_samples(self):
         """Ensure collate_samples task works."""
-        sample1 = {'name': 'Sample01', KRAKEN_NAME: create_kraken(save=False)}
-        sample2 = {'name': 'Sample02', KRAKEN_NAME: create_kraken(save=False)}
+        sample1 = {
+            'name': 'Sample01',
+            'library_uuid': uuid4(),
+            KRAKEN_NAME: create_kraken(save=False),
+        }
+        sample2 = {
+            'name': 'Sample02',
+            'library_uuid': uuid4(),
+            KRAKEN_NAME: create_kraken(save=False),
+        }
         samples = [sample1, sample2]
         result = collate_samples(KRAKEN_NAME, ['taxa'], samples)
         self.assertIn('Sample01', result)

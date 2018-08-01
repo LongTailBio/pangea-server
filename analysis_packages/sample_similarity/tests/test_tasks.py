@@ -1,5 +1,6 @@
 """Test suite for Sample Similarity tasks."""
 
+from uuid import uuid4
 from unittest import TestCase
 
 from tool_packages.kraken import KrakenResultModule
@@ -72,7 +73,11 @@ class TestSampleSimilarityTasks(TestCase):
 
         def create_sample(i):
             """Create unique sample for index."""
-            sample_data = {'name': f'SMPL_{i}', KRAKEN_NAME: create_kraken(save=False)}
+            sample_data = {
+                'name': f'SMPL_{i}',
+                'library_uuid': uuid4(),
+                KRAKEN_NAME: create_kraken(save=False),
+            }
             return sample_data
 
         samples = [create_sample(i) for i in range(3)]

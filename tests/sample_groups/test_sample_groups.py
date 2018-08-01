@@ -1,5 +1,7 @@
 """Test suite for Sample Group model."""
 
+from uuid import uuid4
+
 from sqlalchemy.exc import IntegrityError
 
 from app import db
@@ -41,8 +43,12 @@ class TestSampleGroupModel(BaseTestCase):
     def test_add_samples(self):
         """Ensure that samples can be added to SampleGroup."""
         sample_group = add_sample_group('Sample Group One', access_scheme='public')
-        sample_one = Sample(name='SMPL_01', metadata={'subject_group': 1}).save()
-        sample_two = Sample(name='SMPL_02', metadata={'subject_group': 4}).save()
+        sample_one = Sample(name='SMPL_01',
+                            library_uuid=uuid4(),
+                            metadata={'subject_group': 1}).save()
+        sample_two = Sample(name='SMPL_02',
+                            library_uuid=uuid4(),
+                            metadata={'subject_group': 4}).save()
         sample_group.samples = [sample_one, sample_two]
         db.session.commit()
         self.assertEqual(len(sample_group.sample_ids), 2)
