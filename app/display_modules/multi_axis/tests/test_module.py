@@ -5,13 +5,12 @@ from app.display_modules.multi_axis import MultiAxisDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.multi_axis.models import MultiAxisResult
 from app.display_modules.multi_axis.constants import MODULE_NAME
-from app.display_modules.multi_axis.tests.factory import MultiAxisFactory
-from app.tool_results.multi_axis.tests.factory import (
-    create_values,
-    create_taxa,
-    create_genes,
-    create_ags,
-)
+from app.display_modules.multi_axis.tests.factory import MultiAxisFactory, create_values
+from app.tool_results.card_amrs.tests import create_card_amr
+from app.tool_results.humann2_normalize import create_humann2_normalize
+from app.tool_results.krakenhll.tests import create_krakenhll
+from app.tool_results.metaphlan2.tests import create_metaphlan2
+from app.tool_results.microbe_census.tests import create_microbe_census
 
 
 class TestMultiAxisModule(BaseDisplayModuleTest):
@@ -39,11 +38,7 @@ class TestMultiAxisModule(BaseDisplayModuleTest):
             return Sample(
                 name=f'Sample{i}',
                 metadata={'foobar': f'baz{i}'},
-                metaphlan2_taxonomy_profiling=create_taxa(),
-                krakenhll_taxonomy_profiling=create_taxa(),
-                align_to_amr_genes=create_genes(),
-                humann2_normalize_genes=create_genes(),
-                microbe_census=create_ags(),
+                **create_values(),
             ).save()
 
         self.generic_run_group_test(
