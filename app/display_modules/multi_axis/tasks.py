@@ -33,32 +33,14 @@ def sample_mean(data_matrix):
     return np.array(data_matrix.mean(axis=0))
 
 
-def get_data_matrix(samples, tool_result_module, key, extractor=lambda x: x, normalize_rows=False):
-    """Return a tbl of values"""
-    tool_result_name = tool_result_module.name()
-    data_tbl = {
-        sample['name']: {
-            feature: extractor(val)
-            for feature, val in sample[tool_result_name][key].items()
-        }
-        for sample in samples
-
-    }
-    # Columns are samples, rows are genes, vals are rpkms
-    data_tbl = pd.DataFrame.from_dict(data_tbl, orient='index').fillna(0)
-    if normalize_rows:
-        data_tbl = data_tbl.div(data_tbl.sum(axis=1), axis=0)
-    return data_tbl
-
-
 def make_taxa_axes(samples, axes):
     """Build taxa axes for the samples."""
 
     for module in [KrakenHLLResultModule, Metaphlan2ResultModule]:
-        taxa_matrix = get_data_matrix(samples, module, 'taxa', normalize_rows=True)
+        taxa_matrix = module.promote_vectors(samples, normalize_rows=True)['taxa']
         taxa_pca = run_pca(taxa_matrix)
         for i, axis in enumerate(taxa_pca):
-            axis_name = module.name() + f'_PCA_{i}'
+            axis_name = module.name() + f'_PC_{i}'
             axes[axis_name] = axis
 
 
@@ -66,21 +48,19 @@ def make_gene_axes(samples, axes):
     """Build gene axes for the samples."""
 
     for module in [Humann2NormalizeResultModule, CARDAMRResultModule]:
-        gene_matrix = get_data_matrix(samples, module, 'genes', extractor=lambda x: x[key])
+        gene_matrix = module.promote_vectors(samples, extractor=lambda x: x['rpkm'])['genes']
         axis_name = module.name() + f'_mean'
         axes[axis_name] = sample_mean(gene_matrix)
         gene_pca = run_pca(gene_matrix)
         for i, axis in enumerate(gene_pca):
-            axis_name = module.name() + f'_PCA_{i}'
+            axis_name = module.name() + f'_PC_{i}'
             axes[axis_name] = axis
 
 
 def make_axes(samples):
-
-    axes = {}
+    ags = 'average_genome_size'
+    axes = {
+        ags: MicrobeCensusResultModule.promote_scalars(samples)[ags]
+    }
     make_taxa_axes(samples, axes)
     make_gene_axes(samples, axes)
-
-    axes['average_genome_size'] = {
-        sample['name']: sample[MicrobeCensusResultModule.name()]['average_genome_size']
-    }

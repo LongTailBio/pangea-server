@@ -28,6 +28,10 @@ class MicrobeCensusResult(ToolResult):  # pylint: disable=too-few-public-methods
             msg = 'MicrobeCensusResult values must be non-negative'
             raise ValidationError(msg)
 
+    @classmethod
+    def scalar_variables(cls):
+        return ['average_genome_size', 'genome_equivalents']
+
 
 class MicrobeCensusResultModule(SampleToolResultModule):
     """Microbe Census tool module."""
