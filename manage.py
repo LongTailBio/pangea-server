@@ -28,7 +28,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.tool_results.models import ToolResult, GroupToolResult
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
-
+from os import environ
 
 app = create_app()
 manager = Manager(app)  # pylint: disable=invalid-name
@@ -91,15 +91,29 @@ def recreate_db():
     drop_mongo_collections()
 
 
+def get_password(username=None):
+    """Get the password from env vars or a default."""
+    if username:
+        key = username.upper() + '_PASSWORD'
+        try:
+            return environ[key]
+        except KeyError:
+            return get_password()
+    try:
+        return environ['GENERIC_PASSWORD']
+    except KeyError:
+        return 'Foobar22'
+
+
 @manager.command
 def seed_users():
     """Seed just the users for the database."""
     bchrobot = User(username='bchrobot',
                     email='benjamin.blair.chrobot@gmail.com',
-                    password='Foobar22')
+                    password=get_password('bchrobot'))
     dcdanko = User(username='dcdanko',
                    email='dcd3001@med.cornell.edu',
-                   password='Foobar22')
+                   password=get_password('dcdanko'))
     db.session.add(bchrobot)
     db.session.add(dcdanko)
     db.session.commit()
@@ -110,13 +124,13 @@ def seed_db():
     """Seed the database."""
     bchrobot = User(username='bchrobot',
                     email='benjamin.blair.chrobot@gmail.com',
-                    password='Foobar22')
+                    password=get_password('bchrobot'))
     dcdanko = User(username='dcdanko',
                    email='dcd3001@med.cornell.edu',
-                   password='Foobar22')
+                   password=get_password('dcdanko'))
     cmason = User(username='cmason',
                   email='chm2042@med.cornell.edu',
-                  password='Foobar22')
+                  password=get_password('cmason'))
 
 
     abrf_analysis_result_01 = AnalysisResultMeta(reads_classified=reads_classified).save()
