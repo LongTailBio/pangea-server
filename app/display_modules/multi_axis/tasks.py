@@ -13,7 +13,7 @@ from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.microbe_census import MicrobeCensusResultModule
 
-from .models import SampleSimilarityResult
+from .models import MultiAxisResult
 from .constants import MODULE_NAME
 
 
@@ -57,6 +57,7 @@ def make_gene_axes(samples, axes):
             axes[axis_name] = axis
 
 
+@celery.task(name='multi_axis.make_axes')
 def make_axes(samples):
     ags = 'average_genome_size'
     axes = {
@@ -64,3 +65,15 @@ def make_axes(samples):
     }
     make_taxa_axes(samples, axes)
     make_gene_axes(samples, axes)
+    return axes
+
+
+@celery.task(name='multi_axis.persist_result')
+def persist_result(samples, axes, categories, analysis_result_id, result_name):
+    """Persist Microbe Directory results."""
+    result_data = {
+        'axes': axes,
+        'categories': categories,
+    }
+    result = MultiAxisResult(**result_data)
+    persist_result_helper(result, analysis_result_id, result_name)
