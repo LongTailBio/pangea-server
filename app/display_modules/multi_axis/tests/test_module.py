@@ -18,12 +18,8 @@ class TestMultiAxisModule(BaseDisplayModuleTest):
 
     def test_add_multi_axis(self):
         """Ensure MultiAxis model is created correctly."""
-        samples = {
-            'sample_1': create_values(),
-            'sample_2': create_values(),
-        }
-        multi_axis_result = MultiAxisResult(samples=samples)
-        self.generic_adder_test(multi_axis_result, MODULE_NAME)
+        multi_axis = MultiAxisFactory()
+        self.generic_adder_test(multi_axis, MODULE_NAME)
 
     def test_run_multi_axis_sample_group(self):  # pylint: disable=invalid-name
         """Ensure microbe directory run_sample_group produces correct results."""

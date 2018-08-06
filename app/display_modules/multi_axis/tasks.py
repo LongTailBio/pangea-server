@@ -21,6 +21,7 @@ def run_pca(data_matrix, n_components=3):
     data_matrix is standard form, observations in the rows and
     dimensions in columns.
     """
+    data_matrix = data_matrix.fillna(0)
     scaled_data_matrix = center_and_scale(data_matrix)
     pca = PCA(n_components=n_components, whiten=True)
     return pca.fit_transform(scaled_data_matrix)
@@ -28,6 +29,7 @@ def run_pca(data_matrix, n_components=3):
 
 def sample_mean(data_matrix):
     """Return a vector giving the average value for all observations."""
+    data_matrix = data_matrix.fillna(0)
     return np.array(data_matrix.mean(axis=0))
 
 

@@ -32,9 +32,16 @@ class MultiAxisFactory(factory.mongoengine.MongoEngineFactory):
         model = MultiAxisResult
 
     @factory.lazy_attribute
-    def samples(self):  # pylint: disable=no-self-use
+    def categories(self):  # pylint: disable=no-self-use
         """Generate random samples."""
-        samples = {}
-        for i in range(10):
-            samples[f'Sample{i}'] = create_values()
-        return samples
+        return {
+            'foo': ['foo_1', 'foo_2'],
+            'bar': ['bar_1', 'bar_2'],
+        }
+
+    @factory.lazy_attribute
+    def axes(self):
+        return {
+            'axis_1': {'sample_1': 1, 'sample_2': 2},
+            'axis_2': {'sample_1': 3, 'sample_2': 4},
+        }
