@@ -3,7 +3,6 @@
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.multi_axis import MultiAxisDisplayModule
 from app.samples.sample_models import Sample
-from app.display_modules.multi_axis.models import MultiAxisResult
 from app.display_modules.multi_axis.constants import MODULE_NAME
 from app.display_modules.multi_axis.tests.factory import MultiAxisFactory, create_values
 
