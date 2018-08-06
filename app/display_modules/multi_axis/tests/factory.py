@@ -5,11 +5,11 @@
 import factory
 
 from app.display_modules.multi_axis import MultiAxisResult
-from app.tool_results.card_amrs.tests import create_card_amr
-from app.tool_results.humann2_normalize import create_humann2_normalize
-from app.tool_results.krakenhll.tests import create_krakenhll
-from app.tool_results.metaphlan2.tests import create_metaphlan2
-from app.tool_results.microbe_census.tests import create_microbe_census
+from app.tool_results.card_amrs.tests.factory import create_card_amr
+from app.tool_results.humann2_normalize.tests.factory import create_humann2_normalize
+from app.tool_results.krakenhll.tests.factory import create_krakenhll
+from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
+from app.tool_results.microbe_census.tests.factory import create_microbe_census
 
 
 def create_values():

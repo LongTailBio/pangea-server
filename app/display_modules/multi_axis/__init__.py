@@ -16,7 +16,7 @@ from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 # Re-export modules
 from .constants import MODULE_NAME
-from .models import MultiAxisResult, ToolDocument
+from .models import MultiAxisResult, AxisDocument
 from .wrangler import MultiAxisWrangler
 
 

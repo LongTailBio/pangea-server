@@ -1,12 +1,10 @@
 """Tasks for generating Sample Similarity results."""
 
-import numpy as np
-import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper, scrub_category_val
+from app.display_modules.utils import persist_result_helper
 from app.tool_results.card_amrs import CARDAMRResultModule
 from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
@@ -14,7 +12,6 @@ from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 from .models import MultiAxisResult
-from .constants import MODULE_NAME
 
 
 def run_pca(data_matrix, n_components=3):
@@ -59,6 +56,7 @@ def make_gene_axes(samples, axes):
 
 @celery.task(name='multi_axis.make_axes')
 def make_axes(samples):
+    """Return a dict of axes with names."""
     ags = 'average_genome_size'
     axes = {
         ags: MicrobeCensusResultModule.promote_scalars(samples)[ags]
@@ -69,7 +67,7 @@ def make_axes(samples):
 
 
 @celery.task(name='multi_axis.persist_result')
-def persist_result(samples, axes, categories, analysis_result_id, result_name):
+def persist_result(axes, categories, analysis_result_id, result_name):
     """Persist Microbe Directory results."""
     result_data = {
         'axes': axes,
