@@ -91,47 +91,26 @@ def recreate_db():
     drop_mongo_collections()
 
 
-def get_password(username=None):
+def get_user():
     """Get the password from env vars or a default."""
-    if username:
-        key = username.upper() + '_PASSWORD'
-        try:
-            return environ[key]
-        except KeyError:
-            return get_password()
-    try:
-        return environ['GENERIC_PASSWORD']
-    except KeyError:
-        return 'Foobar22'
+    return User(
+        username=environ.get('SEED_USER_USERNAME', 'bchrobot'),
+        email=environ.get('SEED_USER_EMAIL', 'benjamin.blair.chrobot@gmail.com'),
+        password=environ.get('SEED_USER_PASSWORD', 'Foobar22')
+    )
 
 
 @manager.command
 def seed_users():
     """Seed just the users for the database."""
-    bchrobot = User(username='bchrobot',
-                    email='benjamin.blair.chrobot@gmail.com',
-                    password=get_password('bchrobot'))
-    dcdanko = User(username='dcdanko',
-                   email='dcd3001@med.cornell.edu',
-                   password=get_password('dcdanko'))
-    db.session.add(bchrobot)
-    db.session.add(dcdanko)
+    db.session.add(get_user())
     db.session.commit()
 
 
 @manager.command
 def seed_db():
     """Seed the database."""
-    bchrobot = User(username='bchrobot',
-                    email='benjamin.blair.chrobot@gmail.com',
-                    password=get_password('bchrobot'))
-    dcdanko = User(username='dcdanko',
-                   email='dcd3001@med.cornell.edu',
-                   password=get_password('dcdanko'))
-    cmason = User(username='cmason',
-                  email='chm2042@med.cornell.edu',
-                  password=get_password('cmason'))
-
+    default_user = get_user()
 
     abrf_analysis_result_01 = AnalysisResultMeta(reads_classified=reads_classified).save()
     abrf_sample_01 = Sample(name='SomethingUnique_A',
@@ -160,14 +139,13 @@ def seed_db():
     fuzz_group = create_saved_group(uuid=fuzz_uuid)
 
     mason_lab = Organization(name='Mason Lab', admin_email='benjamin.blair.chrobot@gmail.com')
-    mason_lab.users = [bchrobot, dcdanko, cmason]
+    mason_lab.users = [default_user]
     mason_lab.sample_groups = [abrf_2017_group, uw_madison_group, fuzz_group]
 
     db.session.add(mason_lab)
     db.session.commit()
 
-    mason_lab.add_admin(bchrobot)
-    mason_lab.add_admin(dcdanko)
+    mason_lab.add_admin(default_user)
     db.session.commit()
 
 
