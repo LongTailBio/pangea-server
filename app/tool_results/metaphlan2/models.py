@@ -12,4 +12,5 @@ class Metaphlan2Result(ToolResult):     # pylint: disable=too-few-public-methods
 
     @classmethod
     def vector_variables(cls):
+        """Return names of vector variables."""
         return ['taxa']

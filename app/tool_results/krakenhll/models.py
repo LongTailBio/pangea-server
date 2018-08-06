@@ -14,4 +14,5 @@ class KrakenHLLResult(ToolResult):
 
     @classmethod
     def vector_variables(cls):
+        """Return names of vector variables."""
         return ['taxa']

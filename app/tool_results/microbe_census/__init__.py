@@ -30,6 +30,7 @@ class MicrobeCensusResult(ToolResult):  # pylint: disable=too-few-public-methods
 
     @classmethod
     def scalar_variables(cls):
+        """Return names of scalar variables."""
         return ['average_genome_size', 'genome_equivalents']
 
 

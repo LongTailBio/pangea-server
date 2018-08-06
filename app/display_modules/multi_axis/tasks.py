@@ -33,7 +33,6 @@ def sample_mean(data_matrix):
 
 def make_taxa_axes(samples, axes):
     """Build taxa axes for the samples."""
-
     for module in [KrakenHLLResultModule, Metaphlan2ResultModule]:
         taxa_matrix = module.promote_vectors(samples, normalize_rows=True)['taxa']
         taxa_pca = run_pca(taxa_matrix)
@@ -44,7 +43,6 @@ def make_taxa_axes(samples, axes):
 
 def make_gene_axes(samples, axes):
     """Build gene axes for the samples."""
-
     for module in [Humann2NormalizeResultModule, CARDAMRResultModule]:
         gene_matrix = module.promote_vectors(samples, extractor=lambda x: x['rpkm'])['genes']
         axis_name = module.name() + f'_mean'
