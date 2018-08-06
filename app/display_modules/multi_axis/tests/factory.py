@@ -36,6 +36,6 @@ class MultiAxisFactory(factory.mongoengine.MongoEngineFactory):
         'bar': ['bar_1', 'bar_2'],
     }
     axes = {
-        'axis_1': {'sample_1': 1, 'sample_2': 2},
-        'axis_2': {'sample_1': 3, 'sample_2': 4},
+        'axis_1': {'vals': {'sample_1': 1, 'sample_2': 2}},
+        'axis_2': {'vals': {'sample_1': 3, 'sample_2': 4}},
     }

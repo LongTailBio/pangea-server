@@ -64,7 +64,7 @@ def make_axes(samples):
     }
     make_taxa_axes(samples, axes)
     make_gene_axes(samples, axes)
-    return axes
+    return {axis_name: {'vals': axis_vals} for axis_name, axis_vals in axes.items()}
 
 
 @celery.task(name='multi_axis.persist_result')
