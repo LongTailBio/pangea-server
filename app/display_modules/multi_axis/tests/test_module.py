@@ -6,11 +6,6 @@ from app.samples.sample_models import Sample
 from app.display_modules.multi_axis.models import MultiAxisResult
 from app.display_modules.multi_axis.constants import MODULE_NAME
 from app.display_modules.multi_axis.tests.factory import MultiAxisFactory, create_values
-from app.tool_results.card_amrs.tests import create_card_amr
-from app.tool_results.humann2_normalize import create_humann2_normalize
-from app.tool_results.krakenhll.tests import create_krakenhll
-from app.tool_results.metaphlan2.tests import create_metaphlan2
-from app.tool_results.microbe_census.tests import create_microbe_census
 
 
 class TestMultiAxisModule(BaseDisplayModuleTest):
