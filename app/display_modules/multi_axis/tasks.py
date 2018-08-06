@@ -1,5 +1,6 @@
 """Tasks for generating Sample Similarity results."""
 
+import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 

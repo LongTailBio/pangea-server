@@ -1,7 +1,6 @@
 """Base module for Group Tool Results."""
 
 import pandas as pd
-from app.extensions import mongoDB
 
 
 class BaseToolResultModule:
