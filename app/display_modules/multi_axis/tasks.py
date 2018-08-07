@@ -86,6 +86,7 @@ def multi_axis_reducer(args, samples):
         'categories': categories,
         'metadata': metadata,
     }
+    return result_data
 
 
 @celery.task(name='multi_axis.persist_result')
