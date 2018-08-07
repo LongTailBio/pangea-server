@@ -5,13 +5,14 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 
 from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
+from app.display_modules.utils import persist_result_helper, scrub_category_val
 from app.tool_results.card_amrs import CARDAMRResultModule
 from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.microbe_census import MicrobeCensusResultModule
 
+from .constants import MODULE_NAME
 from .models import MultiAxisResult
 
 
@@ -55,7 +56,7 @@ def make_gene_axes(samples, axes):
             axes[axis_name] = axis
 
 
-@celery.task(name='multi_axis.make_axes')
+@celery.task()
 def make_axes(samples):
     """Return a dict of axes with names."""
     ags = 'average_genome_size'
@@ -67,12 +68,28 @@ def make_axes(samples):
     return {axis_name: {'vals': axis_vals} for axis_name, axis_vals in axes.items()}
 
 
-@celery.task(name='multi_axis.persist_result')
-def persist_result(axes, categories, analysis_result_id, result_name):
-    """Persist Microbe Directory results."""
+@celery.task()
+def multi_axis_reducer(args, samples):
+    """Combine multi axis components."""
+    axes = args[0]
+    categories = args[1]
+    metadata = {}
+    for sample in samples:
+        metadata[sample['name']] = {}
+        for category_name in categories.keys():
+            category_value = sample['metadata'].get(category_name, 'None')
+            category_value = scrub_category_val(category_value)
+            metadata[sample['name']][category_name] = category_value
+
     result_data = {
         'axes': axes,
         'categories': categories,
+        'metadata': metadata,
     }
+
+
+@celery.task(name='multi_axis.persist_result')
+def persist_result(result_data, analysis_result_id):
+    """Persist Microbe Directory results."""
     result = MultiAxisResult(**result_data)
-    persist_result_helper(result, analysis_result_id, result_name)
+    persist_result_helper(result, analysis_result_id, MODULE_NAME)

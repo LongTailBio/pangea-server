@@ -6,7 +6,7 @@ from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import categories_from_metadata
 
 from .constants import MODULE_NAME
-from .tasks import make_axes, persist_result
+from .tasks import make_axes, persist_result, multi_axis_reducer
 
 
 class MultiAxisWrangler(DisplayModuleWrangler):
@@ -20,4 +20,4 @@ class MultiAxisWrangler(DisplayModuleWrangler):
         categories_task = categories_from_metadata.s(samples)
         make_axes_task = make_axes.s(samples)
 
-        return chord([make_axes_task, categories_task])(persist_task)
+        return chord([make_axes_task, categories_task])(multi_axis_reducer | persist_task)

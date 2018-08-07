@@ -39,3 +39,7 @@ class MultiAxisFactory(factory.mongoengine.MongoEngineFactory):
         'axis_1': {'vals': {'sample_1': 1, 'sample_2': 2}},
         'axis_2': {'vals': {'sample_1': 3, 'sample_2': 4}},
     }
+    metadata = {
+        'sample_1': {'foo': 'foo_1', 'bar': 'bar_1'},
+        'sample_2': {'foo': 'foo_2', 'bar': 'bar_2'},
+    }
