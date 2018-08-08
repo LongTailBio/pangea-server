@@ -13,7 +13,8 @@ class TestMultiAxisModule(BaseDisplayModuleTest):
     def test_get_multi_axis(self):
         """Ensure getting a single MultiAxis behaves correctly."""
         multi_axis = MultiAxisFactory()
-        self.generic_getter_test(multi_axis, MODULE_NAME)
+        self.generic_getter_test(multi_axis, MODULE_NAME,
+                                 verify_fields=['categories', 'axes', 'metadata'])
 
     def test_add_multi_axis(self):
         """Ensure MultiAxis model is created correctly."""

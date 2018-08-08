@@ -15,9 +15,12 @@ class MultiAxisWrangler(DisplayModuleWrangler):
     @classmethod
     def run_sample_group(cls, sample_group, samples):
         """Gather samples and process."""
+        reducer_task = multi_axis_reducer.s(samples)
         persist_task = persist_result.s(sample_group.analysis_result_uuid, MODULE_NAME)
 
-        categories_task = categories_from_metadata.s(samples)
-        make_axes_task = make_axes.s(samples)
+        middle_tasks = [
+            make_axes.s(samples),
+            categories_from_metadata.s(samples),
+        ]
 
-        return chord([make_axes_task, categories_task])(multi_axis_reducer | persist_task)
+        return chord(middle_tasks)(reducer_task | persist_task)
