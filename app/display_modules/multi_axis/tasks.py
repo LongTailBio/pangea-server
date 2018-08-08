@@ -91,7 +91,6 @@ def multi_axis_reducer(args, samples):
         'categories': categories,
         'metadata': metadata,
     }
-    print(result_data)
     return result_data
 
 
