@@ -44,8 +44,8 @@ def make_taxa_axes(samples, axes):
     for module in [KrakenHLLResultModule, Metaphlan2ResultModule]:
         taxa_matrix = module.promote_vectors(samples, normalize_rows=True)['taxa']
         taxa_pca = run_pca(taxa_matrix)
-        for i, axis in enumerate(taxa_pca):
-            axis_name = module.name() + f'_PC_{i}'
+        for col_name, axis in taxa_pca.items():
+            axis_name = module.name() + f'_{col_name}'
             axes[axis_name] = axis.to_dict()
 
 
@@ -56,8 +56,8 @@ def make_gene_axes(samples, axes):
         axis_name = module.name() + f'_mean'
         axes[axis_name] = sample_mean(gene_matrix).to_dict()
         gene_pca = run_pca(gene_matrix)
-        for i, axis in enumerate(gene_pca):
-            axis_name = module.name() + f'_PC_{i}'
+        for i, axis in gene_pca.items():
+            axis_name = module.name() + f'_{col_name}'
             axes[axis_name] = axis.to_dict()
 
 
