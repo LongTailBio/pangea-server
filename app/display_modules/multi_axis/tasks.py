@@ -56,7 +56,7 @@ def make_gene_axes(samples, axes):
         axis_name = module.name() + f'_mean'
         axes[axis_name] = sample_mean(gene_matrix).to_dict()
         gene_pca = run_pca(gene_matrix)
-        for i, axis in gene_pca.items():
+        for col_name, axis in gene_pca.items():
             axis_name = module.name() + f'_{col_name}'
             axes[axis_name] = axis.to_dict()
 
