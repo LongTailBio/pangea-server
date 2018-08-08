@@ -1,6 +1,6 @@
 """Tasks for generating Sample Similarity results."""
 
-import numpy as np
+from pandas import DataFrame
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 
@@ -25,13 +25,19 @@ def run_pca(data_matrix, n_components=3):
     data_matrix = data_matrix.fillna(0)
     scaled_data_matrix = center_and_scale(data_matrix)
     pca = PCA(n_components=n_components, whiten=True)
-    return pca.fit_transform(scaled_data_matrix)
+    pca_matrix = pca.fit_transform(scaled_data_matrix)
+    return DataFrame(
+        pca_matrix,
+        columns=[f'PC_{i}' for i in range(n_components)],
+        index=data_matrix.index
+    )
 
 
 def sample_mean(data_matrix):
     """Return a vector giving the average value for all observations."""
     data_matrix = data_matrix.fillna(0)
-    return np.array(data_matrix.mean(axis=0))
+    return data_matrix.mean(axis=0)
+
 
 
 def make_taxa_axes(samples, axes):
@@ -41,7 +47,7 @@ def make_taxa_axes(samples, axes):
         taxa_pca = run_pca(taxa_matrix)
         for i, axis in enumerate(taxa_pca):
             axis_name = module.name() + f'_PC_{i}'
-            axes[axis_name] = axis
+            axes[axis_name] = axis.to_dict()
 
 
 def make_gene_axes(samples, axes):
@@ -49,11 +55,11 @@ def make_gene_axes(samples, axes):
     for module in [Humann2NormalizeResultModule, CARDAMRResultModule]:
         gene_matrix = module.promote_vectors(samples, extractor=lambda x: x['rpkm'])['genes']
         axis_name = module.name() + f'_mean'
-        axes[axis_name] = sample_mean(gene_matrix)
+        axes[axis_name] = sample_mean(gene_matrix).to_dict()
         gene_pca = run_pca(gene_matrix)
         for i, axis in enumerate(gene_pca):
             axis_name = module.name() + f'_PC_{i}'
-            axes[axis_name] = axis
+            axes[axis_name] = axis.to_dict()
 
 
 @celery.task()
@@ -61,7 +67,7 @@ def make_axes(samples):
     """Return a dict of axes with names."""
     ags = 'average_genome_size'
     axes = {
-        ags: MicrobeCensusResultModule.promote_scalars(samples)[ags]
+        ags: MicrobeCensusResultModule.promote_scalars(samples)[ags].to_dict()
     }
     make_taxa_axes(samples, axes)
     make_gene_axes(samples, axes)
