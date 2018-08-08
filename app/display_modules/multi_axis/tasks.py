@@ -39,7 +39,6 @@ def sample_mean(data_matrix):
     return data_matrix.mean(axis=0)
 
 
-
 def make_taxa_axes(samples, axes):
     """Build taxa axes for the samples."""
     for module in [KrakenHLLResultModule, Metaphlan2ResultModule]:
