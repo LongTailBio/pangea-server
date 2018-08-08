@@ -5,7 +5,6 @@ from celery import chord
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import categories_from_metadata
 
-from .constants import MODULE_NAME
 from .tasks import make_axes, persist_result, multi_axis_reducer
 
 
