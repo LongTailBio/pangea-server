@@ -1,6 +1,6 @@
 """Tasks for generating Top Taxa results."""
 
-from celery import chord
+from celery import chain
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 
