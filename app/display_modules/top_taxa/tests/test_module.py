@@ -28,8 +28,8 @@ class TestTopAxisModule(BaseDisplayModuleTest):
         def create_sample(i):
             """Create unique sample for index i."""
             return Sample(
-                name=f'Sample{i}',
-                metadata={'foobar': f'baz{i}'},
+                name=f'Sample_{i}',
+                metadata={'foobizz': f'bar{i}'},
                 **create_values(),
             ).save()
 
