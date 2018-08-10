@@ -18,17 +18,17 @@ class TopTaxaResult(mdb.EmbeddedDocument):
     # cats -> vals
     categories = mdb.MapField(
         # vals -> tool
-        field=mdb.EmbeddedDocumentField(mdb.MapField(
+        field=mdb.MapField(
             # tool -> kingdom
-            field=mdb.EmbeddedDocumentField(mdb.MapField(
+            field=mdb.MapField(
                 # kingdom -> abundance and prevalence
-                field=mdb.EmbeddedDocumentField(mdb.MapField(
+                field=mdb.MapField(
                     field=mdb.EmbeddedDocumentField(AbundPrev),
                     reuired=True,
-                )),
+                ),
                 required=True,
-            )),
+            ),
             required=True,
-        )),
+        ),
         required=True,
     )
