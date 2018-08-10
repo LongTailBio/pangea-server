@@ -16,4 +16,4 @@ class TopTaxaWrangler(DisplayModuleWrangler):
         persist_task = persist_result.s(sample_group.analysis_result_uuid)
         top_taxa_task = find_top_taxa.s(samples)
 
-        return chord(top_taxa_task | persist_task)
+        return chain(top_taxa_task, persist_task).delay()
