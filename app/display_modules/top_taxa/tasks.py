@@ -26,7 +26,10 @@ def taxa_in_kingdom(sample, tool_name, kingdom):
 def abund_prev(taxa_vecs, top_n=50):
     """Return abundance and prevalence for topn taxa."""
     taxa_df = DataFrame(taxa_vecs).fillna(0)
-    taxa_means = taxa_df.mean(axis=1).nlargest(top_n)
+    print(taxa_df)
+    taxa_means = taxa_df.mean(axis=1)
+    print(taxa_means)
+    taxa_means = taxa_means.nlargest(top_n)
     print(taxa_means)
 
     prevalence = {}
