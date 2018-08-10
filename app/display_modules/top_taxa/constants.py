@@ -1,5 +1,3 @@
-# pylint:disable=unused-import
+"""Constants for Top Taxa display module."""
 
-"""Constants for AGS display module."""
-
-MODULE_NAME = 'top_tasks'
+MODULE_NAME = 'top_taxa'
