@@ -11,18 +11,18 @@ from .factory import TopTaxaFactory, create_values
 class TestTopAxisModule(BaseDisplayModuleTest):
     """Test suite for Top Taxa diplay module."""
 
-    def test_get_multi_axis(self):
+    def test_get_top_taxa(self):
         """Ensure getting a single TopTaxa behaves correctly."""
         top_taxa = TopTaxaFactory()
         self.generic_getter_test(top_taxa, MODULE_NAME,
                                  verify_fields=['categories'])
 
-    def test_add_multi_axis(self):
+    def test_add_top_taxa(self):
         """Ensure TopTaxa model is created correctly."""
         top_taxa = TopTaxaFactory()
         self.generic_adder_test(top_taxa, MODULE_NAME)
 
-    def test_run_multi_axis_sample_group(self):  # pylint: disable=invalid-name
+    def test_run_top_taxa_sample_group(self):  # pylint: disable=invalid-name
         """Ensure top_taxa run_sample_group produces correct results."""
 
         def create_sample(i):

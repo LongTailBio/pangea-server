@@ -3,7 +3,6 @@
 from celery import chord
 
 from app.display_modules.display_wrangler import DisplayModuleWrangler
-from app.display_modules.utils import categories_from_metadata
 
 from .tasks import find_top_taxa, persist_result
 

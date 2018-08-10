@@ -17,8 +17,10 @@ METAPHLAN = Metaphlan2ResultModule.name()
 def taxa_in_kingdom(sample, tool_name, kingdom):
     """Return taxa in the given kingdom."""
     if kingdom == 'all_kingdoms':
-        return sample[tool_name]['taxa']
-    assert False, f'Kingdom {kingdom} not found.'
+        out = sample[tool_name]['taxa']
+    else:
+        assert False, f'Kingdom {kingdom} not found.'
+    return out
 
 
 def abund_prev(taxa_vecs, top_n=50):
@@ -35,6 +37,7 @@ def abund_prev(taxa_vecs, top_n=50):
     return {'abundance': taxa_means, 'prevalence': prevalence}
 
 
+@celery.task()
 def find_top_taxa(samples):
     """Return top taxa organized by metadata and kingdoms."""
     taxa_vecs = {}
