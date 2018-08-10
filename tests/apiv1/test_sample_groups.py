@@ -3,6 +3,8 @@
 import json
 from uuid import UUID
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from app import db
 from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
 from app.samples.sample_models import Sample
@@ -77,6 +79,24 @@ class TestSampleGroupModule(BaseTestCase):
         organization = add_organization('Organization', 'admin@organization.org')
         response = self.create_group_for_organization(auth_headers, organization.id)
         self.assertEqual(response.status_code, 403)
+
+    @with_user
+    def test_delete_sample_group(self, auth_headers, *_):
+        """Ensure a sample group can be removed from the database."""
+        sample_group = add_sample_group(name='The Least Sampled of Groups')
+        with self.client:
+            response = self.client.delete(
+                f'/api/v1/sample_groups/{sample_group.id}',
+                headers=auth_headers,
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+
+            # Ensure Sample Group was removed
+            query = SampleGroup.query.filter_by(id=sample_group.id)
+            self.assertRaises(NoResultFound, query.one)
 
     @with_user
     def test_add_samples_to_group(self, auth_headers, *_):
