@@ -23,7 +23,7 @@ class TopTaxaResult(mdb.EmbeddedDocument):
             field=mdb.EmbeddedDocumentField(mdb.MapField(
                 # kingdom -> abundance and prevalence
                 field=mdb.EmbeddedDocumentField(mdb.MapField(
-                    field=AbundPrev,
+                    field=mdb.EmbeddedDocumentField(AbundPrev),
                     reuired=True,
                 )),
                 required=True,
