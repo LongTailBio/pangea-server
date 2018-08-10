@@ -43,7 +43,7 @@ def find_top_taxa(samples):
     taxa_vecs = {}
     key_sets = []
     for sample in samples:
-        for metadata_cat, metadata_val in sample['metadata']:
+        for metadata_cat, metadata_val in sample['metadata'].items():
             if metadata_cat not in taxa_vecs:
                 taxa_vecs[metadata_cat] = {}
             if metadata_val not in taxa_vecs[metadata_cat]:
