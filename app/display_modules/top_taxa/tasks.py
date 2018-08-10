@@ -1,4 +1,4 @@
-"""Tasks for generating Average Genome Size results."""
+"""Tasks for generating Top Taxa Size results."""
 
 from pandas import DataFrame
 
