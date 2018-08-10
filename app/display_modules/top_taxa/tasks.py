@@ -28,10 +28,12 @@ def abund_prev(taxa_vecs, top_n=50):
     taxa_df = DataFrame(taxa_vecs).fillna(0)
     print(taxa_df)
     print(type(taxa_df))
-    taxa_means = taxa_df.mean(axis=1)
+    taxa_means = taxa_df.mean(axis=0)
     print(taxa_means)
+    print(type(taxa_means))
     taxa_means = taxa_means.nlargest(top_n)
     print(taxa_means)
+    print(type(taxa_means))
 
     prevalence = {}
     for taxa_name in taxa_means.index():
