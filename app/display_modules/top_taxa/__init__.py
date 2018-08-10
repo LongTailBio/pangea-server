@@ -1,5 +1,5 @@
 """
-Top Taxa Display Module
+Top Taxa Display Module.
 
 Show the top taxa across different metadata groups and kingdoms.
 """
