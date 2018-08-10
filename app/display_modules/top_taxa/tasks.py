@@ -27,6 +27,7 @@ def abund_prev(taxa_vecs, top_n=50):
     """Return abundance and prevalence for topn taxa."""
     taxa_df = DataFrame(taxa_vecs).fillna(0)
     print(taxa_df)
+    print(type(taxa_df))
     taxa_means = taxa_df.mean(axis=1)
     print(taxa_means)
     taxa_means = taxa_means.nlargest(top_n)
