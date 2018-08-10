@@ -14,10 +14,22 @@ KRAKENHLL = KrakenHLLResultModule.name()
 METAPHLAN = Metaphlan2ResultModule.name()
 
 
+def filter_to_species_and_normalize(taxa_vec):
+    """Remove everything but species and normalize."""
+    out = {}
+    total_count = 0
+    for name, val in taxa_vec.items():
+        last_taxa = name.split('|')[-1]
+        if 's__' in last_taxa:
+            out[last_taxa] = val
+            total_count += val
+    return {name: val / total_count for name, val in taxa_vec.items()}
+
+
 def taxa_in_kingdom(sample, tool_name, kingdom):
     """Return taxa in the given kingdom."""
     if kingdom == 'all_kingdoms':
-        out = sample[tool_name]['taxa']
+        out = filter_to_species_and_normalize(sample[tool_name]['taxa'])
     else:
         assert False, f'Kingdom {kingdom} not found.'
     return out
@@ -26,17 +38,11 @@ def taxa_in_kingdom(sample, tool_name, kingdom):
 def abund_prev(taxa_vecs, top_n=50):
     """Return abundance and prevalence for topn taxa."""
     taxa_df = DataFrame(taxa_vecs).fillna(0)
-    print(taxa_df)
-    print(type(taxa_df))
     taxa_means = taxa_df.mean(axis=0)
-    print(taxa_means)
-    print(type(taxa_means))
     taxa_means = taxa_means.nlargest(top_n)
-    print(taxa_means)
-    print(type(taxa_means))
 
     prevalence = {}
-    for taxa_name in taxa_means.index():
+    for taxa_name in taxa_means.index:
         one_taxa = taxa_df[taxa_name]
         taxa_prev = one_taxa[one_taxa > 0].count() / len(taxa_vecs)
         prevalence[taxa_name] = taxa_prev
