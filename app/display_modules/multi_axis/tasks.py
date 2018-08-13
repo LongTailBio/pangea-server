@@ -39,17 +39,17 @@ def sample_mean(data_matrix):
     return data_matrix.mean(axis=0)
 
 
-def make_taxa_axes(samples, axes):
+def fill_taxa_axes(samples, axes):
     """Build taxa axes for the samples."""
     for module in [KrakenHLLResultModule, Metaphlan2ResultModule]:
         taxa_matrix = module.promote_vectors(samples, normalize_rows=True)['taxa']
         taxa_pca = run_pca(taxa_matrix)
         for col_name, axis in taxa_pca.items():
-            axis_name = module.name() + f'_{col_name}'
+            axis_name = f'{module.name()}_{col_name}'
             axes[axis_name] = axis.to_dict()
 
 
-def make_gene_axes(samples, axes):
+def fill_gene_axes(samples, axes):
     """Build gene axes for the samples."""
     for module in [Humann2NormalizeResultModule, CARDAMRResultModule]:
         gene_matrix = module.promote_vectors(samples, extractor=lambda x: x['rpkm'])['genes']
@@ -57,7 +57,7 @@ def make_gene_axes(samples, axes):
         axes[axis_name] = sample_mean(gene_matrix).to_dict()
         gene_pca = run_pca(gene_matrix)
         for col_name, axis in gene_pca.items():
-            axis_name = module.name() + f'_{col_name}'
+            axis_name = f'{module.name()}_{col_name}'
             axes[axis_name] = axis.to_dict()
 
 
@@ -68,8 +68,8 @@ def make_axes(samples):
     axes = {
         ags: MicrobeCensusResultModule.promote_scalars(samples)[ags].to_dict()
     }
-    make_taxa_axes(samples, axes)
-    make_gene_axes(samples, axes)
+    fill_taxa_axes(samples, axes)
+    fill_gene_axes(samples, axes)
     return {axis_name: {'vals': axis_vals} for axis_name, axis_vals in axes.items()}
 
 

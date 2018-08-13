@@ -20,4 +20,7 @@ class MultiAxisResult(mdb.EmbeddedDocument):     # pylint: disable=too-few-publi
     # Categories dict is of the form: {<category_name>: [<category_value>, ...]}
     categories = mdb.MapField(field=StringList, required=True)
     axes = mdb.MapField(field=EmbeddedDoc(AxisDocument), required=True)
-    metadata = mdb.MapField(field=mdb.MapField(field=mdb.StringField()), required=True)
+    metadata = mdb.MapField(
+        field=mdb.MapField(field=mdb.StringField(), required=True),
+        required=True
+    )
