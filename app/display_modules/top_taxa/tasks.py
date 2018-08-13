@@ -32,7 +32,7 @@ def taxa_in_kingdom(sample, tool_name, kingdom):
     if kingdom == 'all_kingdoms':
         out = filter_to_species_and_normalize(sample[tool_name]['taxa'])
     else:
-        assert False, f'Kingdom {kingdom} not found.'
+        raise ValueError(f'Kingdom {kingdom} not found.')
     return out
 
 

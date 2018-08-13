@@ -4,6 +4,7 @@
 
 import factory
 
+from random import random
 from app.display_modules.top_taxa import TopTaxaResult
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.krakenhll.tests.factory import create_krakenhll
@@ -26,14 +27,14 @@ def factory_abundance():
     """Return fake abunds and prevs."""
     return {
         'abundance': {
-            'taxa_1': 0.5,
-            'taxa_2': 0.2,
-            'taxa_3': 0.1,
+            'taxa_1': random(),
+            'taxa_2': random(),
+            'taxa_3': random(),
         },
         'prevalence': {
-            'taxa_1': 0.5,
-            'taxa_2': 0.8,
-            'taxa_3': 0.3,
+            'taxa_1': random(),
+            'taxa_2': random(),
+            'taxa_3': random(),
         }
 
     }

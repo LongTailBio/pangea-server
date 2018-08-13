@@ -20,13 +20,13 @@ PHYLA = ['acanthocephala', 'annelida', 'arthropoda', 'brachiopoda', 'bryozoa',
 def create_taxa_pair(depth=None):
     """Create taxa name and value for given depth."""
     if depth is None:
-        depth = random.randint(1, 5)
+        depth = random.randint(1, 5)  # bias distribution towards longer
     entry_name = f'd__{random.choice(DOMAINS)}'
     if depth >= 2:
         entry_name = f'{entry_name}|k__{random.choice(KINGDOMS)}'
     if depth >= 3:
         entry_name = f'{entry_name}|p__{random.choice(PHYLA)}'
-    if depth >= 4:
+    if depth >= 4:  # taxa names do not matter
         entry_name = f'{entry_name}|p__{random.choice(PHYLA)}|s__{random.choice(PHYLA)}'
     value = random.randint(0, 8e07)
 
