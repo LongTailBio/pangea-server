@@ -20,18 +20,20 @@ PHYLA = ['acanthocephala', 'annelida', 'arthropoda', 'brachiopoda', 'bryozoa',
 def create_taxa_pair(depth=None):
     """Create taxa name and value for given depth."""
     if depth is None:
-        depth = random.randint(1, 3)
+        depth = random.randint(1, 5)  # bias distribution towards longer
     entry_name = f'd__{random.choice(DOMAINS)}'
     if depth >= 2:
         entry_name = f'{entry_name}|k__{random.choice(KINGDOMS)}'
     if depth >= 3:
         entry_name = f'{entry_name}|p__{random.choice(PHYLA)}'
+    if depth >= 4:  # taxa names do not matter
+        entry_name = f'{entry_name}|p__{random.choice(PHYLA)}|s__{random.choice(PHYLA)}'
     value = random.randint(0, 8e07)
 
     return (entry_name, value)
 
 
-def create_values(taxa_count=10):
+def create_values(taxa_count=30):
     """Create taxa dictionary."""
     # Make sure we have at least one root element to avoid divide-by-zero
     # https://github.com/bchrobot/metagenscope-server/issues/76

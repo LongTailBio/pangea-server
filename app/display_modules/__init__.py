@@ -12,6 +12,7 @@ from app.display_modules.methyls import MethylsDisplayModule
 from app.display_modules.microbe_directory import MicrobeDirectoryDisplayModule
 from app.display_modules.multi_axis import MultiAxisDisplayModule
 from app.display_modules.read_stats import ReadStatsDisplayModule
+from app.display_modules.top_taxa import TopTaxaDisplayModule
 from app.display_modules.pathways import PathwaysDisplayModule
 from app.display_modules.reads_classified import ReadsClassifiedModule
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
@@ -41,6 +42,7 @@ all_display_modules = [  # pylint: disable=invalid-name
     SampleSimilarityDisplayModule,
     TaxaTreeDisplayModule,
     TaxonAbundanceDisplayModule,
+    TopTaxaDisplayModule,
     VirulenceFactorsDisplayModule,
     VolcanoDisplayModule,
 ]
