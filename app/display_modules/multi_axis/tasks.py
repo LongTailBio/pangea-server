@@ -53,7 +53,7 @@ def fill_gene_axes(samples, axes):
     """Build gene axes for the samples."""
     for module in [Humann2NormalizeResultModule, CARDAMRResultModule]:
         gene_matrix = module.promote_vectors(samples, extractor=lambda x: x['rpkm'])['genes']
-        axis_name = module.name() + f'_mean'
+        axis_name = f'{module.name()}_mean'
         axes[axis_name] = sample_mean(gene_matrix).to_dict()
         gene_pca = run_pca(gene_matrix)
         for col_name, axis in gene_pca.items():
