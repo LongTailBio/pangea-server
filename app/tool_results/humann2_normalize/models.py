@@ -17,3 +17,8 @@ class Humann2NormalizeToolResult(ToolResult):  # pylint: disable=too-few-public-
 
     hum_row_field = mongoDB.EmbeddedDocumentField(Humann2NormalizeRow)
     genes = mongoDB.MapField(field=hum_row_field, required=True)
+
+    @classmethod
+    def vector_variables(cls):
+        """Return the names of vector variables."""
+        return ['genes']
