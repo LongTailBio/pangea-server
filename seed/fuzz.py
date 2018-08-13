@@ -11,10 +11,12 @@ from app.display_modules.hmp.tests.factory import HMPFactory
 from app.display_modules.macrobes.tests.factory import MacrobeFactory
 from app.display_modules.methyls.tests.factory import MethylsFactory
 from app.display_modules.microbe_directory.tests.factory import MicrobeDirectoryFactory
+from app.display_modules.multi_axis.tests.factory import MultiAxisFactory
 from app.display_modules.pathways.tests.factory import PathwayFactory
 from app.display_modules.read_stats.tests.factory import ReadStatsFactory
 from app.display_modules.reads_classified.tests.factory import ReadsClassifiedFactory
 from app.display_modules.sample_similarity.tests.factory import create_mvp_sample_similarity
+from app.display_modules.top_taxa.tests.factory import TopTaxaFactory
 from app.display_modules.virulence_factors.tests.factory import VFDBFactory
 from app.sample_groups.sample_group_models import SampleGroup
 
@@ -45,11 +47,13 @@ def create_saved_group(uuid=None):
     analysis_result.macrobe_abundance = wrap_result(MacrobeFactory())
     analysis_result.methyltransferases = wrap_result(MethylsFactory())
     analysis_result.microbe_directory = wrap_result(MicrobeDirectoryFactory())
+    analysis_result.multi_axis_abundance = wrap_result(MultiAxisFactory())
     analysis_result.pathways = wrap_result(PathwayFactory())
     analysis_result.read_stats = wrap_result(ReadStatsFactory())
     analysis_result.reads_classified = wrap_result(ReadsClassifiedFactory())
     analysis_result.sample_similarity = wrap_result(create_mvp_sample_similarity())
     # analysis_result.taxon_abundance =
+    analysis_result.top_taxa = wrap_result(TopTaxaFactory())
     analysis_result.virulence_factors = wrap_result(VFDBFactory())
     analysis_result.save()
 
