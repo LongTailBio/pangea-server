@@ -121,7 +121,7 @@ class TestSampleGroupModule(BaseTestCase):
         self.assertRaises(NoResultFound, query.one)
 
     @with_user
-    def test_unauthorized_delete_sample_group(self, auth_headers, *_):
+    def test_unauthorized_delete_sample_group(self, auth_headers, *_):  # pylint: disable=invalid-name
         """Ensure an owned sample group cannot be removed by an unauthorized user."""
         organization = add_organization('Organization', 'admin@organization.org')
         sample_group = add_sample_group(name='Owned Sample Group')
