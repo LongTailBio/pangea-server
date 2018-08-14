@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Endpoint to delete sample groups.
 - Multi-Axis and Top Taxa fuzz values.
 
 ## [0.9.0] - 2018-05-11

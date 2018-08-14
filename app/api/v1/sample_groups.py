@@ -80,6 +80,34 @@ def get_single_result(group_uuid):
         raise NotFound('Sample Group does not exist')
 
 
+@sample_groups_blueprint.route('/sample_groups/<group_uuid>', methods=['DELETE'])
+@authenticate()
+def delete_single_result(auth_user_uuid, group_uuid):
+    """Delete single sample group model."""
+    try:
+        sample_group_id = UUID(group_uuid)
+        sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+    except ValueError:
+        raise ParseError('Invalid Sample Group UUID.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+    if sample_group.organization_id:
+        organization = Organization.query.filter_by(id=sample_group.organization_id).one()
+        user_ids = [user.id for user in organization.users]
+        if auth_user_uuid not in user_ids:
+            raise PermissionDenied('You do not have permission to delete that sample group.')
+
+    try:
+        db.session.delete(sample_group)
+        db.session.commit()
+        return {}, 200
+    except IntegrityError as integrity_error:
+        current_app.logger.exception('Sample Group could not be deleted.')
+        db.session.rollback()
+        raise InternalError(str(integrity_error))
+
+
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>/samples', methods=['GET'])
 def get_samples_for_group(group_uuid):
     """Get single sample group's list of samples."""
