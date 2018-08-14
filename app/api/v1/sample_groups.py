@@ -13,7 +13,11 @@ from app.display_modules import all_display_modules
 from app.display_modules.conductor import SampleConductor
 from app.extensions import db
 from app.organizations.organization_models import Organization
-from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
+from app.sample_groups.sample_group_models import (
+    SampleGroup,
+    SamplePlaceholder,
+    sample_group_schema,
+)
 from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
 
@@ -99,6 +103,9 @@ def delete_single_result(auth_user_uuid, group_uuid):
             raise PermissionDenied('You do not have permission to delete that sample group.')
 
     try:
+        sample_group.analysis_result.delete()
+        for row in sample_group.sample_placeholders:
+            db.session.delete(row)
         db.session.delete(sample_group)
         db.session.commit()
         return {}, 200
