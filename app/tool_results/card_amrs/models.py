@@ -17,3 +17,8 @@ class CARDAMRToolResult(ToolResult):  # pylint: disable=too-few-public-methods
 
     amr_row_field = mongoDB.EmbeddedDocumentField(AMRRow)
     genes = mongoDB.MapField(field=amr_row_field, required=True)
+
+    @classmethod
+    def vector_variables(cls):
+        """Return the names of vector variables."""
+        return ['genes']

@@ -11,3 +11,8 @@ class KrakenHLLResult(ToolResult):
 
     # Taxa is of the form: {<taxon_name>: <abundance_value>}
     taxa = mongoDB.MapField(mongoDB.IntField(), required=True)
+
+    @classmethod
+    def vector_variables(cls):
+        """Return names of vector variables."""
+        return ['taxa']
