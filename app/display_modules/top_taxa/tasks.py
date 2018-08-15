@@ -48,7 +48,7 @@ def abund_prev(taxa_vecs, top_n=50):
         taxa_prev = one_taxa[one_taxa > 0].count() / len(taxa_vecs)
         prevalence[taxa_name] = taxa_prev
 
-    return {'abundance': taxa_means, 'prevalence': prevalence}
+    return {'abundance': taxa_means.to_dict(), 'prevalence': prevalence}
 
 
 @celery.task()
