@@ -99,6 +99,9 @@ def delete_single_result(auth_user_uuid, group_uuid):
             raise PermissionDenied('You do not have permission to delete that sample group.')
 
     try:
+        sample_group.analysis_result.delete()
+        for row in sample_group.sample_placeholders:
+            db.session.delete(row)
         db.session.delete(sample_group)
         db.session.commit()
         return {}, 200

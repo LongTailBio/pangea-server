@@ -94,6 +94,9 @@ class TestSampleGroupModule(BaseTestCase):
     def test_delete_sample_group(self, auth_headers, *_):
         """Ensure an unowned sample group can be removed from the database."""
         sample_group = add_sample_group(name='The Least Sampled of Groups')
+        sample = add_sample(name='SMPL_01')
+        sample_group.samples = [sample]
+        db.session.commit()
         response = self.delete_sample_group(auth_headers, sample_group.id)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
