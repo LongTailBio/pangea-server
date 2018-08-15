@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Authentication endpoints and tests.
 - CircleCI configuration.
 
+### Fixed
+- Updated Celery to 4.2.1 to fix module name change on kombu ([source](https://stackoverflow.com/a/50464774)).
+
 ### Changed
 - Moved API to blueprint.
 
