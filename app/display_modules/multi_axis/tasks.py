@@ -36,7 +36,7 @@ def run_pca(data_matrix, n_components=3):
 def sample_mean(data_matrix):
     """Return a vector giving the average value for all observations."""
     data_matrix = data_matrix.fillna(0)
-    return data_matrix.mean(axis=0)
+    return data_matrix.mean(axis=1)  # row-wise mean
 
 
 def fill_taxa_axes(samples, axes):
