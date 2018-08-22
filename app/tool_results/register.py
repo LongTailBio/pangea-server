@@ -8,7 +8,7 @@ from flask_api.exceptions import NotFound, ParseError, PermissionDenied
 from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.display_modules.conductor import SampleConductor, GroupConductor
+from app.conductor import SampleConductor, GroupConductor
 from app.extensions import sample_upload_lock
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup

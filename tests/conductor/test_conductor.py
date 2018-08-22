@@ -2,7 +2,7 @@
 
 from uuid import uuid4
 
-from app.display_modules.conductor import DisplayModuleConductor, SampleConductor
+from app.conductor import DisplayModuleConductor, SampleConductor
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule

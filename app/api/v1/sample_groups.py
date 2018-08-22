@@ -9,8 +9,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
+from app.conductor import SampleConductor
 from app.display_modules import all_display_modules
-from app.display_modules.conductor import SampleConductor
 from app.extensions import db
 from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
