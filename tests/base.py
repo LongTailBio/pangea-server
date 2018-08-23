@@ -4,7 +4,7 @@ import logging
 
 from flask_testing import TestCase
 
-from app import create_app, db, celery, update_celery_settings
+from app import create_app, db, celery
 from app.config import app_config
 from app.mongo import drop_mongo_collections
 
@@ -19,7 +19,7 @@ class BaseTestCase(TestCase):
         """Create app configured for testing."""
         config_cls = app_config['testing']
         app.config.from_object(config_cls)
-        update_celery_settings(celery, config_cls)
+        celery.update_from_app(app)
         return app
 
     def setUp(self):

@@ -44,6 +44,7 @@ def create_app(environment=None):
     db.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
+    celery.init_app(app)
 
     # Register application components
     register_tool_result_modules(app)
@@ -51,27 +52,7 @@ def create_app(environment=None):
     register_blueprints(app)
     register_error_handlers(app)
 
-    # Update Celery config
-    update_celery_settings(celery, config_object)
-
     return app
-
-
-def update_celery_settings(celery_app, config_class):
-    """
-    Update Celery configuration.
-
-    celery.config_from_object(object) isn't working so we set each option explicitly.
-    """
-    celery_app.conf.update(
-        broker_url=config_class.broker_url,
-        result_backend=config_class.result_backend,
-        result_cache_max=config_class.result_cache_max,
-        result_expires=config_class.result_expires,
-        task_always_eager=config_class.task_always_eager,
-        task_eager_propagates=config_class.task_eager_propagates,
-        task_serializer=config_class.task_serializer,
-    )
 
 
 def register_tool_result_modules(app):
