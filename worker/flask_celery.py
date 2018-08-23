@@ -1,4 +1,4 @@
-"""Flask adapter for Celery"""
+"""Flask adapter for Celery."""
 
 from collections import namedtuple
 
