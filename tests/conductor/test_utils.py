@@ -4,7 +4,7 @@ from analysis_packages.top_taxa import TopTaxaAnalysisModule
 from analysis_packages.top_taxa.tests.factory import create_values
 from tool_packages.krakenhll.constants import MODULE_NAME as KRAKENHLL_NAME
 
-from app.conductor.tasks import fetch_samples, filter_samples
+from app.conductor.utils import fetch_samples, filter_samples
 from app.extensions import db
 
 from tests.base import BaseTestCase
@@ -20,7 +20,7 @@ class TestConductorTasks(BaseTestCase):
         group.samples = [add_sample(f'Sample {i}') for i in range(5)]
         db.session.commit()
 
-        samples = fetch_samples.run(group.id)
+        samples = fetch_samples(group.id)
         self.assertEqual(len(samples), 5)
 
     def test_filter_samples(self):
@@ -36,6 +36,6 @@ class TestConductorTasks(BaseTestCase):
                                        sample_kwargs=incomplete_values)
         samples = [sample.fetch_safe() for sample in [sample_complete, sample_incomplete]]
         module_name = TopTaxaAnalysisModule.name()
-        filtered_samples = filter_samples.run(samples, module_name)
+        filtered_samples = filter_samples(samples, module_name)
         self.assertEqual(len(filtered_samples), 1)
         self.assertEqual(filtered_samples[0]['name'], 'Complete Sample')
