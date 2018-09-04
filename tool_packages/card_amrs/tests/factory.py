@@ -2,7 +2,7 @@
 
 from random import randint
 
-from app.tool_results.card_amrs import CARDAMRToolResult
+from ..models import CARDAMRToolResult
 
 
 def simulate_gene():
@@ -21,7 +21,7 @@ def create_values():
     return out
 
 
-def create_card_amr():
+def create_result():
     """Create CARD AMR Alignment ToolResult with randomized field data."""
     packed_data = create_values()
     return CARDAMRToolResult(genes=packed_data).save()

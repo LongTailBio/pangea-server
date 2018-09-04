@@ -4,8 +4,9 @@
 
 import factory
 
+from tool_packages.card_amrs.tests.factory import create_result as create_card_amr
+
 from app.display_modules.multi_axis import MultiAxisResult
-from app.tool_results.card_amrs.tests.factory import create_card_amr
 from app.tool_results.humann2_normalize.tests.factory import create_humann2_normalize
 from app.tool_results.krakenhll.tests.factory import create_krakenhll
 from app.tool_results.metaphlan2.tests.factory import create_metaphlan2

@@ -1,7 +1,8 @@
 """CARD Genes module."""
 
+from tool_packages.card_amrs import CARDAMRResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.card_amrs import CARDAMRResultModule
 
 from .models import CARDGenesResult, CARDGenesSampleDocument
 from .wrangler import CARDGenesWrangler

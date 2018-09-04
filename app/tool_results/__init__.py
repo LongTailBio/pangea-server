@@ -7,7 +7,6 @@ from tool_packages.base.tests import get_result_module
 from .modules import SampleToolResultModule, GroupToolResultModule
 from .wrangler import all_tool_results as new_results
 
-from .card_amrs import CARDAMRResultModule
 from .food_pet import FoodPetResultModule
 from .hmp_sites import HmpSitesResultModule
 from .humann2 import Humann2ResultModule
@@ -25,7 +24,6 @@ from .vfdb import VFDBResultModule
 
 
 all_tool_results = [
-    CARDAMRResultModule,
     FoodPetResultModule,
     HmpSitesResultModule,
     Humann2ResultModule,

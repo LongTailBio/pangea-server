@@ -7,8 +7,9 @@ The user is given a choice of a large number of axes which can
 be plotted together as a scatter plot.
 """
 
+from tool_packages.card_amrs import CARDAMRResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.card_amrs import CARDAMRResultModule
 from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule

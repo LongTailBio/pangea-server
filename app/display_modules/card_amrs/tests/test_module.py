@@ -1,5 +1,8 @@
 """Test suite for CARD Genes diplay module."""
 
+from tool_packages.card_amrs.tests.factory import create_result
+from tool_packages.card_amrs.constants import MODULE_NAME as TOOL_MODULE_NAME
+
 from app.display_modules.card_amrs import CARDGenesDisplayModule
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.card_amrs import CARDGenesResult
@@ -7,8 +10,6 @@ from app.display_modules.card_amrs.constants import MODULE_NAME
 from app.display_modules.card_amrs.tests.factory import CARDGenesFactory
 from app.display_modules.generic_gene_set.tests.factory import create_one_sample
 from app.samples.sample_models import Sample
-from app.tool_results.card_amrs.tests.factory import create_card_amr
-from app.tool_results.card_amrs.constants import MODULE_NAME as TOOL_MODULE_NAME
 
 
 class TestCARDGenesModule(BaseDisplayModuleTest):
@@ -36,7 +37,7 @@ class TestCARDGenesModule(BaseDisplayModuleTest):
             args = {
                 'name': f'Sample{i}',
                 'metadata': {'foobar': f'baz{i}'},
-                TOOL_MODULE_NAME: create_card_amr(),
+                TOOL_MODULE_NAME: create_result(),
             }
             return Sample(**args).save()
 
