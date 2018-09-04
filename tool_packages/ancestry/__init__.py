@@ -1,10 +1,9 @@
 """Ancestry tool module."""
 
-from mongoengine import ValidationError
+from mongoengine import ValidationError, MapField, FloatField
 
-from app.extensions import mongoDB
-from app.tool_results.modules import SampleToolResultModule
-from app.tool_results.models import ToolResult
+from tool_packages.base import SampleToolResultModule
+from tool_packages.base.models import ToolResult
 
 from .constants import MODULE_NAME, KNOWN_LOCATIONS
 
@@ -13,7 +12,7 @@ class AncestryToolResult(ToolResult):  # pylint: disable=too-few-public-methods
     """Ancestry result type."""
 
     # Dict of form: {<location_id: string>: <percentage: float>}
-    populations = mongoDB.MapField(field=mongoDB.FloatField(), required=True)
+    populations = MapField(field=FloatField(), required=True)
 
     def clean(self):
         """Check that all keys are known, all values are [0, 1]."""

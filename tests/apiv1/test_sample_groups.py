@@ -5,11 +5,12 @@ from uuid import UUID
 
 from sqlalchemy.orm.exc import NoResultFound
 
+from tool_packages.ancestry.tests.factory import create_result as create_ancestry
+
 from app import db
 from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
-from app.tool_results.ancestry.tests.factory import create_ancestry
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user, add_organization

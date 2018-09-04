@@ -7,7 +7,6 @@ from tool_packages.base.tests import get_result_module
 from .modules import SampleToolResultModule, GroupToolResultModule
 from .wrangler import all_tool_results as new_results
 
-from .ancestry import AncestryResultModule
 from .beta_diversity import BetaDiversityResultModule
 from .card_amrs import CARDAMRResultModule
 from .food_pet import FoodPetResultModule
@@ -27,7 +26,6 @@ from .vfdb import VFDBResultModule
 
 
 all_tool_results = [
-    AncestryResultModule,
     BetaDiversityResultModule,
     CARDAMRResultModule,
     FoodPetResultModule,

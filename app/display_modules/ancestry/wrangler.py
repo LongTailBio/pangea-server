@@ -2,9 +2,10 @@
 
 from celery import chain
 
+from tool_packages.ancestry import AncestryToolResult
+
 from app.display_modules.display_wrangler import SharedWrangler
 from app.display_modules.utils import collate_samples
-from app.tool_results.ancestry import AncestryToolResult
 
 from .constants import MODULE_NAME, TOOL_MODULE_NAME
 from .tasks import ancestry_reducer, persist_result
