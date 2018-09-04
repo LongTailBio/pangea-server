@@ -24,6 +24,7 @@ for tool_result in all_tool_results:
         result = factory.create_result()
         self.generic_add_sample_tool_test(result, name)
 
+    add_module.__doc__ = f'Ensure a raw {module.__name__} model is created correctly.'
     setattr(TestToolResultUploads, f'test_add_{module_name}', add_module)
 
     def upload_module(self, name=module_name, factory=current_factory):
@@ -31,4 +32,5 @@ for tool_result in all_tool_results:
         payload = factory.create_values()
         self.generic_test_upload_sample(payload, name)
 
+    upload_module.__doc__ = f'Ensure a raw {module.__name__} can be uploaded.'
     setattr(TestToolResultUploads, f'test_upload_{module_name}', upload_module)
