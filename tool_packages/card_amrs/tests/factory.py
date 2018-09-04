@@ -21,7 +21,10 @@ def create_values():
     return out
 
 
-def create_result():
+def create_result(save=True):
     """Create CARD AMR Alignment ToolResult with randomized field data."""
     packed_data = create_values()
-    return CARDAMRToolResult(genes=packed_data).save()
+    result = CARDAMRToolResult(genes=packed_data)
+    if save:
+        result.save()
+    return result

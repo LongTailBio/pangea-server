@@ -62,7 +62,10 @@ def create_values():
     }
 
 
-def create_result():
+def create_result(save=True):
     """Return a beta diversity result with simulated data."""
     ranks = create_values()
-    return BetaDiversityToolResult(data=ranks).save()
+    result = BetaDiversityToolResult(data=ranks)
+    if save:
+        result.save()
+    return result

@@ -60,7 +60,8 @@ class BaseToolResultTest(BaseTestCase):
         group_uuid = str(sample_group.id)
         endpoint = f'/api/v1/sample_groups/{group_uuid}/{tool_result_name}'
 
-        self.help_test_upload(endpoint, payload)
+        wrapped_payload = {'data': payload}
+        self.help_test_upload(endpoint, wrapped_payload)
 
         # Reload object to ensure tool result was stored properly
         tool_result = result_cls.objects.get(sample_group_uuid=group_uuid)

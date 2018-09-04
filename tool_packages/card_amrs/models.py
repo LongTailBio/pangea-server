@@ -2,7 +2,6 @@
 
 from mongoengine import EmbeddedDocument, MapField, EmbeddedDocumentField, FloatField
 
-from app.extensions import mongoDB
 from app.tool_results.models import ToolResult
 
 

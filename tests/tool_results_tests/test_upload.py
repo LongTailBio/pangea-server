@@ -22,7 +22,7 @@ for tool_result in all_tool_results:
 
     def add_module(self, module=result_module, name=module_name, factory=current_factory):
         """Ensure a ToolResult model is created correctly."""
-        result = factory.create_result()
+        result = factory.create_result(save=False)
         if issubclass(module, (SampleToolResultModule,)):
             self.generic_add_sample_tool_test(result, name)
         else:
