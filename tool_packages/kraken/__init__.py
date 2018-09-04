@@ -1,9 +1,11 @@
 """Kraken tool module."""
 
-from app.tool_results.modules import SampleToolResultModule
+from tool_packages.base import SampleToolResultModule
 
-from .constants import MODULE_NAME
 from .models import KrakenResult
+
+
+MODULE_NAME = 'kraken_taxonomy_profiling'
 
 
 class KrakenResultModule(SampleToolResultModule):

@@ -13,10 +13,10 @@ Points on the top right and left are likely to be both signfiicant
 and testable.
 """
 
+from tool_packages.kraken import KrakenResultModule
 
 from app.display_modules.display_module import SampleToolDisplayModule
 from app.display_modules.sample_similarity.constants import MODULE_NAME
-from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 # Re-export modules

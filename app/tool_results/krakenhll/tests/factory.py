@@ -1,7 +1,8 @@
 """Factory for generating KrakenHLL result models for testing."""
 
+from tool_packages.kraken.tests.factory import create_values
+
 from app.tool_results.krakenhll import KrakenHLLResult
-from app.tool_results.kraken.tests.factory import create_values
 
 
 def create_krakenhll(taxa_count=10):

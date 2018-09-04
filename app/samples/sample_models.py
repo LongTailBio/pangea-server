@@ -9,11 +9,12 @@ from mongoengine import Document, LazyReferenceField
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
+from app.display_modules.utils import jsonify
 from app.extensions import mongoDB
 from app.tool_results import all_tool_results
-from app.tool_results.modules import SampleToolResultModule
+from app.tool_results.modules import SampleToolResultModule as OldSampleToolResultModule
 
-from app.display_modules.utils import jsonify
+from tool_packages.base import SampleToolResultModule as NewSampleToolResultModule
 
 
 class BaseSample(Document):
@@ -49,11 +50,17 @@ class BaseSample(Document):
         return safe_sample
 
 
+def is_result_module(module):
+    """Determine if module is correct subclass."""
+    valid_types = (OldSampleToolResultModule, NewSampleToolResultModule)
+    return issubclass(module, valid_types)
+
+
 # Create actual Sample class based on modules present at runtime
 Sample = type('Sample', (BaseSample,), {
     module.name(): LazyReferenceField(module.result_model())
     for module in all_tool_results
-    if issubclass(module, SampleToolResultModule)})
+    if is_result_module(module)})
 
 
 class SampleSchema(BaseSchema):

@@ -3,9 +3,10 @@
 import numpy as np
 from sklearn.manifold import TSNE
 
+from tool_packages.kraken import KrakenResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper, scrub_category_val
-from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 

@@ -27,27 +27,27 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 lint-app:
-	pylint --rcfile=.pylintrc app -f parseable -r n && \
+	pylint --rcfile=.pylintrc app -f parseable -r n --disable=similarities && \
 	pycodestyle app --max-line-length=120 && \
 	pydocstyle app
 
 lint-tests:
-	pylint --rcfile=.pylintrc tests -f parseable -r n && \
+	pylint --rcfile=.pylintrc tests -f parseable -r n --disable=similarities && \
 	pycodestyle tests --max-line-length=120 && \
 	pydocstyle tests
 
 lint-seed:
-	pylint --rcfile=.pylintrc seed -f parseable -r n && \
+	pylint --rcfile=.pylintrc seed -f parseable -r n --disable=similarities && \
 	pycodestyle seed --max-line-length=120 && \
 	pydocstyle seed
 
 lint-worker:
-	pylint --rcfile=.pylintrc worker -f parseable -r n && \
+	pylint --rcfile=.pylintrc worker -f parseable -r n --disable=similarities && \
 	pycodestyle worker --max-line-length=120 && \
 	pydocstyle worker
 
 lint:
-	pylint --rcfile=.pylintrc app tests seed worker -f parseable -r n && \
+	pylint --rcfile=.pylintrc app tests seed worker -f parseable -r n --disable=similarities && \
 	pycodestyle app tests seed worker --max-line-length=120 && \
 	pydocstyle app tests seed worker
 

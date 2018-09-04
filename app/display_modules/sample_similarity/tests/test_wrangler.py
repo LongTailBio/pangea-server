@@ -1,11 +1,12 @@
 """Test suite for Sample Similarity Wrangler."""
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app import db
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.display_modules.sample_similarity.wrangler import SampleSimilarityWrangler
 from app.samples.sample_models import Sample
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.krakenhll.tests.factory import create_krakenhll
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule

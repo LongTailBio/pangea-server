@@ -8,10 +8,11 @@ Hover over the plot to highlight connections. Thicker connections represent
 larger proportions of taxa in a given sample.
 """
 
+from tool_packages.kraken import KrakenResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
 
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 
 from .constants import MODULE_NAME

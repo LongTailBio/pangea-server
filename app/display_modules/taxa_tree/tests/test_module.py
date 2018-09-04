@@ -1,11 +1,12 @@
 """Test suite for Taxa Tree display module."""
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.taxa_tree import TaxaTreeDisplayModule
 from app.display_modules.taxa_tree.models import TaxaTreeResult
 from app.display_modules.taxa_tree.constants import MODULE_NAME
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.krakenhll.tests.factory import create_krakenhll
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule

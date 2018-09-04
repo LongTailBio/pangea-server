@@ -2,9 +2,10 @@
 
 from celery import chord
 
+from tool_packages.kraken import KrakenResultModule
+
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import categories_from_metadata
-from app.tool_results.kraken import KrakenResultModule
 from app.tool_results.krakenhll import KrakenHLLResultModule
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 

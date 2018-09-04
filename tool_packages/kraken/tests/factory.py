@@ -2,7 +2,7 @@
 
 import random
 
-from app.tool_results.kraken import KrakenResult
+from ..models import KrakenResult
 
 DOMAINS = ['archaea', 'bacteria', 'eukarya']
 KINGDOMS = ['archaebacteria', 'eubacteria', 'protista', 'fungi',
@@ -43,7 +43,7 @@ def create_values(taxa_count=30):
     return taxa
 
 
-def create_kraken(taxa_count=10):
+def create_result(taxa_count=10):
     """Create KrakenResult with specified number of taxa."""
     taxa = create_values(taxa_count=taxa_count)
     return KrakenResult(taxa=taxa).save()

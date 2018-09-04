@@ -44,6 +44,7 @@ def test():
     """Run the tests without code coverage."""
     tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
     tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
+    tests.addTests(unittest.TestLoader().discover('./tool_packages', pattern='test*.py'))
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0
@@ -55,6 +56,7 @@ def cov():
     """Run the unit tests with coverage."""
     tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
     tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
+    tests.addTests(unittest.TestLoader().discover('./tool_packages', pattern='test*.py'))
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         COV.stop()

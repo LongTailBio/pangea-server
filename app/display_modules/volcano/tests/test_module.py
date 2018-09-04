@@ -2,6 +2,9 @@
 
 from random import randint
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.volcano import VolcanoDisplayModule
 from app.display_modules.volcano.models import VolcanoResult
@@ -10,8 +13,6 @@ from app.display_modules.volcano.tests.factory import VolcanoFactory
 from app.samples.sample_models import Sample
 from app.tool_results.card_amrs import CARDAMRResultModule
 from app.tool_results.card_amrs.tests.factory import create_card_amr
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
