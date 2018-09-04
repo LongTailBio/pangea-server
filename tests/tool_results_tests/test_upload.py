@@ -28,7 +28,7 @@ for tool_result in all_tool_results:
         else:
             self.generic_add_group_tool_test(result, module.result_model())
 
-    add_module.__doc__ = f'Ensure a raw {module.__name__} model is created correctly.'
+    add_module.__doc__ = f'Ensure a raw {tool_result.__name__} model is created correctly.'
     setattr(TestToolResultUploads, f'test_add_{module_name}', add_module)
 
     def upload_module(self, module=result_module, name=module_name, factory=current_factory):
@@ -39,5 +39,5 @@ for tool_result in all_tool_results:
         else:
             self.generic_test_upload_group(module.result_model(), payload, name)
 
-    upload_module.__doc__ = f'Ensure a raw {module.__name__} can be uploaded.'
+    upload_module.__doc__ = f'Ensure a raw {tool_result.__name__} can be uploaded.'
     setattr(TestToolResultUploads, f'test_upload_{module_name}', upload_module)
