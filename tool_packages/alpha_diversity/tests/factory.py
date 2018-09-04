@@ -2,7 +2,7 @@
 
 from random import random, randint
 
-from app.tool_results.alpha_diversity.models import AlphaDiversityToolResult
+from ..models import AlphaDiversityToolResult
 
 
 def shannon():
@@ -63,7 +63,7 @@ def create_values():
     }
 
 
-def create_alpha_diversity():
+def create_result():
     """Return an alpha diversity result with simulated data."""
     packed_data = create_values()
     return AlphaDiversityToolResult(**packed_data).save()

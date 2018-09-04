@@ -2,8 +2,9 @@
 
 """Alpha Diversity tool module."""
 
-from app.extensions import mongoDB
-from app.tool_results.models import ToolResult
+from mongoengine import DynamicField
+
+from tool_packages.base.models import ToolResult
 
 
 class AlphaDiversityToolResult(ToolResult):

@@ -1,6 +1,6 @@
 """Alpha Diversity tool module."""
 
-from app.tool_results.modules import SampleToolResultModule
+from tool_packages.base import SampleToolResultModule
 
 from .models import AlphaDiversityToolResult
 
