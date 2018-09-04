@@ -25,7 +25,7 @@ class BetaDiversityToolResult(GroupToolResult):  # pylint: disable=too-few-publi
 
     # Accept any JSON
     # Data: {<genus>: {<metric>: {<tool>: {<sample_name>: {<sample_name>: <value>}}}}}
-    data = mongoDB.DictField(required=True)
+    data = DictField(required=True)
 
     def clean(self):
         """Ensure data blob meets minimum requirements."""
