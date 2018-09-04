@@ -1,9 +1,8 @@
 """Beta Diversity tool module."""
 
-from mongoengine import ValidationError
+from mongoengine import ValidationError, DictField
 
-from app.extensions import mongoDB
-from app.tool_results.models import GroupToolResult
+from tool_packages.base.models import GroupToolResult
 
 
 def validate_entry(entry):

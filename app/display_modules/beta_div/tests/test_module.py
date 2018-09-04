@@ -1,12 +1,12 @@
 """Test suite for Beta Diversity display module."""
 
+from tool_packages.beta_diversity.models import BetaDiversityToolResult
+from tool_packages.beta_diversity.tests.factory import create_ranks
+
 from app.display_modules.beta_div import BetaDiversityDisplayModule
 from app.display_modules.beta_div.models import BetaDiversityResult
 from app.display_modules.beta_div import MODULE_NAME
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-
-from app.tool_results.beta_diversity.models import BetaDiversityToolResult
-from app.tool_results.beta_diversity.tests.factory import create_ranks
 
 from tests.utils import add_sample_group
 

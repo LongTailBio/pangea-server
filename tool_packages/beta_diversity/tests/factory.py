@@ -2,7 +2,7 @@
 
 from random import randint, random
 
-from app.tool_results.beta_diversity import BetaDiversityToolResult
+from ..models import BetaDiversityToolResult
 
 
 def generate_sample_names():
@@ -53,7 +53,7 @@ def taxa_level(snames):
     }
 
 
-def create_ranks():
+def create_values():
     """Return simulated beta diversity data."""
     sample_names = generate_sample_names()
     return {
@@ -62,7 +62,7 @@ def create_ranks():
     }
 
 
-def create_beta_diversity():
+def create_result():
     """Return a beta diversity result with simulated data."""
-    ranks = create_ranks()
+    ranks = create_values()
     return BetaDiversityToolResult(data=ranks).save()

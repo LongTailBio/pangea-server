@@ -1,6 +1,6 @@
 """Beta Diversity tool module."""
 
-from app.tool_results.modules import GroupToolResultModule
+from tool_packages.base import GroupToolResultModule
 
 from .models import BetaDiversityToolResult
 

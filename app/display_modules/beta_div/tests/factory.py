@@ -4,8 +4,9 @@
 
 import factory
 
+from tool_packages.beta_diversity.tests.factory import create_values
+
 from app.display_modules.beta_div.models import BetaDiversityResult
-from app.tool_results.beta_diversity.tests.factory import create_ranks
 
 
 class BetaDiversityFactory(factory.mongoengine.MongoEngineFactory):
@@ -19,4 +20,4 @@ class BetaDiversityFactory(factory.mongoengine.MongoEngineFactory):
     @factory.lazy_attribute
     def data(self):  # pylint:disable=no-self-use
         """Generate a random result."""
-        return create_ranks()
+        return create_values()

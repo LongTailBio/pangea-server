@@ -1,7 +1,8 @@
 """Module for Beta Diversity results."""
 
+from tool_packages.beta_diversity import BetaDiversityResultModule
+
 from app.display_modules.display_module import GroupToolDisplayModule
-from app.tool_results.beta_diversity import BetaDiversityResultModule
 
 from .constants import MODULE_NAME
 from .models import BetaDiversityResult

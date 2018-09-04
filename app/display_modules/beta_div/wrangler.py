@@ -1,8 +1,9 @@
 """Wrangler for Beta Diversity display module."""
 
+from tool_packages.beta_diversity.models import BetaDiversityToolResult
+
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import jsonify
-from app.tool_results.beta_diversity.models import BetaDiversityToolResult
 
 from .constants import MODULE_NAME
 from .tasks import persist_result
