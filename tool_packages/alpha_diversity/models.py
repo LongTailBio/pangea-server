@@ -11,8 +11,8 @@ class AlphaDiversityToolResult(ToolResult):
     """Alpha Diversity result type."""
 
     # Accept any JSON
-    metaphlan2 = mongoDB.DynamicField(required=True)
-    kraken = mongoDB.DynamicField(required=True)
+    metaphlan2 = DynamicField(required=True)
+    kraken = DynamicField(required=True)
 
     @staticmethod
     def metrics():
