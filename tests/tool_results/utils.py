@@ -1,6 +1,6 @@
 """Utilities for testing ToolResults."""
 
-from tool_packages.base.tests import get_result_module
+from tool_packages.base.utils import get_result_module
 
 
 def unpack_package(package):

@@ -3,6 +3,8 @@
 import pkgutil
 
 import tool_packages
+from tool_packages.base import SampleToolResultModule, GroupToolResultModule
+from tool_packages.base.utils import get_result_module
 
 
 def discover_local_packages():
@@ -21,4 +23,17 @@ def discover_local_packages():
     return results
 
 
-all_tool_results = discover_local_packages()  # pylint:disable=invalid-name
+# pylint:disable=invalid-name
+
+all_tool_packages = discover_local_packages()
+
+
+all_tool_results = [get_result_module(module) for module in all_tool_packages]
+
+
+all_group_results = [tool for tool in all_tool_results
+                     if issubclass(tool, GroupToolResultModule)]
+
+
+all_sample_results = [tool for tool in all_tool_results
+                      if issubclass(tool, SampleToolResultModule)]
