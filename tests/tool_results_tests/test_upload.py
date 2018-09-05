@@ -29,7 +29,7 @@ for tool_result in all_tool_results:
 
     def add_module(self, package=tool_result):
         """Ensure a ToolResult model is created correctly."""
-        (base_name, module, module_name, factory) = unpack_package(package)
+        (_, module, module_name, factory) = unpack_package(package)
 
         result = factory.create_result(save=False)
         if issubclass(module, (SampleToolResultModule,)):
