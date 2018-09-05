@@ -31,9 +31,17 @@ for tool_result in all_tool_results:
     add_module.__doc__ = f'Ensure a raw {tool_result.__name__} model is created correctly.'
     setattr(TestToolResultUploads, f'test_add_{module_name}', add_module)
 
-    def upload_module(self, module=result_module, name=module_name, factory=current_factory):
+    def upload_module(self, base_module_name=base_name, module=result_module,
+                      name=module_name, factory=current_factory):
         """Ensure a raw ToolResult can be uploaded."""
         payload = factory.create_values()
+        try:
+            path = f'{base_module_name}.tests.utils'
+            util = __import__(path, fromlist=['package_payload'])
+            payload = util.package_payload(payload)
+        except ModuleNotFoundError as exc:
+            pass
+
         if issubclass(module, (SampleToolResultModule,)):
             self.generic_test_upload_sample(payload, name)
         else:
