@@ -4,8 +4,9 @@
 
 import factory
 
+from tool_packages.macrobes.tests.factory import create_values
+
 from app.display_modules.macrobes import MacrobeResult
-from app.tool_results.macrobes.tests.factory import create_values
 
 
 def create_one_sample():

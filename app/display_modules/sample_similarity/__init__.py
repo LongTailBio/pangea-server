@@ -10,11 +10,12 @@ The plot can be colored by different sample metadata and the position of the
 points can be adjust to reflect the analyses of different tools.
 """
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
 from app.display_modules.sample_similarity.constants import MODULE_NAME
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 # Re-export modules
 from .models import SampleSimilarityResult, ToolDocument

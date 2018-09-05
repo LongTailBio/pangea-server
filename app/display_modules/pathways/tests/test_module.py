@@ -1,4 +1,7 @@
 """Test suite for Pathway display module."""
+
+from tool_packages.humann2.tests.factory import create_result as create_humann2
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.pathways import PathwaysDisplayModule
 from app.display_modules.pathways.models import PathwayResult
@@ -8,7 +11,6 @@ from app.display_modules.pathways.tests.factory import (
     create_one_sample,
 )
 from app.samples.sample_models import Sample
-from app.tool_results.humann2.tests.factory import create_humann2
 
 
 class TestPathwaysModule(BaseDisplayModuleTest):

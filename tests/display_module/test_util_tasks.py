@@ -1,5 +1,8 @@
 """Test suite for Display Module utility tasks."""
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.display_modules.sample_similarity.tests.factory import create_mvp_sample_similarity
@@ -9,8 +12,6 @@ from app.display_modules.utils import (
     collate_samples,
 )
 from app.samples.sample_models import Sample
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample_group

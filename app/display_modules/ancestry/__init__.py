@@ -1,6 +1,7 @@
 """Module for Ancestry results."""
 
-from app.tool_results.ancestry import AncestryResultModule
+from tool_packages.ancestry import AncestryResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME

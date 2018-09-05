@@ -2,9 +2,10 @@
 
 from numpy import percentile
 
+from tool_packages.hmp_sites import HmpSitesResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper, scrub_category_val
-from app.tool_results.hmp_sites import HmpSitesResultModule
 
 from .models import HMPResult
 

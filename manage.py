@@ -20,12 +20,13 @@ from uuid import UUID
 from flask_script import Manager
 from flask_migrate import MigrateCommand, upgrade
 
+from tool_packages.base.models import ToolResult, GroupToolResult
+
 from app import create_app, db
 from app.mongo import drop_mongo_collections
 from app.users.user_models import User
 from app.organizations.organization_models import Organization
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.tool_results.models import ToolResult, GroupToolResult
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from os import environ
@@ -44,6 +45,7 @@ def test():
     """Run the tests without code coverage."""
     tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
     tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
+    tests.addTests(unittest.TestLoader().discover('./tool_packages', pattern='test*.py'))
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0
@@ -55,6 +57,7 @@ def cov():
     """Run the unit tests with coverage."""
     tests = unittest.TestLoader().discover('./tests', pattern='test*.py')
     tests.addTests(unittest.TestLoader().discover('./app', pattern='test*.py'))
+    tests.addTests(unittest.TestLoader().discover('./tool_packages', pattern='test*.py'))
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         COV.stop()

@@ -1,7 +1,8 @@
 """Virulence Factor module."""
 
+from tool_packages.vfdb import VFDBResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.vfdb import VFDBResultModule
 
 from .models import VFDBSampleDocument, VFDBResult
 from .wrangler import VFDBWrangler

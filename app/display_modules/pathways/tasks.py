@@ -3,9 +3,10 @@
 import pandas as pd
 import numpy as np
 
+from tool_packages.humann2 import Humann2ResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
-from app.tool_results.humann2 import Humann2ResultModule
 
 from .constants import TOP_N
 from .models import PathwayResult

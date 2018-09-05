@@ -1,15 +1,16 @@
 """Test suite for Microbe Directory diplay module."""
 
+from tool_packages.microbe_directory.tests.factory import (
+    create_values,
+    create_result as create_microbe_directory,
+)
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.microbe_directory import MicrobeDirectoryDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.microbe_directory.models import MicrobeDirectoryResult
 from app.display_modules.microbe_directory.constants import MODULE_NAME
 from app.display_modules.microbe_directory.tests.factory import MicrobeDirectoryFactory
-from app.tool_results.microbe_directory.tests.factory import (
-    create_values,
-    create_microbe_directory
-)
 
 
 class TestMicrobeDirectoryModule(BaseDisplayModuleTest):

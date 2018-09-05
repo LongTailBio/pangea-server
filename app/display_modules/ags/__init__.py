@@ -5,8 +5,9 @@ This plot display the distribution of average genome sizes
 for different metadata attributes.
 """
 
+from tool_packages.microbe_census import MicrobeCensusResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 # Re-export modules
 from .ags_models import DistributionResult, AGSResult

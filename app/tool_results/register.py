@@ -16,7 +16,7 @@ from app.users.user_models import User
 from app.users.user_helpers import authenticate
 from app.utils import lock_function
 
-from .modules import SampleToolResultModule, GroupToolResultModule
+from tool_packages.base import SampleToolResultModule, GroupToolResultModule
 
 
 @lock_function(sample_upload_lock)

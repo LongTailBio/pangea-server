@@ -2,10 +2,11 @@
 
 from pandas import DataFrame
 
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 from .constants import MODULE_NAME
 from .models import TopTaxaResult

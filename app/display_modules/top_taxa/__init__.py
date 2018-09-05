@@ -4,9 +4,10 @@ Top Taxa Display Module.
 Show the top taxa across different metadata groups and kingdoms.
 """
 
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 # Re-export modules
 from .models import TopTaxaResult

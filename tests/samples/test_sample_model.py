@@ -2,9 +2,10 @@
 
 from mongoengine.errors import NotUniqueError
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app.samples.sample_models import Sample
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 from tests.base import BaseTestCase
 
 

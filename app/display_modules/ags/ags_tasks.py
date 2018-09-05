@@ -1,8 +1,9 @@
 """Tasks for generating Average Genome Size results."""
 
+from tool_packages.microbe_census import MicrobeCensusResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import boxplot, persist_result_helper
-from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 from .ags_models import AGSResult
 

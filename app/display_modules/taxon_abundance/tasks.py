@@ -2,11 +2,12 @@
 
 import pandas as pd
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.krakenhll import KrakenHLLResultModule
+
 from app.extensions import celery
 from app.display_modules.utils import persist_result_helper
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.krakenhll import KrakenHLLResultModule
 
 from .models import TaxonAbundanceResult
 
