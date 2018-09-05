@@ -14,6 +14,7 @@ def discover_local_packages():
     results = []
     for _, modname, _ in pkgutil.iter_modules(path, prefix):
         if modname != 'tool_packages.base':
+            # Pass dummy value to fromlist in order to import all module members
             module = __import__(modname, fromlist='dummy')
             results.append(module)
 
