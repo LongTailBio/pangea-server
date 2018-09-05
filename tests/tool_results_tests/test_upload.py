@@ -48,7 +48,7 @@ for tool_result in all_tool_results:
             path = f'{base_name}.tests.utils'
             util = __import__(path, fromlist=['package_payload'])
             payload = util.package_payload(payload)
-        except ModuleNotFoundError as exc:
+        except ModuleNotFoundError:
             pass
 
         if issubclass(module, (SampleToolResultModule,)):
