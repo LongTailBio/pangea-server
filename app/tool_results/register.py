@@ -16,14 +16,7 @@ from app.users.user_models import User
 from app.users.user_helpers import authenticate
 from app.utils import lock_function
 
-from tool_packages.base import (
-    SampleToolResultModule as SampleToolResultModule,
-    GroupToolResultModule as GroupToolResultModule,
-)
-from .modules import (
-    SampleToolResultModule as OldSampleToolResultModule,
-    GroupToolResultModule as OldGroupToolResultModule,
-)
+from tool_packages.base import SampleToolResultModule, GroupToolResultModule
 
 
 @lock_function(sample_upload_lock)
@@ -116,9 +109,9 @@ def register_tool_result(cls, router):
     @authenticate()
     def view_function(resp, uuid):
         """Wrap receive_upload to provide class."""
-        if issubclass(cls, (OldSampleToolResultModule, SampleToolResultModule)):
+        if issubclass(cls, SampleToolResultModule):
             return receive_sample_tool_upload(cls, resp, uuid)
-        elif issubclass(cls, (OldGroupToolResultModule, GroupToolResultModule)):
+        elif issubclass(cls, GroupToolResultModule):
             return receive_group_tool_upload(cls, resp, uuid)
         raise ParseError('Tool Result of unrecognized type.')
 
