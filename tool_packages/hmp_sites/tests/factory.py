@@ -2,7 +2,7 @@
 
 from random import random, randint
 
-from ..models import HmpSitesResult
+from .. import HmpSitesResult
 
 
 def create_values():
@@ -16,7 +16,7 @@ def create_values():
     }
 
 
-def create_hmp_sites(save=True):
+def create_result(save=True):
     """Create HmpSitesResult with randomized fields."""
     packed_data = create_values()
     result = HmpSitesResult(**packed_data)

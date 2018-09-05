@@ -2,7 +2,7 @@
 
 from random import randint, random
 
-from ..models import Humann2Result
+from .. import Humann2Result
 
 
 def random_pathway():

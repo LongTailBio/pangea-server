@@ -2,15 +2,15 @@
 
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.kraken.tests.factory import create_result as create_kraken
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
 
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.taxa_tree import TaxaTreeDisplayModule
 from app.display_modules.taxa_tree.models import TaxaTreeResult
 from app.display_modules.taxa_tree.constants import MODULE_NAME
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.krakenhll.tests.factory import create_krakenhll
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
 from .factory import generate_random_tree, TaxaTreeFactory
 

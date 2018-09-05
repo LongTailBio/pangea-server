@@ -1,5 +1,7 @@
 """Test suite for Reads Classified display module."""
 
+from tool_packages.reads_classified.tests.factory import create_result as create_read_stats
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.reads_classified import ReadsClassifiedModule
 from app.display_modules.reads_classified.models import ReadsClassifiedResult
@@ -9,7 +11,6 @@ from app.display_modules.reads_classified.tests.factory import (
     create_vals_no_total
 )
 from app.samples.sample_models import Sample
-from app.tool_results.reads_classified.tests.factory import create_read_stats
 
 
 class TestReadsClassifiedModule(BaseDisplayModuleTest):

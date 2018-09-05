@@ -3,11 +3,11 @@
 from uuid import uuid4
 
 from tool_packages.kraken import KrakenResultModule
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
 from app.conductor import DisplayModuleConductor, SampleConductor
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from tests.base import BaseTestCase
 
 

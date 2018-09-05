@@ -1,9 +1,9 @@
 """Taxon Tree display module."""
 
 from tool_packages.kraken import KrakenResultModule
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME

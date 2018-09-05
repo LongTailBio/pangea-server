@@ -1,7 +1,8 @@
 """Virulence Factor module."""
 
+from tool_packages.humann2_normalize import Humann2NormalizeResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
 
 from .models import FunctionalGenesSampleDocument, FunctionalGenesResult
 from .wrangler import FunctionalGenesWrangler

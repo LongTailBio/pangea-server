@@ -1,7 +1,8 @@
 """Pathwaytransferase display module."""
 
+from tool_packages.humann2 import Humann2ResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.humann2 import Humann2ResultModule
 
 from .constants import MODULE_NAME
 from .models import PathwaySampleDocument, PathwayResult

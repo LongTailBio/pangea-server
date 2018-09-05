@@ -2,7 +2,7 @@
 
 from random import random
 
-from ..models import ShortbredResult
+from .. import ShortbredResult
 
 
 def create_values():

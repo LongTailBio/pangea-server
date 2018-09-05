@@ -5,8 +5,9 @@ import json
 from app import db
 from app.analysis_results.analysis_result_models import (
     AnalysisResultMeta,
-    AnalysisResultWrapper
+    AnalysisResultWrapper,
 )
+from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
 from tests.utils import add_sample_group, add_sample
 
@@ -68,3 +69,17 @@ class BaseDisplayModuleTest(BaseTestCase):
         self.assertIn(endpt, analysis_result)
         wrangled = getattr(analysis_result, endpt).fetch()
         self.assertEqual(wrangled.status, 'S')
+
+
+def generic_create_sample(tool_name, values_factory):
+    """Return a generic sample creator function."""
+    def create_sample(i, name=tool_name, factory=values_factory):
+        """Create unique sample for index i."""
+        args = {
+            'name': f'Sample{i}',
+            'metadata': {'foobar': f'baz{i}'},
+            name: factory(),
+        }
+        return Sample(**args).save()
+
+    return create_sample

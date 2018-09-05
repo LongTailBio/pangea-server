@@ -5,8 +5,9 @@ This chart shows the average similarity between bacterial communities in the
 samples and human body sites from the Human Microbiome Project.
 """
 
+from tool_packages.hmp_sites import HmpSitesResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.hmp_sites import HmpSitesResultModule
 
 from .constants import MODULE_NAME
 from .models import HMPResult

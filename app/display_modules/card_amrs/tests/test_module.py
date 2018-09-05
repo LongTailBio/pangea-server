@@ -3,13 +3,15 @@
 from tool_packages.card_amrs.tests.factory import create_result
 from tool_packages.card_amrs.constants import MODULE_NAME as TOOL_MODULE_NAME
 
-from app.display_modules.card_amrs import CARDGenesDisplayModule
-from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-from app.display_modules.card_amrs import CARDGenesResult
+from app.display_modules.card_amrs import CARDGenesDisplayModule, CARDGenesResult
 from app.display_modules.card_amrs.constants import MODULE_NAME
 from app.display_modules.card_amrs.tests.factory import CARDGenesFactory
 from app.display_modules.generic_gene_set.tests.factory import create_one_sample
-from app.samples.sample_models import Sample
+
+from app.display_modules.display_module_base_test import (
+    BaseDisplayModuleTest,
+    generic_create_sample,
+)
 
 
 class TestCARDGenesModule(BaseDisplayModuleTest):
@@ -31,15 +33,6 @@ class TestCARDGenesModule(BaseDisplayModuleTest):
 
     def test_run_card_genes_sample_group(self):  # pylint: disable=invalid-name
         """Ensure CARD Genes run_sample_group produces correct results."""
-
-        def create_sample(i):
-            """Create unique sample for index i."""
-            args = {
-                'name': f'Sample{i}',
-                'metadata': {'foobar': f'baz{i}'},
-                TOOL_MODULE_NAME: create_result(),
-            }
-            return Sample(**args).save()
-
+        create_sample = generic_create_sample(TOOL_MODULE_NAME, create_result)
         self.generic_run_group_test(create_sample,
                                     CARDGenesDisplayModule)

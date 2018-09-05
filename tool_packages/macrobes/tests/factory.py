@@ -21,7 +21,7 @@ def create_values():
     return macrobe_tbl
 
 
-def create_result():
+def create_result(save=True):
     """Create VFDBlToolResult with randomized field data."""
     packed_data = create_values()
     result = MacrobeToolResult(macrobes=packed_data)

@@ -2,7 +2,7 @@
 
 from mongoengine import EmbeddedDocument, MapField, EmbeddedDocumentField, FloatField
 
-from app.tool_results.models import ToolResult
+from tool_packages.base.models import ToolResult
 
 
 class AMRRow(EmbeddedDocument):  # pylint: disable=too-few-public-methods

@@ -2,15 +2,15 @@
 
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.kraken.tests.factory import create_result as create_kraken
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
 
 from app import db
 from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
 from app.display_modules.sample_similarity.wrangler import SampleSimilarityWrangler
 from app.samples.sample_models import Sample
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.krakenhll.tests.factory import create_krakenhll
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample_group

@@ -4,8 +4,9 @@
 
 import factory
 
+from tool_packages.microbe_directory.tests.factory import create_values
+
 from app.display_modules.microbe_directory import MicrobeDirectoryResult
-from app.tool_results.microbe_directory.tests.factory import create_values
 
 
 class MicrobeDirectoryFactory(factory.mongoengine.MongoEngineFactory):

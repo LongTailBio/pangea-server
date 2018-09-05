@@ -2,7 +2,7 @@
 
 import random
 
-from ..models import MicrobeCensusResult
+from .. import MicrobeCensusResult
 
 
 def create_values():

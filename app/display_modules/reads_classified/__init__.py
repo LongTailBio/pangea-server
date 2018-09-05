@@ -4,8 +4,9 @@ Reads Classified Module.
 This chart shows the proportion of reads in each sample assigned to different groups.
 """
 
+from tool_packages.reads_classified import ReadsClassifiedResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.reads_classified import ReadsClassifiedResultModule
 
 # Re-export modules
 from .models import ReadsClassifiedResult, SingleReadsClassifiedResult

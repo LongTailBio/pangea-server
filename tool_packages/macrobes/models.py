@@ -2,7 +2,7 @@
 
 from mongoengine import EmbeddedDocument, EmbeddedDocumentField, MapField, IntField, FloatField
 
-from tool_packages.models import ToolResult
+from tool_packages.base.models import ToolResult
 
 
 class MacrobialRow(EmbeddedDocument):  # pylint: disable=too-few-public-methods

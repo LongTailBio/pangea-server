@@ -8,12 +8,12 @@ be plotted together as a scatter plot.
 """
 
 from tool_packages.card_amrs import CARDAMRResultModule
+from tool_packages.humann2_normalize import Humann2NormalizeResultModule
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.microbe_census import MicrobeCensusResultModule
 
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.humann2_normalize import Humann2NormalizeResultModule
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.microbe_census import MicrobeCensusResultModule
 
 # Re-export modules
 from .constants import MODULE_NAME

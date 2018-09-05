@@ -3,8 +3,10 @@
 """Factory for generating Read Classified models for testing."""
 
 import factory
+
+from tool_packages.reads_classified.tests.factory import create_values
+
 from app.display_modules.reads_classified.models import ReadsClassifiedResult
-from app.tool_results.reads_classified.tests.factory import create_values
 
 
 def create_vals_no_total():

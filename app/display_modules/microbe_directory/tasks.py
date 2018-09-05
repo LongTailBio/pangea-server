@@ -2,12 +2,13 @@
 
 from pandas import DataFrame
 
-from app.extensions import celery
-from app.display_modules.utils import persist_result_helper
-from app.tool_results.microbe_directory import (
+from tool_packages.microbe_directory import (
     MicrobeDirectoryToolResult,
     MicrobeDirectoryResultModule,
 )
+
+from app.extensions import celery
+from app.display_modules.utils import persist_result_helper
 
 from .models import MicrobeDirectoryResult
 

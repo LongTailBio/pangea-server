@@ -1,15 +1,17 @@
 # pylint: disable=missing-docstring,too-few-public-methods
 
 """Factory for generating Top Taxa models for testing."""
+
 from random import random
 
 import factory
 
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
+from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+
 from app.display_modules.top_taxa import TopTaxaResult
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.krakenhll.tests.factory import create_krakenhll
-from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
 
 KRAKENHLL = KrakenHLLResultModule.name()
 METAPHLAN = Metaphlan2ResultModule.name()
