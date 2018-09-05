@@ -5,7 +5,7 @@ from app.tool_results.wrangler import all_tool_results
 from tool_packages.base import SampleToolResultModule
 
 from .base import BaseToolResultTest
-from .utils import unpack_package
+from .utils import unpack_module
 
 
 class TestToolResultUploads(BaseToolResultTest):
@@ -14,13 +14,13 @@ class TestToolResultUploads(BaseToolResultTest):
     pass
 
 
-for tool_result in all_tool_results:
+for tool_module in all_tool_results:
     # Grab top-level values we need
-    tool_name = unpack_package(tool_result)[2]
+    tool_name = unpack_module(tool_module)[1]
 
-    def upload_module(self, package=tool_result):
+    def upload_module(self, module=tool_module):
         """Ensure a raw ToolResult can be uploaded."""
-        (base_name, module, module_name, factory) = unpack_package(package)
+        (base_name, module_name, factory) = unpack_module(module)
         payload = factory.create_values()
         try:
             path = f'{base_name}.tests.utils'
@@ -34,5 +34,5 @@ for tool_result in all_tool_results:
         else:
             self.generic_test_upload_group(module.result_model(), payload, module_name)
 
-    upload_module.__doc__ = f'Ensure a raw {tool_result.__name__} can be uploaded.'
+    upload_module.__doc__ = f'Ensure a raw {tool_module.__name__} can be uploaded.'
     setattr(TestToolResultUploads, f'test_upload_{tool_name}', upload_module)

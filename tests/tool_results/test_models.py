@@ -5,7 +5,7 @@ from app.tool_results.wrangler import all_tool_results
 from tool_packages.base import SampleToolResultModule
 
 from .base import BaseToolResultTest
-from .utils import unpack_package
+from .utils import unpack_module
 
 
 class TestToolResultModels(BaseToolResultTest):
@@ -14,13 +14,13 @@ class TestToolResultModels(BaseToolResultTest):
     pass
 
 
-for tool_result in all_tool_results:
+for tool_module in all_tool_results:
     # Grab top-level values we need
-    tool_name = unpack_package(tool_result)[2]
+    tool_name = unpack_module(tool_module)[1]
 
-    def add_module(self, package=tool_result):
+    def add_module(self, module=tool_module):
         """Ensure a ToolResult model is created correctly."""
-        (_, module, module_name, factory) = unpack_package(package)
+        (_, module_name, factory) = unpack_module(module)
 
         result = factory.create_result(save=False)
         if issubclass(module, (SampleToolResultModule,)):
@@ -28,5 +28,5 @@ for tool_result in all_tool_results:
         else:
             self.generic_add_group_tool_test(result, module.result_model())
 
-    add_module.__doc__ = f'Ensure a raw {tool_result.__name__} model is created correctly.'
+    add_module.__doc__ = f'Ensure a raw {tool_module.__name__} model is created correctly.'
     setattr(TestToolResultModels, f'test_add_{tool_name}', add_module)
