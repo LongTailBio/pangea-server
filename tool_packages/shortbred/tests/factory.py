@@ -15,13 +15,13 @@ def create_values():
         'YP_310429': random() * 15,
         'soxR_2': random() * 8,
     }
-    return abundances
+    return {'abundances': abundances}
 
 
 def create_result(save=True):
     """Create ShortbredResult with randomized field data."""
-    abundances = create_values()
-    result = ShortbredResult(abundances=abundances)
+    packed_data = create_values()
+    result = ShortbredResult(**packed_data)
     if save:
         result.save()
     return result
