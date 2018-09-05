@@ -9,7 +9,7 @@ from .utils import unpack_package
 
 
 class TestToolResultModels(BaseToolResultTest):
-    """Test suite for ToolResult uploads."""
+    """Test suite for ToolResult models."""
 
     pass
 
