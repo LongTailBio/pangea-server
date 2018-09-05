@@ -26,10 +26,8 @@ def receive_sample_tool_upload(cls, resp, uuid):
         safe_uuid = UUID(uuid)
         sample = Sample.objects.get(uuid=safe_uuid)
     except ValueError:
-        print('Invalid UUID provided.')
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
-        print('Sample does not exist.')
         raise NotFound('Sample does not exist.')
 
     # gh-21: Write actual validation:
