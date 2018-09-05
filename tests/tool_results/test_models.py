@@ -8,7 +8,7 @@ from .base import BaseToolResultTest
 from .utils import unpack_package
 
 
-class TestToolResultUploads(BaseToolResultTest):
+class TestToolResultModels(BaseToolResultTest):
     """Test suite for ToolResult uploads."""
 
     pass
