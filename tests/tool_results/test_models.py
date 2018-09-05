@@ -29,4 +29,4 @@ for tool_result in all_tool_results:
             self.generic_add_group_tool_test(result, module.result_model())
 
     add_module.__doc__ = f'Ensure a raw {tool_result.__name__} model is created correctly.'
-    setattr(TestToolResultUploads, f'test_add_{tool_name}', add_module)
+    setattr(TestToolResultModels, f'test_add_{tool_name}', add_module)
