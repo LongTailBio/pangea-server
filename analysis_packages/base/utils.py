@@ -45,3 +45,42 @@ def scrub_category_val(category_val):
     if not category_val:
         category_val = 'NaN'
     return category_val
+
+
+def categories_from_metadata(samples, min_size=2):
+    """
+    Create dict of categories and their values from sample metadata.
+
+    Parameters
+    ----------
+    samples : list
+        List of sample models.
+    min_size: int
+        Minimum number of values required for a given metadata item to
+        be included in returned categories.
+
+    Returns
+    -------
+    dict
+        Dictionary of form {<category_name>: [category_value[, category_value]]}
+
+    """
+    categories = {}
+
+    # Gather categories and values
+    all_metadata = [sample['metadata'] for sample in samples]
+    for metadata in all_metadata:
+        properties = [prop for prop in metadata.keys()]
+        for prop in properties:
+            if prop not in categories:
+                categories[prop] = set([])
+            category_val = metadata[prop]
+            category_val = scrub_category_val(category_val)
+            categories[prop].add(category_val)
+
+    # Filter for minimum number of values
+    categories = {category_name: list(category_values)
+                  for category_name, category_values in categories.items()
+                  if len(category_values) >= min_size}
+
+    return categories
