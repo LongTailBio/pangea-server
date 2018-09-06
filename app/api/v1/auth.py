@@ -76,14 +76,14 @@ def login_user():
 
 
 @auth_blueprint.route('/auth/logout', methods=['GET'])
-@authenticate
+@authenticate()
 def logout_user(resp):  # pylint: disable=unused-argument
     """Log user out."""
     return {}, 200
 
 
 @auth_blueprint.route('/auth/status', methods=['GET'])
-@authenticate
+@authenticate()
 def get_user_status(resp):
     """Get user status."""
     user = User.query.filter_by(id=resp).first()

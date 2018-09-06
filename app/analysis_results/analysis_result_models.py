@@ -39,10 +39,10 @@ class AnalysisResultMetaBase(mongoDB.Document):
     @property
     def result_types(self):
         """Return a list of all analysis result types available for this record."""
-        blacklist = ['uuid', 'created_at']
-        all_fields = [k
-                      for k, v in vars(self).items()
-                      if k not in blacklist and not k.startswith('_')]
+        meta_fields = ['uuid', 'created_at', 'meta']
+        all_fields = [field for field in self._fields.keys()  # pylint:disable=no-member
+                      if field not in meta_fields
+                      and not field.startswith('_')]
         return [field for field in all_fields
                 if getattr(self, field, None) is not None]
 

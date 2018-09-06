@@ -2,9 +2,10 @@
 
 from celery import chain
 
+from tool_packages.read_stats import ReadStatsToolResultModule
+
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import collate_samples
-from app.tool_results.read_stats import ReadStatsToolResultModule
 
 from .constants import MODULE_NAME
 from .tasks import read_stats_reducer, persist_result

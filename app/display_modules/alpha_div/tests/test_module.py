@@ -1,5 +1,9 @@
 """Test suite for Alpha Diversity diplay module."""
 
+from tool_packages.alpha_diversity.tests.factory import (
+    create_result as create_alpha_diversity,
+)
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.alpha_div import (
     AlphaDivDisplayModule,
@@ -7,9 +11,6 @@ from app.display_modules.alpha_div import (
     MODULE_NAME,
 )
 from app.samples.sample_models import Sample
-from app.tool_results.alpha_diversity.tests.factory import (
-    create_alpha_diversity,
-)
 
 from .factory import AlphaDivFactory, create_categories, create_tools, create_by_tool
 

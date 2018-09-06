@@ -5,8 +5,9 @@ import json
 from app import db
 from app.analysis_results.analysis_result_models import (
     AnalysisResultMeta,
-    AnalysisResultWrapper
+    AnalysisResultWrapper,
 )
+from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
 from tests.utils import add_sample_group, add_sample
 
@@ -51,7 +52,7 @@ class BaseDisplayModuleTest(BaseTestCase):
         wrangled_sample = getattr(analysis_result, endpt).fetch()
         self.assertEqual(wrangled_sample.status, 'S')
 
-    def generic_run_group_test(self, sample_builder, module, group_builder=None):
+    def generic_run_group_test(self, sample_builder, module, group_builder=None, nsamples=6):
         """Check that we can run a wrangler on a set of samples."""
         wrangler = module.get_wrangler()
         endpt = module.name()
@@ -60,7 +61,7 @@ class BaseDisplayModuleTest(BaseTestCase):
             samples = []
         else:
             sample_group = add_sample_group(name='SampleGroup01')
-            samples = [sample_builder(i) for i in range(6)]
+            samples = [sample_builder(i) for i in range(nsamples)]
             sample_group.samples = samples
         db.session.commit()
         wrangler.help_run_sample_group(sample_group, samples, module).get()
@@ -68,3 +69,17 @@ class BaseDisplayModuleTest(BaseTestCase):
         self.assertIn(endpt, analysis_result)
         wrangled = getattr(analysis_result, endpt).fetch()
         self.assertEqual(wrangled.status, 'S')
+
+
+def generic_create_sample(tool_name, values_factory):
+    """Return a generic sample creator function."""
+    def create_sample(i, name=tool_name, factory=values_factory):
+        """Create unique sample for index i."""
+        args = {
+            'name': f'Sample{i}',
+            'metadata': {'foobar': f'baz{i}'},
+            name: factory(),
+        }
+        return Sample(**args).save()
+
+    return create_sample

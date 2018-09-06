@@ -3,10 +3,11 @@
 from celery import chain
 from pandas import DataFrame
 
+from tool_packages.macrobes import MacrobeResultModule
+
 from app.display_modules.display_wrangler import DisplayModuleWrangler
 from app.display_modules.utils import persist_result_helper
 from app.extensions import celery
-from app.tool_results.macrobes import MacrobeResultModule
 
 from .constants import MODULE_NAME
 from .models import MacrobeResult

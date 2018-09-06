@@ -19,6 +19,7 @@ class TestDevelopmentConfig(TestCase):
 
     def create_app(self):
         app.config.from_object(app_config['development'])
+        celery.update_from_app(app)
         return app
 
     def test_app_is_development(self):
@@ -53,6 +54,7 @@ class TestTestingConfig(TestCase):
 
     def create_app(self):
         app.config.from_object(app_config['testing'])
+        celery.update_from_app(app)
         return app
 
     def test_app_is_testing(self):
@@ -88,6 +90,7 @@ class TestProductionConfig(TestCase):
 
     def create_app(self):
         app.config.from_object(app_config['production'])
+        celery.update_from_app(app)
         return app
 
     def test_app_is_production(self):

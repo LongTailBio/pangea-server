@@ -1,6 +1,7 @@
 """Module for Macrobe results."""
 
-from app.tool_results.macrobes import MacrobeResultModule
+from tool_packages.macrobes import MacrobeResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME

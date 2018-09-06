@@ -3,8 +3,10 @@
 """Factory for generating ReadStats models for testing."""
 
 import factory
+
+from tool_packages.read_stats.tests.factory import create_values
+
 from app.display_modules.read_stats import ReadStatsResult
-from app.tool_results.read_stats.tests.factory import create_values
 
 
 class ReadStatsFactory(factory.mongoengine.MongoEngineFactory):

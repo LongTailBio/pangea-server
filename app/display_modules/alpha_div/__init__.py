@@ -1,7 +1,8 @@
 """Module for alpha diversity results."""
 
+from tool_packages.alpha_diversity import AlphaDiversityResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.alpha_diversity import AlphaDiversityResultModule
 
 from .models import AlphaDiversityResult
 from .wrangler import AlphaDivWrangler

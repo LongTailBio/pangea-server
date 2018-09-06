@@ -1,6 +1,7 @@
 """Module for Microbe Directory results."""
 
-from app.tool_results.microbe_directory import MicrobeDirectoryResultModule
+from tool_packages.microbe_directory import MicrobeDirectoryResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
 
 from .constants import MODULE_NAME

@@ -1,10 +1,11 @@
 """Test suite for Average Genome Size Wrangler."""
 
+from tool_packages.microbe_census.tests.factory import create_result as create_microbe_census
+
 from app import db
 from app.display_modules.ags import AGSDisplayModule
 from app.display_modules.ags.ags_wrangler import AGSWrangler
 from app.samples.sample_models import Sample
-from app.tool_results.microbe_census.tests.factory import create_microbe_census
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample_group

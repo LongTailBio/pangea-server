@@ -6,8 +6,9 @@ from pandas import DataFrame
 
 import factory
 
+from tool_packages.ancestry.tests.factory import create_values
+
 from app.display_modules.ancestry import AncestryResult
-from app.tool_results.ancestry.tests.factory import create_values
 
 
 class AncestryFactory(factory.mongoengine.MongoEngineFactory):

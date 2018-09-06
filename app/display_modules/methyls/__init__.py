@@ -1,7 +1,8 @@
 """Methyls module."""
 
+from tool_packages.methyltransferases import MethylResultModule
+
 from app.display_modules.display_module import SampleToolDisplayModule
-from app.tool_results.methyltransferases import MethylResultModule
 
 from .constants import MODULE_NAME
 from .models import MethylResult

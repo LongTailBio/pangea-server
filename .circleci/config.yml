@@ -1,5 +1,79 @@
 version: 2
 
+# Common steps for building server Docker images
+build_steps: &build_steps
+  docker:
+    - image: circleci/node:9.2.0
+
+  steps:
+    - checkout
+
+    - setup_remote_docker
+
+    - run:
+        name: Set COMMIT env var
+        command: echo 'export COMMIT=${CIRCLE_SHA1::8}' >> $BASH_ENV
+
+    - run:
+        name: Sign in to Docker Hub
+        command: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
+
+    - run:
+        name: Build and push mongo-db
+        environment:
+          DB_SERVICE: mongo
+        command: |
+          docker build ./database_docker/mongo_db -t $DB_SERVICE:$COMMIT
+          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
+          docker push $DOCKER_ORG/$DB_SERVICE
+
+    - run:
+        name: Build and push metagenscope-db
+        environment:
+          DB_SERVICE: metagenscope-db
+        command: |
+          docker build ./database_docker/postgres_db -t $DB_SERVICE:$COMMIT
+          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
+          docker push $DOCKER_ORG/$DB_SERVICE
+
+    - run:
+        name: Build and push redis
+        environment:
+          DB_SERVICE: redis
+        command: |
+          docker build ./database_docker/redis -t $DB_SERVICE:$COMMIT
+          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
+          docker push $DOCKER_ORG/$DB_SERVICE
+
+    - run:
+        name: Build and push rabbitmq
+        environment:
+          DB_SERVICE: rabbitmq
+        command: |
+          docker build ./database_docker/rabbitmq -t $DB_SERVICE:$COMMIT
+          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
+          docker push $DOCKER_ORG/$DB_SERVICE
+
+    - run:
+        name: Build and push metagenscope-worker
+        environment:
+          DB_SERVICE: metagenscope-worker
+        command: |
+          docker build . -f Dockerfile-worker -t $DB_SERVICE:$COMMIT
+          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
+          docker push $DOCKER_ORG/$DB_SERVICE
+
+    - run:
+        name: Build and push metagenscope-service
+        environment:
+          MAIN_SERVICE: metagenscope-service
+        command: |
+          docker build . -t $MAIN_SERVICE:$COMMIT
+          docker tag $MAIN_SERVICE:$COMMIT $DOCKER_ORG/$MAIN_SERVICE:$TAG
+          docker push $DOCKER_ORG/$MAIN_SERVICE
+
+
+# CircleCI Jobs
 jobs:
   test_app:
     docker:
@@ -68,53 +142,11 @@ jobs:
           path: htmlcov
           destination: test-reports
 
-  build_app_staging:
-    docker:
-      - image: circleci/node:9.2.0
-
+  build_staging:
+    <<: *build_steps
     environment:
       TAG: staging
       DOCKER_ORG: metagenscope
-
-    steps:
-      - checkout
-
-      - setup_remote_docker
-
-      - run:
-          name: Set COMMIT env var
-          command: echo 'export COMMIT=${CIRCLE_SHA1::8}' >> $BASH_ENV
-
-      - run:
-          name: Sign in to Docker Hub
-          command: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
-
-      - run:
-          name: Build and push mongo-db
-          environment:
-            DB_SERVICE: mongo
-          command: |
-            docker build ./database_docker/mongo_db -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push metagenscope-db
-          environment:
-            DB_SERVICE: metagenscope-db
-          command: |
-            docker build ./database_docker/postgres_db -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push metagenscope-service
-          environment:
-            MAIN_SERVICE: metagenscope-service
-          command: |
-            docker build . -t $MAIN_SERVICE:$COMMIT
-            docker tag $MAIN_SERVICE:$COMMIT $DOCKER_ORG/$MAIN_SERVICE:$TAG
-            docker push $DOCKER_ORG/$MAIN_SERVICE
 
   deploy_staging:
     docker:
@@ -127,83 +159,41 @@ jobs:
           name: Deploy to emptyfish.net
           command: |
             set -x
-            echo "$DROPLET_IP $DROPLET_HOST_KEY" > ~/tmp_auth_hosts
-            ssh -A -o "UserKnownHostsFile ~/tmp_auth_hosts" $DROPLET_USER@$DROPLET_IP "cd /home/metagenscope/metagenscope-app && sh deploy.sh"
+            echo "$STAGING_MACHINE_IP $STAGING_MACHINE_HOST_KEY" > ~/tmp_auth_hosts
+            ssh -A -o "UserKnownHostsFile ~/tmp_auth_hosts" $STAGING_MACHINE_USER@$STAGING_MACHINE_IP "cd /home/metagenscope/metagenscope-app && sh deploy.sh"
 
-  build_worker_staging:
-    docker:
-      - image: circleci/node:9.2.0
-
+  build_master:
+    <<: *build_steps
     environment:
-      TAG: staging
+      TAG: latest
       DOCKER_ORG: metagenscope
 
-    steps:
-      - checkout
-
-      - setup_remote_docker
-
-      - run:
-          name: Set COMMIT env var
-          command: echo 'export COMMIT=${CIRCLE_SHA1::8}' >> $BASH_ENV
-
-      - run:
-          name: Sign in to Docker Hub
-          command: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
-
-      - run:
-          name: Build and push redis
-          environment:
-            DB_SERVICE: redis
-          command: |
-            docker build ./database_docker/redis -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push rabbitmq
-          environment:
-            DB_SERVICE: rabbitmq
-          command: |
-            docker build ./database_docker/rabbitmq -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
-
-      - run:
-          name: Build and push metagenscope-worker
-          environment:
-            DB_SERVICE: metagenscope-worker
-          command: |
-            docker build . -f Dockerfile-worker -t $DB_SERVICE:$COMMIT
-            docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-            docker push $DOCKER_ORG/$DB_SERVICE
 
 workflows:
   version: 2
 
-  app_staging_cd:
+  app_cd:
     jobs:
       - test_app:
-          context: org-global
-      - build_app_staging:
-          context: org-global
-          filters:
-            branches:
-              only: develop
-          requires:
-            - test_app
-      - build_worker_staging:
-          context: org-global
+          context: metagenscope-staging
+      - build_staging:
+          context: metagenscope-staging
           filters:
             branches:
               only: develop
           requires:
             - test_app
       - deploy_staging:
-          context: org-global
+          context: metagenscope-staging
           filters:
             branches:
               only: develop
           requires:
-            - build_app_staging
-            - build_worker_staging
+            - build_staging
+      - build_master:
+          context: metagenscope-staging
+          filters:
+            branches:
+              only: master
+          requires:
+            - test_app

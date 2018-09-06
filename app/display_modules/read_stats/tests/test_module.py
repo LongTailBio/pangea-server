@@ -1,15 +1,16 @@
 """Test suite for ReadStats display module."""
 
+from tool_packages.read_stats.tests.factory import (
+    create_values,
+    create_result as create_read_stats,
+)
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.read_stats import ReadStatsDisplayModule
 from app.display_modules.read_stats.models import ReadStatsResult
 from app.display_modules.read_stats.constants import MODULE_NAME
 from app.display_modules.read_stats.tests.factory import ReadStatsFactory
 from app.samples.sample_models import Sample
-from app.tool_results.read_stats.tests.factory import (
-    create_read_stats,
-    create_values
-)
 
 
 class TestReadStatsModule(BaseDisplayModuleTest):

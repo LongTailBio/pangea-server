@@ -1,5 +1,8 @@
 """Test suite for Sample Similarity tasks."""
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+
 from app.display_modules.sample_similarity.tasks import (
     get_clean_samples,
     run_tsne,
@@ -7,8 +10,6 @@ from app.display_modules.sample_similarity.tasks import (
     taxa_tool_tsne,
 )
 from app.samples.sample_models import Sample
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
 
 from tests.base import BaseTestCase
 

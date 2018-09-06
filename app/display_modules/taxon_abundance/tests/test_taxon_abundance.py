@@ -1,17 +1,18 @@
 """Test suite for Taxon Abundance model."""
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
+
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.taxon_abundance import TaxonAbundanceResult
 from app.display_modules.taxon_abundance.constants import MODULE_NAME
 from app.display_modules.taxon_abundance import TaxonAbundanceDisplayModule
 from app.samples.sample_models import Sample
-from app.tool_results.krakenhll import KrakenHLLResultModule
-from app.tool_results.krakenhll.tests.factory import create_krakenhll
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
 
 def flow_model():

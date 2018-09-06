@@ -1,8 +1,9 @@
 """Test suite for Average Genome Size tasks."""
 
+from tool_packages.microbe_census.tests.factory import create_result as create_microbe_census
+
 from app.display_modules.ags.ags_tasks import boxplot, ags_distributions
 from app.samples.sample_models import Sample
-from app.tool_results.microbe_census.tests.factory import create_microbe_census
 
 from tests.base import BaseTestCase
 

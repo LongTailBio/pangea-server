@@ -4,7 +4,7 @@
 
 ## Getting Started
 
-This readme documents how to run and test the MetaGenScope server as a standalone application. `metagenscope-server` is part of [`metagenscope-main`](https://github.com/bchrobot/metagenscope-main) and should usually be run as part of the complete stack.
+This readme documents how to run and test the MetaGenScope server as a standalone application. `metagenscope-server` is part of [`metagenscope-main`](https://github.com/longtailbio/metagenscope-main) and should usually be run as part of the complete stack.
 
 ### Prerequisites
 
@@ -173,5 +173,5 @@ See also the list of [contributors][contributors] who participated in this proje
 This project is licensed under the MIT License - see the [`LICENSE.md`](LICENSE.md) file for details.
 
 
-[project-tags]: https://github.com/bchrobot/metagenscope-server/tags
-[contributors]: https://github.com/bchrobot/metagenscope-server/contributors
+[project-tags]: https://github.com/longtailbio/metagenscope-server/tags
+[contributors]: https://github.com/longtailbio/metagenscope-server/contributors

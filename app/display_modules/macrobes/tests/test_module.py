@@ -1,12 +1,13 @@
 """Test suite for Macrobe display module."""
 
+from tool_packages.macrobes import MacrobeResultModule
+from tool_packages.macrobes.tests.factory import create_result as create_macrobe
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.macrobes import MacrobeDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.macrobes.models import MacrobeResult
 from app.display_modules.macrobes.constants import MODULE_NAME
-from app.tool_results.macrobes import MacrobeResultModule
-from app.tool_results.macrobes.tests.factory import create_macrobe
 
 from .factory import MacrobeFactory, create_one_sample
 

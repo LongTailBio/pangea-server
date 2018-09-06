@@ -1,9 +1,10 @@
 """Tasks for generating CARD AMR results."""
 
+from tool_packages.card_amrs.constants import MODULE_NAME as TOOL_MODULE_NAME
+
 from app.extensions import celery
 from app.display_modules.generic_gene_set.wrangler import GenericGeneWrangler
 from app.display_modules.utils import persist_result_helper
-from app.tool_results.card_amrs.constants import MODULE_NAME as TOOL_MODULE_NAME
 
 from .models import CARDGenesResult
 from .constants import MODULE_NAME, TOP_N

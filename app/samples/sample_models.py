@@ -9,11 +9,11 @@ from mongoengine import Document, LazyReferenceField
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
+from app.display_modules.utils import jsonify
 from app.extensions import mongoDB
 from app.tool_results import all_tool_results
-from app.tool_results.modules import SampleToolResultModule
 
-from app.display_modules.utils import jsonify
+from tool_packages.base import SampleToolResultModule
 
 
 class BaseSample(Document):

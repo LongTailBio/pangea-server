@@ -2,18 +2,19 @@
 
 from random import randint
 
+from tool_packages.kraken import KrakenResultModule
+from tool_packages.kraken.tests.factory import create_result as create_kraken
+from tool_packages.card_amrs import CARDAMRResultModule
+from tool_packages.card_amrs.tests.factory import create_result as create_card_amr
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.volcano import VolcanoDisplayModule
 from app.display_modules.volcano.models import VolcanoResult
 from app.display_modules.volcano.constants import MODULE_NAME
 from app.display_modules.volcano.tests.factory import VolcanoFactory
 from app.samples.sample_models import Sample
-from app.tool_results.card_amrs import CARDAMRResultModule
-from app.tool_results.card_amrs.tests.factory import create_card_amr
-from app.tool_results.kraken import KrakenResultModule
-from app.tool_results.kraken.tests.factory import create_kraken
-from app.tool_results.metaphlan2 import Metaphlan2ResultModule
-from app.tool_results.metaphlan2.tests.factory import create_metaphlan2
 
 from .factory import make_tool_doc
 
@@ -47,14 +48,14 @@ class TestVolcanoModule(BaseDisplayModuleTest):
         """Ensure Volcano run_sample_group produces correct results."""
         def create_sample(i):
             """Create unique sample for index i."""
+            j = randint(1, 3)
             args = {
                 'name': f'Sample{i}',
-                'metadata': {'foobar': f'baz{i}'},
+                'metadata': {'foobar': f'baz{j}'},
                 CARDAMRResultModule.name(): create_card_amr(),
                 KrakenResultModule.name(): create_kraken(),
                 Metaphlan2ResultModule.name(): create_metaphlan2(),
             }
             return Sample(**args).save()
 
-        self.generic_run_group_test(create_sample,
-                                    VolcanoDisplayModule)
+        self.generic_run_group_test(create_sample, VolcanoDisplayModule, nsamples=40)

@@ -47,9 +47,9 @@ lint-worker:
 	pydocstyle worker
 
 lint:
-	pylint --rcfile=.pylintrc app tests seed worker -f parseable -r n && \
-	pycodestyle app tests seed worker --max-line-length=120 && \
-	pydocstyle app tests seed worker
+	pylint --rcfile=.pylintrc app tests seed worker tool_packages -f parseable -r n && \
+	pycodestyle app tests seed worker tool_packages --max-line-length=120 && \
+	pydocstyle app tests seed worker tool_packages
 
 test:
 	pytest

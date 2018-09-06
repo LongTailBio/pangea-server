@@ -1,15 +1,16 @@
 """Test suite for Ancestry diplay module."""
 
+from tool_packages.ancestry.tests.factory import (
+    create_values,
+    create_result as create_ancestry,
+)
+
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.ancestry import AncestryDisplayModule
 from app.samples.sample_models import Sample
 from app.display_modules.ancestry.models import AncestryResult
 from app.display_modules.ancestry.constants import MODULE_NAME, TOOL_MODULE_NAME
 from app.display_modules.ancestry.tests.factory import AncestryFactory
-from app.tool_results.ancestry.tests.factory import (
-    create_values,
-    create_ancestry
-)
 
 
 class TestAncestryModule(BaseDisplayModuleTest):

@@ -1,13 +1,16 @@
 """Test suite for Functional Genes diplay module."""
 
-from app.display_modules.display_module_base_test import BaseDisplayModuleTest
+from tool_packages.humann2_normalize.tests.factory import create_result
+
+from app.display_modules.display_module_base_test import (
+    BaseDisplayModuleTest,
+    generic_create_sample,
+)
 from app.display_modules.functional_genes import FunctionalGenesDisplayModule
 from app.display_modules.functional_genes import FunctionalGenesResult
 from app.display_modules.functional_genes.constants import MODULE_NAME, TOOL_MODULE_NAME
 from app.display_modules.functional_genes.tests.factory import FunctionalGenesFactory
 from app.display_modules.generic_gene_set.tests.factory import create_one_sample
-from app.samples.sample_models import Sample
-from app.tool_results.humann2_normalize.tests.factory import create_humann2_normalize
 
 
 class TestFunctionalGenesModule(BaseDisplayModuleTest):
@@ -29,14 +32,6 @@ class TestFunctionalGenesModule(BaseDisplayModuleTest):
 
     def test_run_functional_genes_sample_group(self):  # pylint: disable=invalid-name
         """Ensure Functional Genes run_sample_group produces correct result."""
-        def create_sample(i):
-            """Create unique sample for index i."""
-            args = {
-                'name': f'Sample{i}',
-                'metadata': {'foobar': f'baz{i}'},
-                TOOL_MODULE_NAME: create_humann2_normalize(),
-            }
-            return Sample(**args).save()
-
+        create_sample = generic_create_sample(TOOL_MODULE_NAME, create_result)
         self.generic_run_group_test(create_sample,
                                     FunctionalGenesDisplayModule)

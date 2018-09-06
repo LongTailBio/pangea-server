@@ -11,8 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from app.extensions import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
+from app.conductor import SampleConductor
 from app.display_modules import sample_display_modules
-from app.display_modules.conductor import SampleConductor
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_helpers import authenticate
@@ -22,7 +22,7 @@ samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-
 
 
 @samples_blueprint.route('/samples', methods=['POST'])
-@authenticate
+@authenticate()
 def add_sample(resp):  # pylint: disable=unused-argument
     """Add sample."""
     try:
@@ -77,7 +77,7 @@ def get_single_sample(sample_uuid):
 
 
 @samples_blueprint.route('/samples/metadata', methods=['POST'])
-@authenticate
+@authenticate()
 def add_sample_metadata(resp):  # pylint: disable=unused-argument
     """Update metadata for sample."""
     try:

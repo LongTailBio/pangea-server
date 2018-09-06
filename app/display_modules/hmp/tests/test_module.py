@@ -2,6 +2,8 @@
 
 from mongoengine import ValidationError
 
+from tool_packages.hmp_sites.tests.factory import create_result as create_hmp_sites
+
 from app.analysis_results.analysis_result_models import AnalysisResultWrapper
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
 from app.display_modules.hmp import HMPDisplayModule
@@ -9,7 +11,6 @@ from app.samples.sample_models import Sample
 from app.display_modules.hmp.models import HMPResult
 from app.display_modules.hmp.constants import MODULE_NAME
 from app.display_modules.hmp.tests.factory import HMPFactory
-from app.tool_results.hmp_sites.tests.factory import create_hmp_sites
 
 from .factory import (
     HMPFactory,

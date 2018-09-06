@@ -3,10 +3,11 @@
 import json
 from uuid import UUID, uuid4
 
+from tool_packages.ancestry.tests.factory import create_result as create_ancestry
+
 from app import db
 from app.samples.sample_models import Sample
 from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
-from app.tool_results.ancestry.tests.factory import create_ancestry
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user

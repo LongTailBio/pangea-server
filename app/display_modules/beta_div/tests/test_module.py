@@ -1,12 +1,12 @@
 """Test suite for Beta Diversity display module."""
 
+from tool_packages.beta_diversity.models import BetaDiversityToolResult
+from tool_packages.beta_diversity.tests.factory import create_values
+
 from app.display_modules.beta_div import BetaDiversityDisplayModule
 from app.display_modules.beta_div.models import BetaDiversityResult
 from app.display_modules.beta_div import MODULE_NAME
 from app.display_modules.display_module_base_test import BaseDisplayModuleTest
-
-from app.tool_results.beta_diversity.models import BetaDiversityToolResult
-from app.tool_results.beta_diversity.tests.factory import create_ranks
 
 from tests.utils import add_sample_group
 
@@ -18,7 +18,7 @@ class TestBetaDivModule(BaseDisplayModuleTest):
 
     def test_add_beta_div(self):
         """Ensure Beta Diversity model is created correctly."""
-        ranks = create_ranks()
+        ranks = create_values()
         beta_div_result = BetaDiversityResult(data=ranks)
         self.generic_adder_test(beta_div_result, MODULE_NAME)
 
@@ -34,7 +34,7 @@ class TestBetaDivModule(BaseDisplayModuleTest):
         def create_sample_group():
             """Create unique sample for index i."""
             sample_group = add_sample_group(name='SampleGroup01')
-            ranks = create_ranks()
+            ranks = create_values()
             BetaDiversityToolResult(sample_group_uuid=sample_group.id, data=ranks).save()
             return sample_group
 
