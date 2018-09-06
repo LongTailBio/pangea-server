@@ -1,9 +1,4 @@
-"""
-Average Genome Size Module.
-
-This plot display the distribution of average genome sizes
-for different metadata attributes.
-"""
+"""Average Genome Size Module."""
 
 from analysis_packages.base import SampleToolAnalysisModule
 from tool_packages.microbe_census import MicrobeCensusResultModule

@@ -27,7 +27,7 @@ def ags_distributions(samples):
 
 
 def processor(*samples):
-    """Combine AGS component calculations."""
+    """Handle AGS component calculations."""
     samples = list(samples)
     categories = categories_from_metadata(samples)
     ags_dists = ags_distributions(samples)
