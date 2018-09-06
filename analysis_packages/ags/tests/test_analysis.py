@@ -1,4 +1,4 @@
-"""Test suite for Average Genome Size tasks."""
+"""Test suite for Average Genome Size analysis."""
 
 from unittest import TestCase
 
@@ -8,10 +8,10 @@ from ..analysis import ags_distributions
 
 
 class TestAverageGenomeSizeTasks(TestCase):
-    """Test suite for Average Genome Size tasks."""
+    """Test suite for Average Genome Size analysis."""
 
     def test_ags_distributions(self):
-        """Ensure ags_distributions task works."""
+        """Ensure ags_distributions analysis works."""
 
         def create_sample(i):
             """Create test sample."""
