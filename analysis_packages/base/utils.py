@@ -47,6 +47,19 @@ def scrub_category_val(category_val):
     return category_val
 
 
+def collate_samples(tool_name, fields, samples):
+    """Group a set of ToolResult fields from a set of samples by sample name."""
+    sample_dict = {}
+    for sample in samples:
+        sample_name = sample['name']
+        sample_dict[sample_name] = {}
+        tool_result = sample[tool_name]
+        for field in fields:
+            sample_dict[sample_name][field] = tool_result[field]
+
+    return sample_dict
+
+
 def categories_from_metadata(samples, min_size=2):
     """
     Create dict of categories and their values from sample metadata.
