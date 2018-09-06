@@ -1,25 +1,23 @@
-"""Base AnalysisModule classes."""
+"""
+Base AnalysisModule classes.
 
+AnalysisModules take ToolResult data as input and perform additional analysis.
+"""
 
-DEFAULT_MINIMUM_SAMPLE_COUNT = 2
+from .constants import DEFAULT_MINIMUM_SAMPLE_COUNT
 
 
 class AnalysisModule:
     """Base AnalysisModule class."""
 
-    @classmethod
-    def name(cls):
+    @staticmethod
+    def name():
         """Return module's unique identifier string."""
         raise NotImplementedError()
 
-    @classmethod
-    def get_result_model(cls):
-        """Return data model for AnalysisModule type."""
-        raise NotImplementedError()
-
-    @classmethod
-    def get_wrangler(cls):
-        """Return middleware wrangler for AnalysisModule type."""
+    @staticmethod
+    def result_model():
+        """Return data model class for AnalysisModule type."""
         raise NotImplementedError()
 
     @staticmethod
@@ -27,8 +25,8 @@ class AnalysisModule:
         """Enumerate which ToolResult modules a sample must have for this task to run."""
         raise NotImplementedError()
 
-    @classmethod
-    def transmission_hooks(cls):
+    @staticmethod
+    def transmission_hooks():
         """Return a list of hooks to run before transmission to the client."""
         return []
 
@@ -38,22 +36,34 @@ class AnalysisModule:
         required_tools = cls.required_tool_results()
         return tool_result_cls in required_tools
 
-    @classmethod
-    def get_data(cls, my_query_result):
-        """Transform my_query_result to data."""
-        return my_query_result
-
 
 class SampleToolAnalysisModule(AnalysisModule):  # pylint: disable=abstract-method
     """AnalysisModule dependent on single-sample tool results."""
 
-    @classmethod
-    def minimum_samples(cls):
+    @staticmethod
+    def processor():
+        """
+        Return function(*sample_data) for proccessing sample data.
+
+        Where sample_data is one or more dictionary dumps (with appropriate ToolResults)
+        of either a single Sample or all Samples in a SampleGroup.
+
+        It is up to the returned function to check the length of *sample_data to see if
+        it was called to process a Sample or a SampleGroup and raise a NotImplementedError
+        where appropriate.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def minimum_samples():
         """Return middleware wrangler for AnalysisModule type."""
         return DEFAULT_MINIMUM_SAMPLE_COUNT
 
 
 class GroupToolAnalysisModule(AnalysisModule):  # pylint: disable=abstract-method
-    """AnalysisModule dependent on a sample group tool result (ex. ancestry, beta diversity)."""
+    """AnalysisModule dependent on a sample group tool result (ex. Ancestry, Beta Diversity)."""
 
-    pass
+    @staticmethod
+    def processor():
+        """Return function(group_tool_result) for proccessing a GroupToolAnalysisModule."""
+        raise NotImplementedError()
