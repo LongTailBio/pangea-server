@@ -55,3 +55,13 @@ def filter_gene_results(samples, source_tool_name, top_n):
 
     result_data = {'samples': filtered_sample_tbl}
     return result_data
+
+
+def make_gene_processor(source_tool_name, top_n):
+    """Make processor from arguments."""
+    def processor(*sample_data):
+        """Wrap Gene Set component calculations."""
+        samples = list(sample_data)
+        return filter_gene_results(samples, source_tool_name, top_n)
+
+    return processor

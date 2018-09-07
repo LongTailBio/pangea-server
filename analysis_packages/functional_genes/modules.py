@@ -1,15 +1,15 @@
-"""CARD Genes AnalysisModule."""
+"""Functional Genes module."""
 
 from analysis_packages.base import SampleToolAnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
-from tool_packages.card_amrs import CARDAMRResultModule
+from tool_packages.humann2_normalize import Humann2NormalizeResultModule
 
 from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
-from .models import CARDGenesResult
+from .models import FunctionalGenesResult
 
 
-class CARDGenesAnalysisModule(SampleToolAnalysisModule):
-    """CARD Genes factors AnalyisModule."""
+class FunctionalGenesAnalysisModule(SampleToolAnalysisModule):
+    """Functional Genes module."""
 
     @staticmethod
     def name():
@@ -19,14 +19,14 @@ class CARDGenesAnalysisModule(SampleToolAnalysisModule):
     @staticmethod
     def result_model():
         """Return the embedded result."""
-        return CARDGenesResult
+        return FunctionalGenesResult
 
     @staticmethod
     def required_tool_results():
         """Return a list of the necessary result modules."""
-        return [CARDAMRResultModule]
+        return [Humann2NormalizeResultModule]
 
     @staticmethod
     def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+        """Return the wrangler class."""
         return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
