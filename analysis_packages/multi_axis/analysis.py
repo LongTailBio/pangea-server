@@ -90,7 +90,7 @@ def multi_axis_reducer(axes, categories, samples):
 def processor(*samples):
     """Handle Multi-Axis component calculations."""
     samples = list(samples)
-    if len(samples) < 2:
+    if len(samples) <= 1:
         raise UnsupportedAnalysisMode
 
     axes = make_axes(samples)

@@ -3,6 +3,7 @@
 from numpy import percentile
 
 from analysis_packages.base.utils import categories_from_metadata, scrub_category_val
+from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
 from tool_packages.alpha_diversity import AlphaDiversityToolResult
 from tool_packages.kraken import KrakenResultModule
@@ -99,6 +100,9 @@ def make_alpha_distributions(categories, samples):
 
 def processor(*samples):
     """Handle Alpha Diversity component calculations."""
+    if len(samples) <= 1:
+        raise UnsupportedAnalysisMode
+
     samples = list(samples)
     categories = categories_from_metadata(samples)
     distributions = make_alpha_distributions(categories, samples)

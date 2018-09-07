@@ -126,5 +126,6 @@ def processor(*samples):
     """Handle Taxon Abundance component calculations."""
     if len(samples) <= 1:
         raise UnsupportedAnalysisMode
+
     samples = list(samples)
     return make_all_flows(samples)

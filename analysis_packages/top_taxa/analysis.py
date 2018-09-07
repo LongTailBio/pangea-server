@@ -80,6 +80,7 @@ def processor(*samples):
     """Handle Top Taxa component calculations."""
     if len(samples) <= 1:
         raise UnsupportedAnalysisMode
+
     samples = list(samples)
     top_taxa = find_top_taxa(samples)
     return {'categories': top_taxa}

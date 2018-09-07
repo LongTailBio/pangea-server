@@ -173,9 +173,10 @@ def sample_similarity_reducer(categories, tools, samples):
 
 def processor(*samples):
     """Handle Sample Similarity component calculations."""
-    samples = list(samples)
-    if len(samples) < 2:
+    if len(samples) <= 1:
         raise UnsupportedAnalysisMode
+
+    samples = list(samples)
     categories = categories_from_metadata(samples)
     kraken = taxa_tool_tsne(samples, KrakenResultModule.name())
     krakenhll = taxa_tool_tsne(samples, KrakenHLLResultModule.name())

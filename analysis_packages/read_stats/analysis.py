@@ -9,7 +9,7 @@ from tool_packages.read_stats import ReadStatsToolResultModule
 def processor(*samples):
     """Handle Read Stats component calculations."""
     samples = list(samples)
-    if len(samples) < 2:
+    if len(samples) <= 1:
         raise UnsupportedAnalysisMode
 
     tool_name = ReadStatsToolResultModule.name()

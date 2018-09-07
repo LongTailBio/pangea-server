@@ -92,5 +92,6 @@ def processor(*samples):
     """Handle Taxa Tree component calculations."""
     if len(samples) > 1:
         raise UnsupportedAnalysisMode
+
     sample = samples[0]
     return trees_from_sample(sample)
