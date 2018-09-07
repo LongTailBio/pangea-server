@@ -1,16 +1,17 @@
-"""Average Genome Size Module."""
+"""Top Taxa AnalysisModule."""
+
+from tool_packages.krakenhll import KrakenHLLResultModule
+from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
 from analysis_packages.base import SampleToolAnalysisModule
-from tool_packages.microbe_census import MicrobeCensusResultModule
 
-# Re-export modules
 from .analysis import processor
-from .models import AGSResult
 from .constants import MODULE_NAME
+from .models import TopTaxaResult
 
 
-class AGSAnalysisModule(SampleToolAnalysisModule):
-    """AGS display module."""
+class TopTaxaAnalysisModule(SampleToolAnalysisModule):
+    """TopTaxa AnalysisModule."""
 
     @staticmethod
     def name():
@@ -19,13 +20,13 @@ class AGSAnalysisModule(SampleToolAnalysisModule):
 
     @staticmethod
     def result_model():
-        """Return data model class for Average Genome Size type."""
-        return AGSResult
+        """Return data model."""
+        return TopTaxaResult
 
     @staticmethod
     def required_tool_results():
         """List requires ToolResult modules."""
-        return [MicrobeCensusResultModule]
+        return [KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @staticmethod
     def processor():

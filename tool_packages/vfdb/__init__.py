@@ -2,6 +2,7 @@
 
 from tool_packages.base import SampleToolResultModule
 
+from .constants import MODULE_NAME
 from .models import VFDBToolResult
 
 
@@ -11,7 +12,7 @@ class VFDBResultModule(SampleToolResultModule):
     @classmethod
     def name(cls):
         """Return Virulence Factor module's unique identifier string."""
-        return 'vfdb_quantify'
+        return MODULE_NAME
 
     @classmethod
     def result_model(cls):
