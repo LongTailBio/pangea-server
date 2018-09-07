@@ -28,5 +28,5 @@ class FunctionalGenesAnalysisModule(SampleToolAnalysisModule):
 
     @staticmethod
     def processor():
-        """Return the wrangler class."""
+        """Return function(*sample_data) for proccessing sample data."""
         return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
