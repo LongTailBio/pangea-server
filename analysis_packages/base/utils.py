@@ -1,8 +1,26 @@
 """Utilities for AnalysisModules."""
 
+import inspect
+
 from mongoengine import QuerySet
 from numpy import percentile
 
+from .modules import AnalysisModule
+
+
+def get_primary_module(package):
+    """Extract AnalysisModule primary module from package."""
+    def test_submodule(submodule):
+        """Test a submodule to see if it is an AnalysisModule module."""
+        is_correct_subclass = issubclass(submodule, AnalysisModule)
+        # Ensure submodule is defined within the package we are inspecting (and not 'base')
+        is_correct_module = package.__name__ in submodule.__module__
+        return is_correct_subclass and is_correct_module
+
+    submodules = inspect.getmembers(package, inspect.isclass)
+    module = next(submodule for _, submodule in submodules
+                  if test_submodule(submodule))
+    return module
 
 def scrub_object(obj):
     """Remove protected fields from object (dict or list)."""
