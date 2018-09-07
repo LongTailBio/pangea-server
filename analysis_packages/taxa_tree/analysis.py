@@ -5,8 +5,6 @@ from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 
-from .models import TaxaTreeResult
-
 
 def get_total(taxa_list, delim):
     """Return the total abundance in the taxa list.

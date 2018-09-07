@@ -1,3 +1,5 @@
+# pylint: disable=unused-import
+
 """Constants for Read Stats display module."""
 
 from tool_packages.reads_classified.constants import MODULE_NAME as TOOL_MODULE_NAME

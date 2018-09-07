@@ -12,7 +12,7 @@ def processor(*samples):
     if len(samples) < 2:
         raise UnsupportedAnalysisMode
 
-    tool_name = ReadStatsToolResultModule.name(),
+    tool_name = ReadStatsToolResultModule.name()
     collate_fields = ReadStatsToolResultModule.result_model().stat_fields()
     collated_samples = collate_samples(tool_name, collate_fields, samples)
     return {'samples': collated_samples}

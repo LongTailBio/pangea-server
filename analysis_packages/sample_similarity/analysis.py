@@ -3,14 +3,11 @@
 import numpy as np
 from sklearn.manifold import TSNE
 
-from analysis_packages.base.utils import scrub_category_val
+from analysis_packages.base.utils import scrub_category_val, categories_from_metadata
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
-
-from .models import SampleSimilarityResult
-from .constants import MODULE_NAME
 
 
 def get_clean_samples(sample_dict, no_zero_features=True, zero_threshold=0.00001):

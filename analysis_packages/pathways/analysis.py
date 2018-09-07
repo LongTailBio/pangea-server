@@ -72,4 +72,4 @@ def filter_humann2_pathways(samples):
 def processor(*samples):
     """Handle Pathways component calculations."""
     samples = list(samples)
-    return filter_humann2_pathways(samples)    
+    return filter_humann2_pathways(samples)

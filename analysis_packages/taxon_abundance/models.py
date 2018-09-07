@@ -31,8 +31,8 @@ class TaxonAbundanceFlow(mdb.EmbeddedDocument):   # pylint: disable=too-few-publ
 
     def clean(self):
         """Ensure that `edges` reference valid nodes."""
-        node_ids = set([node.id for node in self.nodes])
-        for edge in self.edges:
+        node_ids = set([node.id for node in self.nodes])    # pylint: disable=not-an-iterable
+        for edge in self.edges:                             # pylint: disable=not-an-iterable
             if edge.source not in node_ids:
                 msg = f'Could not find Edge source [{edge.source}] in nodes!'
                 raise mdb.ValidationError(msg)

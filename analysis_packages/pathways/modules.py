@@ -5,7 +5,7 @@ from tool_packages.humann2 import Humann2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
-from .models import PathwaySampleDocument, PathwayResult
+from .models import PathwayResult
 
 
 class PathwaysAnalysisModule(SampleToolAnalysisModule):

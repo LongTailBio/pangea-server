@@ -2,7 +2,7 @@
 
 from analysis_packages.base.utils import collate_samples
 
-from .constants import MODULE_NAME, TOOL_MODULE_NAME
+from .constants import TOOL_MODULE_NAME
 
 
 def processor(*samples):

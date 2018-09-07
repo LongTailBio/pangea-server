@@ -37,3 +37,4 @@ def create_taxon_abundance():
             'metaphlan2': flow_model()
         }
     })
+    return taxon_abundance

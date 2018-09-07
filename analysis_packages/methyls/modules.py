@@ -17,7 +17,7 @@ class MethylsAnalysisModule(SampleToolAnalysisModule):
         return MODULE_NAME
 
     @staticmethod
-    def get_result_model():
+    def result_model():
         """Return the embedded result."""
         return MethylResult
 

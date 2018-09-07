@@ -6,8 +6,6 @@ from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
-from .constants import MODULE_NAME
-
 
 KRAKENHLL = KrakenHLLResultModule.name()
 METAPHLAN = Metaphlan2ResultModule.name()
@@ -84,4 +82,4 @@ def processor(*samples):
         raise UnsupportedAnalysisMode
     samples = list(samples)
     top_taxa = find_top_taxa(samples)
-    return {'categories': DATA}
+    return {'categories': top_taxa}

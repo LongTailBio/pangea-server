@@ -29,7 +29,7 @@ class SampleSimilarityResult(mdb.EmbeddedDocument):     # pylint: disable=too-fe
         category_names = self.categories.keys()
         tool_names = self.tools.keys()
 
-        for record in self.data_records:
+        for record in self.data_records:  # pylint: disable=not-an-iterable
             for category_name in category_names:
                 if category_name not in record:
                     msg = 'Record must have all categories.'
