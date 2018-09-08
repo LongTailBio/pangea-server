@@ -60,4 +60,6 @@ test:
 	pytest tests analysis_packages tool_packages
 
 cov:
-	pytest --cov-config .coveragerc --cov=app tests analysis_packages tool_packages
+	pytest --cov-report html \
+	       --cov-config .coveragerc \
+	       --cov=app tests analysis_packages tool_packages
