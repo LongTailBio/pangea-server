@@ -100,21 +100,20 @@ MetaGenScope uses the GitFlow branching strategy along with Pull Requests for co
 
 `ToolResult` modules define database storage and API upload for outputs.
 
-To add a new `ToolResult` module write your new module `app/tool_results/my_new_module` following existing conventions. Make sure the main module class inherits from `ToolResultModule` and is named ending in `ResultModule`.
+To add a new `ToolResult` module write your new module `tool_packages/my_new_tool` following existing conventions. Make sure the main module class inherits from `tool_packages.base.SampleToolResultModule` or `tool_packages.base.GroupToolResultModule`.
 
-### Display Modules
+### Analysis Modules
 
-`DisplayModule`s provide the backing data for each front-end visualization type. They are in charge of:
+`AnalysisModule`s provide the backing data for each front-end visualization type. They are in charge of:
 
 - Providing the data model for the visualization backing data
 - Enumerating the `ToolResult` types that are valid data sources (_WIP_)
 - The Middleware task that transforms a set of `Sample`s into the module's data model (_WIP_)
 
-These modules live in `app/display_modules/` and are self-contained: all models, API endpoint definitions, long-running tasks, and tests live within each module.
+These modules live in `analysis_packages/` and are self-contained: all models, processing tasks, and tests live within each module.
 
-To add a new `DisplayModule` module:
-1. Write your new module `app/display_modules/my_new_module` following existing conventions. Make sure the main module class inherits from `DisplayModule` and is named ending in `Module`.
-2. Add your module to `all_display_modules` in `app.display_modules`.
+To add a new `AnalysisModule` module:
+Write your new module `analysis_packages/my_new_module` following existing conventions. Make sure the main module class inherits from `analysis_packages.base.SampleToolAnalysisModule` or `analysis_packages.base.GroupToolAnalysisModule`.
 
 ## Continuous Integration
 

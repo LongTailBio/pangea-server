@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods
+
 """Factory for generating Taxon Abundance models for testing."""
 
 import factory

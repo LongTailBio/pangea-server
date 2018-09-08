@@ -2,7 +2,7 @@
 
 from flask import current_app
 
-from app.display_modules import all_display_modules, sample_display_modules
+from app.analysis_modules import all_analysis_modules
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_group_results
@@ -26,7 +26,7 @@ class DisplayModuleConductor:
     @staticmethod
     def downstream_modules(tool_result_cls):
         """Calculate display modules dependent on the provided tool result class."""
-        downstream_modules = [module for module in all_display_modules
+        downstream_modules = [module for module in all_analysis_modules
                               if module.is_dependent_on_tool(tool_result_cls)]
         return downstream_modules
 
@@ -38,7 +38,7 @@ class DisplayModuleConductor:
 class SampleConductor(DisplayModuleConductor):
     """Orchestrates Display Module generation based on SampleToolResult changes."""
 
-    def __init__(self, sample_id, display_modules=sample_display_modules,
+    def __init__(self, sample_id, display_modules=all_analysis_modules,
                  downstream_groups=True):
         """
         Initialize the Conductor.
@@ -153,7 +153,7 @@ class GroupConductor(DisplayModuleConductor):
     """
 
     def __init__(self, sample_group_uuid,               # pylint:disable=dangerous-default-value
-                 display_modules=all_display_modules):
+                 display_modules=all_analysis_modules):
         """
         Initialize the Conductor.
 

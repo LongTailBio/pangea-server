@@ -3,7 +3,7 @@
 import json
 import os
 
-from app.display_modules.reads_classified import ReadsClassifiedResult
+from analysis_packages.reads_classified.models import ReadsClassifiedResult
 
 
 LOCATION = os.path.realpath(os.path.join(os.getcwd(),

@@ -7,7 +7,7 @@ from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
 from app.conductor import DisplayModuleConductor, SampleConductor
-from app.display_modules.sample_similarity import SampleSimilarityDisplayModule
+from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
 from tests.base import BaseTestCase
 
 
@@ -22,7 +22,7 @@ class TestDisplayModuleConductor(BaseTestCase):
     def test_downstream_modules(self):
         """Ensure downstream_modules is computed correctly."""
         downstream_modules = DisplayModuleConductor.downstream_modules(KrakenResultModule)
-        self.assertIn(SampleSimilarityDisplayModule, downstream_modules)
+        self.assertIn(SampleSimilarityAnalysisModule, downstream_modules)
 
 
 class TestSampleConductor(BaseTestCase):
@@ -35,7 +35,7 @@ class TestSampleConductor(BaseTestCase):
         sample_id = str(uuid4())
         conductor = SampleConductor(sample_id, downstream_modules)
         valid_modules = conductor.get_valid_modules(tools_present)
-        self.assertIn(SampleSimilarityDisplayModule, valid_modules)
+        self.assertIn(SampleSimilarityAnalysisModule, valid_modules)
 
     def test_partial_valid_modules(self):
         """Ensure valid_modules is computed correctly if tools are missing."""
@@ -44,7 +44,7 @@ class TestSampleConductor(BaseTestCase):
         sample_id = str(uuid4())
         conductor = SampleConductor(sample_id, downstream_modules)
         valid_modules = conductor.get_valid_modules(tools_present)
-        self.assertTrue(SampleSimilarityDisplayModule not in valid_modules)
+        self.assertTrue(SampleSimilarityAnalysisModule not in valid_modules)
 
 
 class TestGroupConductor(BaseTestCase):

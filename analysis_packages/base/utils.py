@@ -22,6 +22,7 @@ def get_primary_module(package):
                   if test_submodule(submodule))
     return module
 
+
 def scrub_object(obj):
     """Remove protected fields from object (dict or list)."""
     if isinstance(obj, list):

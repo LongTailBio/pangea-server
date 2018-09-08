@@ -6,10 +6,10 @@ from uuid import uuid4
 
 from marshmallow import fields, pre_dump
 from mongoengine import Document, LazyReferenceField
+from analysis_packages.base.utils import jsonify
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
-from app.display_modules.utils import jsonify
 from app.extensions import mongoDB
 from app.tool_results import all_tool_results
 

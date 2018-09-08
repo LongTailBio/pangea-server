@@ -7,10 +7,10 @@ from flask_api.exceptions import ParseError, NotFound, PermissionDenied
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.analysis_modules import all_analysis_modules
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.conductor import SampleConductor
-from app.display_modules import all_display_modules
 from app.extensions import db
 from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
@@ -184,7 +184,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     except NoResultFound:
         raise NotFound('Sample Group does not exist.')
 
-    for module in all_display_modules:
+    for module in all_analysis_modules:
         try:
             SampleConductor('', display_modules=[module]).direct_sample_group(group)
         except Exception:  # pylint: disable=broad-except

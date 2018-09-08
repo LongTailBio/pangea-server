@@ -6,7 +6,7 @@ import factory
 
 from tool_packages.read_stats.tests.factory import create_values
 
-from app.display_modules.read_stats import ReadStatsResult
+from ..models import ReadStatsResult
 
 
 class ReadStatsFactory(factory.mongoengine.MongoEngineFactory):

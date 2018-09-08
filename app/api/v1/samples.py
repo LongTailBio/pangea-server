@@ -9,10 +9,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
+from app.analysis_modules import all_analysis_modules
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.conductor import SampleConductor
-from app.display_modules import sample_display_modules
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_helpers import authenticate
@@ -131,7 +131,7 @@ def run_sample_display_modules(uuid):
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
 
-    for module in sample_display_modules:
+    for module in all_analysis_modules:
         try:
             SampleConductor(safe_uuid,
                             display_modules=[module],

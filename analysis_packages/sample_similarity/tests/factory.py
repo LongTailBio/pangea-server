@@ -1,8 +1,11 @@
+# pylint: disable=too-few-public-methods
+
 """Factory for generating Sample Similarity models for testing."""
 
+import random
 import factory
 
-from ..models import SampleSimilarityResult
+from ..models import SampleSimilarityResult, ToolDocument
 
 CATEGORIES = {
     'city': ['Montevideo', 'Sacramento']
@@ -23,6 +26,18 @@ DATA_RECORDS = [{
 }]
 
 
+class ToolFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for Sample Similarity's tool subdocument."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = ToolDocument
+
+    x_label = factory.Faker('word').generate({})
+    y_label = factory.Faker('word').generate({})
+
+
 class SampleSimilarityFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for Sample Similarity."""
 
@@ -33,15 +48,32 @@ class SampleSimilarityFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def categories(self):  # pylint: disable=no-self-use
-        """Use stock categories."""
-        return CATEGORIES
+        """Generate categories."""
+        category_name = factory.Faker('word').generate({})
+        return {category_name: factory.Faker('words', nb=4).generate({})}
 
     @factory.lazy_attribute
     def tools(self):  # pylint: disable=no-self-use
-        """Use stock tools."""
-        return TOOLS
+        """Generate tools."""
+        tool_name = factory.Faker('word').generate({})
+        return {tool_name: ToolFactory()}
 
     @factory.lazy_attribute
     def data_records(self):  # pylint: disable=no-self-use
-        """Use stock data records."""
-        return DATA_RECORDS
+        """Generate data records."""
+        name = factory.Faker('company').generate({}).replace(' ', '_')
+
+        def record(i):
+            """Generate individual record."""
+            result = {'SampleID': f'{name}__seq{i}'}
+            for category, category_values in self.categories.items():
+                result[category] = random.choice(category_values)
+
+            decimal = factory.Faker('pyfloat', left_digits=0, positive=True)
+            for tool in self.tools:
+                result[f'{tool}_x'] = decimal.generate({})
+                result[f'{tool}_y'] = decimal.generate({})
+
+            return result
+
+        return [record(i) for i in range(20)]

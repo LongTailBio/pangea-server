@@ -6,8 +6,6 @@ import json
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine.errors import DoesNotExist
 
-from analysis_packages.base.utils import jsonify
-
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest
 

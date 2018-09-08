@@ -1,8 +1,5 @@
 """Test suite for AnalysisModules API endpoints."""
 
-import json
-from pprint import pprint
-
 from app.analysis_modules.wrangler import all_analysis_modules
 
 from .base import BaseAnalysisModuleTest
@@ -21,8 +18,8 @@ for analysis_module in all_analysis_modules:
 
     def fetch_module(self, module=analysis_module):
         """Ensure an AnalysisModules can be fetched."""
-        (base_name, module_name, factory_module) = unpack_module(module)
-        Factory = discover_factory_class(factory_module)
+        (_, module_name, factory_module) = unpack_module(module)
+        Factory = discover_factory_class(factory_module)  # pylint: disable=invalid-name
         result_model = Factory()
         fields = list(result_model._fields.keys())
         self.generic_getter_test(result_model, module_name, verify_fields=fields)
