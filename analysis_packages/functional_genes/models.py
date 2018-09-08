@@ -13,5 +13,5 @@ class FunctionalGenesSampleDocument(mdb.EmbeddedDocument):   # pylint: disable=t
 class FunctionalGenesResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Fucntioanl Genes document type."""
 
-    sample_doc_field = mdb.EmbeddedDocumentField(FunctionalGenesSampleDocument)
-    samples = mdb.MapField(field=sample_doc_field, required=True)
+    samples = mdb.MapField(field=mdb.EmbeddedDocumentField(FunctionalGenesSampleDocument),
+                           required=True)

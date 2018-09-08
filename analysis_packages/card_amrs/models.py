@@ -13,5 +13,5 @@ class CARDGenesSampleDocument(mdb.EmbeddedDocument):   # pylint: disable=too-few
 class CARDGenesResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Sample Similarity document type."""
 
-    sample_doc_field = mdb.EmbeddedDocumentField(CARDGenesSampleDocument)
-    samples = mdb.MapField(field=sample_doc_field, required=True)
+    samples = mdb.MapField(field=mdb.EmbeddedDocumentField(CARDGenesSampleDocument),
+                           required=True)

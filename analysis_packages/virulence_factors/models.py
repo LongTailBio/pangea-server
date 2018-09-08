@@ -13,5 +13,5 @@ class VFDBSampleDocument(mdb.EmbeddedDocument):   # pylint: disable=too-few-publ
 class VFDBResult(mdb.EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Sample Similarity document type."""
 
-    sample_doc_field = mdb.EmbeddedDocumentField(VFDBSampleDocument)
-    samples = mdb.MapField(field=sample_doc_field, required=True)
+    samples = mdb.MapField(field=mdb.EmbeddedDocumentField(VFDBSampleDocument),
+                           required=True)
