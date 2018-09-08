@@ -52,9 +52,9 @@ lint-analysis-packages:
 	pydocstyle analysis_packages
 
 lint:
-	pylint --rcfile=.pylintrc app tests seed worker tool_packages -f parseable -r n && \
-	pycodestyle app tests seed worker tool_packages --max-line-length=120 && \
-	pydocstyle app tests seed worker tool_packages
+	pylint --rcfile=.pylintrc app tests seed worker analysis_packages tool_packages -f parseable -r n && \
+	pycodestyle app tests seed worker analysis_packages tool_packages --max-line-length=120 && \
+	pydocstyle app tests seed worker analysis_packages tool_packages
 
 test:
 	pytest tests analysis_packages tool_packages
