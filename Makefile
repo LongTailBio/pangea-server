@@ -57,7 +57,7 @@ lint:
 	pydocstyle app tests seed worker tool_packages
 
 test:
-	pytest
+	pytest tests analysis_packages tool_packages
 
 cov:
-	pytest --cov-config .coveragerc --cov=app
+	pytest --cov-config .coveragerc --cov=app tests analysis_packages tool_packages

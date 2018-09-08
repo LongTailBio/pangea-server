@@ -21,7 +21,7 @@ class TestSampleSimilarityTasks(TestCase):
 
     def test_clean_samples(self):
         """Ensure get_clean_samples method adds missing features to all samples."""
-        sample_dict = {f'SMPL_{i}': create_kraken().taxa for i in range(3)}
+        sample_dict = {f'SMPL_{i}': create_kraken(save=False).taxa for i in range(3)}
 
         all_feature_ids = set([])
         for feature_set in sample_dict.values():
@@ -35,7 +35,7 @@ class TestSampleSimilarityTasks(TestCase):
 
     def test_clean_zeroed_samples(self):
         """Ensure get_clean_samples method removes features below threshold."""
-        sample_dict = {f'SMPL_{i}': dict(create_kraken().taxa) for i in range(3)}
+        sample_dict = {f'SMPL_{i}': dict(create_kraken(save=False).taxa) for i in range(3)}
         sample_dict['SMPL_1']['somebadkingdom'] = 0.0000001
 
         all_feature_ids = set([])
@@ -53,7 +53,7 @@ class TestSampleSimilarityTasks(TestCase):
 
         tSNE is non-deterministic so that is as close as we can get to a real test.
         """
-        sample_dict = {f'SMPL_{i}': dict(create_kraken().taxa) for i in range(3)}
+        sample_dict = {f'SMPL_{i}': dict(create_kraken(save=False).taxa) for i in range(3)}
         tsne_output = run_tsne(sample_dict)
         self.assertEqual((3, 2), tsne_output.shape)
 
@@ -72,7 +72,7 @@ class TestSampleSimilarityTasks(TestCase):
 
         def create_sample(i):
             """Create unique sample for index."""
-            sample_data = {'name': f'SMPL_{i}', KRAKEN_NAME: create_kraken()}
+            sample_data = {'name': f'SMPL_{i}', KRAKEN_NAME: create_kraken(save=False)}
             return sample_data
 
         samples = [create_sample(i) for i in range(3)]
