@@ -1,5 +1,7 @@
 """Factory for generating Taxon Abundance models for testing."""
 
+import factory
+
 from ..models import TaxonAbundanceResult
 
 
@@ -29,12 +31,18 @@ def flow_model():
     }
 
 
-def create_taxon_abundance():
-    """Ensure Taxon Abundance model is created correctly."""
-    taxon_abundance = TaxonAbundanceResult(**{
-        'by_tool': {
+class TaxonAbundanceFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for Taxon Abundance."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = TaxonAbundanceResult
+
+    @factory.lazy_attribute
+    def by_tool(self):  # pylint: disable=no-self-use
+        """Generate flow modles by tool."""
+        return {
             'kraken': flow_model(),
             'metaphlan2': flow_model()
         }
-    })
-    return taxon_abundance

@@ -1,5 +1,7 @@
 """Factory for generating Sample Similarity models for testing."""
 
+import factory
+
 from ..models import SampleSimilarityResult
 
 CATEGORIES = {
@@ -21,9 +23,25 @@ DATA_RECORDS = [{
 }]
 
 
-def create_mvp_sample_similarity():
-    """Create the most minimal Sample Similarity model possible."""
-    sample_similarity_result = SampleSimilarityResult(categories=CATEGORIES,
-                                                      tools=TOOLS,
-                                                      data_records=DATA_RECORDS)
-    return sample_similarity_result
+class SampleSimilarityFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for Sample Similarity."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = SampleSimilarityResult
+
+    @factory.lazy_attribute
+    def categories(self):  # pylint: disable=no-self-use
+        """Use stock categories."""
+        return CATEGORIES
+
+    @factory.lazy_attribute
+    def tools(self):  # pylint: disable=no-self-use
+        """Use stock tools."""
+        return TOOLS
+
+    @factory.lazy_attribute
+    def data_records(self):  # pylint: disable=no-self-use
+        """Use stock data records."""
+        return DATA_RECORDS
