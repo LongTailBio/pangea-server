@@ -113,7 +113,7 @@ To add a new `ToolResult` module write your new module `tool_packages/my_new_too
 These modules live in `analysis_packages/` and are self-contained: all models, processing tasks, and tests live within each module.
 
 To add a new `AnalysisModule` module:
-Write your new module `analysis_packages/my_new_module` following existing conventions. Make sure the main module class inherits from `analysis_packages.base.SampleToolAnalysisModule` or `analysis_packages.base.GroupToolAnalysisModule`.
+Write your new module `analysis_packages/my_new_module` following existing conventions. Make sure the main module class inherits from `analysis_packages.base.AnalysisModule`.
 
 ## Continuous Integration
 

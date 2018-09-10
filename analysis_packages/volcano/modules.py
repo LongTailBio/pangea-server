@@ -1,6 +1,6 @@
 """Volcano plot module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
@@ -9,7 +9,7 @@ from .constants import MODULE_NAME
 from .models import VolcanoResult
 
 
-class VolcanoAnalysisModule(SampleToolAnalysisModule):
+class VolcanoAnalysisModule(AnalysisModule):
     """Volcano AnalysisModule."""
 
     @staticmethod
@@ -31,6 +31,6 @@ class VolcanoAnalysisModule(SampleToolAnalysisModule):
         ]
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

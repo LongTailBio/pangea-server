@@ -1,6 +1,6 @@
 """Multi Axis module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.card_amrs import CARDAMRResultModule
 from tool_packages.humann2_normalize import Humann2NormalizeResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
@@ -13,7 +13,7 @@ from .constants import MODULE_NAME
 from .models import MultiAxisResult
 
 
-class MultiAxisAnalysisModule(SampleToolAnalysisModule):
+class MultiAxisAnalysisModule(AnalysisModule):
     """Multi Axis AnalysisModule."""
 
     @staticmethod
@@ -38,6 +38,6 @@ class MultiAxisAnalysisModule(SampleToolAnalysisModule):
         ]
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

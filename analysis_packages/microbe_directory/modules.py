@@ -1,6 +1,6 @@
 """Module for Microbe Directory results."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.microbe_directory import MicrobeDirectoryResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import MicrobeDirectoryResult
 
 
-class MicrobeDirectoryAnalysisModule(SampleToolAnalysisModule):
+class MicrobeDirectoryAnalysisModule(AnalysisModule):
     """Microbe Directory AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,6 @@ class MicrobeDirectoryAnalysisModule(SampleToolAnalysisModule):
         return [MicrobeDirectoryResultModule]
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

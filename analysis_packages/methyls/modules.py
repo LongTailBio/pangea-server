@@ -1,6 +1,6 @@
 """Methyls module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
 from tool_packages.methyltransferases import MethylResultModule
 
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import MethylResult
 
 
-class MethylsAnalysisModule(SampleToolAnalysisModule):
+class MethylsAnalysisModule(AnalysisModule):
     """Methyltransferase AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,6 @@ class MethylsAnalysisModule(SampleToolAnalysisModule):
         return [MethylResultModule]
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)

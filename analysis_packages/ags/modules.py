@@ -1,6 +1,6 @@
 """Average Genome Size Module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.microbe_census import MicrobeCensusResultModule
 
 # Re-export modules
@@ -9,7 +9,7 @@ from .models import AGSResult
 from .constants import MODULE_NAME
 
 
-class AGSAnalysisModule(SampleToolAnalysisModule):
+class AGSAnalysisModule(AnalysisModule):
     """AGS display module."""
 
     @staticmethod
@@ -28,6 +28,6 @@ class AGSAnalysisModule(SampleToolAnalysisModule):
         return [MicrobeCensusResultModule]
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

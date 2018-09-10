@@ -1,6 +1,6 @@
 """Module for Ancestry results."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.ancestry import AncestryResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import AncestryResult
 
 
-class AncestryAnalysisModule(SampleToolAnalysisModule):
+class AncestryAnalysisModule(AnalysisModule):
     """Ancestry display module."""
 
     @staticmethod
@@ -27,6 +27,6 @@ class AncestryAnalysisModule(SampleToolAnalysisModule):
         return AncestryResult
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

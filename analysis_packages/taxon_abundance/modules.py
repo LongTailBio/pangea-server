@@ -1,6 +1,6 @@
 """Taxon Abundance module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
@@ -10,7 +10,7 @@ from .constants import MODULE_NAME
 from .models import TaxonAbundanceResult
 
 
-class TaxonAbundanceAnalysisModule(SampleToolAnalysisModule):
+class TaxonAbundanceAnalysisModule(AnalysisModule):
     """Taxon Abundance AnalysisModule."""
 
     @staticmethod
@@ -34,6 +34,6 @@ class TaxonAbundanceAnalysisModule(SampleToolAnalysisModule):
         return taxa_modules
 
     @staticmethod
-    def processor():
+    def sample_processor():
         """Return function(*sample_data) for proccessing sample data."""
         return processor

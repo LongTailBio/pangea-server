@@ -1,5 +1,5 @@
 """Base module for Analysis Modules."""
 
 # Re-export modules
-from .modules import SampleToolAnalysisModule, GroupToolAnalysisModule
+from .modules import AnalysisModule
 from .exceptions import EmptyGroupResult
