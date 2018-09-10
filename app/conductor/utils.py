@@ -1,14 +1,22 @@
 """Utilities for the Conductor module."""
 
-from flask import current_app
+from uuid import UUID
+from pprint import pformat
 
-from app.analysis_modules import all_analysis_modules
+from flask import current_app
+from mongoengine.errors import ValidationError
+
+from analysis_packages.base.exceptions import UnsupportedAnalysisMode
+
+from app.analysis_modules import all_analysis_modules, MODULES_BY_NAME
+from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.extensions import celery, celery_logger, persist_result_lock
+from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_tool_results
+from app.utils import lock_function
 
-
-MODULES_BY_NAME = {module.name(): module for module in all_analysis_modules}
-TOOLS_BY_NAME = {tool.name(): tool for tool in all_tool_results}
+from .tasks import clean_error
 
 
 def fetch_samples(sample_group_id):
@@ -18,9 +26,8 @@ def fetch_samples(sample_group_id):
     return samples
 
 
-def filter_samples(samples, module_name):
+def filter_samples(samples, module):
     """Filter list of samples to only those supporting the given module."""
-    module = MODULES_BY_NAME[module_name]
     dependencies = set([tool.name() for tool in module.required_tool_results()])
 
     def test_sample(sample):
@@ -38,3 +45,135 @@ def filter_samples(samples, module_name):
     result = [sample for sample in samples if test_sample(sample)]
     current_app.logger.debug(f'result: {result}')
     return result
+
+
+def sample_group_middleware(sample_group_id, *module_names):
+    """
+    Gather task signatures for sample group.
+
+    *module_names are analysis module names. If not provided, all analysis modules will be run.
+    """
+    if not module_names:
+        module_names = list(MODULES_BY_NAME.keys())
+    modules = all_analysis_modules
+    if module_names:
+        # Raises KeyError for unrecognized module names
+        modules = [MODULES_BY_NAME[module_name] for module_name in module_names]
+
+    task_signatures = [module.group_signature(sample_group_id) for module in modules]
+    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures if sig is not None]
+    return task_signatures
+
+
+@lock_function(persist_result_lock)
+def persist_result_helper(result_base, module, data):
+    """Persist results to an Analysis Result model."""
+    analysis_name = module.name()
+    analysis_result = module.result_model()(**data)
+    result_wrapper = getattr(result_base, analysis_name).fetch()
+    try:
+        result_wrapper.data = analysis_result
+        result_wrapper.status = 'S'
+        result_wrapper.save()
+        result_base.save()
+    except ValidationError:
+        contents = pformat(data)
+        celery_logger.exception(f'Could not save result with contents:\n{contents}')
+
+        result_wrapper.data = None
+        result_wrapper.status = 'E'
+        result_wrapper.save()
+        result_base.save()
+
+
+def task_body_sample(sample_uuid, module):
+    """Wrap analysis work with status update operations."""
+    uuid = UUID(sample_uuid)
+    sample = Sample.objects.get(uuid=uuid)
+    analysis_result = sample.analysis_result.fetch()
+    analysis_result.set_module_status(module.name(), 'W')
+    samples = filter_samples([sample], module)
+    data = module.processor()(*samples)
+    persist_result_helper(analysis_result, module, data)
+
+
+@celery.task()
+def run_sample(sample_uuid, module_name):
+    """Wrap analysis work for single Sample."""
+    try:
+        module = MODULES_BY_NAME[module_name]
+    except KeyError:
+        # This should raise a AnalysisNotFound exception to be handled by clean_error
+        return
+
+    task_body_sample(sample_uuid, module)
+
+
+def conduct_sample(sample_uuid, module_names):
+    """Orchestrate tasks to be run for a Sample middleware call."""
+    if not module_names:
+        module_names = list(MODULES_BY_NAME.keys())
+
+    task_signatures = [run_sample.s(sample_uuid, module_name)
+                       for module_name in module_names]
+    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    return task_signatures
+
+
+def task_body_sample_group(sample_group_uuid, module):
+    """Wrap analysis work for SampleGroup."""
+    sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    sample_group.analysis_result.set_module_status(module.name(), 'W')
+    samples = filter_samples(sample_group.samples, module)
+    tool_names = [tool.name() for tool in module.required_tool_results()]
+    samples = [sample.fetch_safe(tool_names) for sample in samples]
+    data = module.processor()(*samples)
+    analysis_result_uuid = sample_group.analysis_result_uuid
+    analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+    persist_result_helper(analysis_result, module, data)
+
+
+def task_body_group_tool_result(sample_group_uuid, module):
+    """Wrap analysis work for a SampleGroup's GroupToolResult."""
+    sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    sample_group.analysis_result.set_module_status(module.name(), 'W')
+    samples = filter_samples(sample_group.samples, module)
+    tool_names = [tool.name() for tool in module.required_tool_results()]
+    samples = [sample.fetch_safe(tool_names) for sample in samples]
+    data = module.processor()(*samples)
+    analysis_result_uuid = sample_group.analysis_result_uuid
+    analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+    persist_result_helper(analysis_result, module, data)
+
+
+@celery.task()
+def run_sample_group(sample_group_uuid, module_name):
+    """Run middleware for a sample group."""
+    try:
+        module = MODULES_BY_NAME[module_name]
+    except KeyError:
+        # This should raise a AnalysisNotFound exception to be handled by clean_error
+        return
+
+    try:
+        _ = module.group_processor()
+        task_body_group_tool_result(sample_group_uuid, module)
+    except UnsupportedAnalysisMode:
+        pass
+
+    try:
+        _ = module.sample_processor()
+        task_body_sample_group(sample_group_uuid, module)
+    except UnsupportedAnalysisMode:
+        pass
+
+
+def conduct_sample_group(sample_group_uuid, module_names):
+    """Orchestrate tasks to be run for a SampleGroup middleware call."""
+    if not module_names:
+        module_names = list(MODULES_BY_NAME.keys())
+
+    task_signatures = [run_sample_group.s(sample_group_uuid, module_name)
+                       for module_name in module_names]
+    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    return task_signatures

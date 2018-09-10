@@ -29,3 +29,6 @@ all_analysis_packages = discover_local_packages()
 
 
 all_analysis_modules = [get_primary_module(package) for package in all_analysis_packages]
+
+
+MODULES_BY_NAME = {module.name(): module for module in all_analysis_modules}
