@@ -6,7 +6,7 @@ from tool_packages.kraken import KrakenResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
-from app.conductor import DisplayModuleConductor, SampleConductor
+from app.analysis_modules.conductor import DisplayModuleConductor, SampleConductor
 from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
 from tests.base import BaseTestCase
 
