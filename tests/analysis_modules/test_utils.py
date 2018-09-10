@@ -34,8 +34,8 @@ class TestConductorTasks(BaseTestCase):
         sample_incomplete = add_sample(name='Incomplete Sample',
                                        metadata={'foo': f'bar'},
                                        sample_kwargs=incomplete_values)
-        samples = [sample.fetch_safe() for sample in [sample_complete, sample_incomplete]]
-        module_name = TopTaxaAnalysisModule.name()
-        filtered_samples = filter_samples(samples, module_name)
+        samples = [sample_complete, sample_incomplete]
+        module = TopTaxaAnalysisModule
+        filtered_samples = filter_samples(samples, module)
         self.assertEqual(len(filtered_samples), 1)
         self.assertEqual(filtered_samples[0]['name'], 'Complete Sample')

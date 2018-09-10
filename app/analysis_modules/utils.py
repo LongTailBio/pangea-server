@@ -34,9 +34,9 @@ def filter_samples(samples, module):
         """Test a single sample to see if it has all tools required by the display module."""
         all_fields = [mod.name() for mod in all_tool_results]
         tools_present = set([field for field in all_fields
-                             if sample.get(field, None) is not None])
+                             if getattr(sample, field, None) is not None])
         is_valid = dependencies <= tools_present
-        sample_name = sample['name']
+        sample_name = sample.name
         current_app.logger.debug(f'Testing sample: {sample_name}')
         current_app.logger.debug(f'Tools present: {tools_present}')
         current_app.logger.debug(f'Is valid: {is_valid}')
