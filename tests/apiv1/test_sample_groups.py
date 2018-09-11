@@ -16,6 +16,8 @@ from app.sample_groups.sample_group_models import SampleGroup
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user, add_organization
 
+from .utils import middleware_tester
+
 
 class TestSampleGroupModule(BaseTestCase):
     """Tests for the SampleGroup module."""
@@ -263,13 +265,5 @@ class TestSampleGroupModule(BaseTestCase):
 
         patch_path = 'app.api.v1.sample_groups.conduct_sample_group'
         with mock.patch(patch_path) as conductor:
-            with self.client:
-                response = self.client.post(
-                    f'/api/v1/sample_groups/{str(sample_group.id)}/middleware',
-                    headers=auth_headers,
-                    content_type='application/json',
-                )
-                self.assertEqual(response.status_code, 202)
-                data = json.loads(response.data.decode())
-                self.assertIn('middleware', data['data'])
-                conductor.assert_called_once()
+            endpoint = f'/api/v1/sample_groups/{str(sample_group.id)}/middleware'
+            middleware_tester(self, auth_headers, conductor, endpoint)

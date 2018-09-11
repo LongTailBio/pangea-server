@@ -132,8 +132,8 @@ def run_sample_display_modules(uuid):
 
     analysis_names = request.args.getlist('analysis_names')
     signatures = conduct_sample(uuid, analysis_names)
-    # for signature in signatures:
-        # signature.delay()
+    for signature in signatures:
+        signature.delay()
 
     result = {'middleware': analysis_names}
 

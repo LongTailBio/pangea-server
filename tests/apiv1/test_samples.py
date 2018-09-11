@@ -13,6 +13,8 @@ from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user
 
+from .utils import middleware_tester
+
 
 class TestSampleModule(BaseTestCase):
     """Tests for the Sample module."""
@@ -113,13 +115,5 @@ class TestSampleModule(BaseTestCase):
 
         patch_path = 'app.api.v1.samples.conduct_sample'
         with mock.patch(patch_path) as conductor:
-            with self.client:
-                response = self.client.post(
-                    f'/api/v1/samples/{str(sample.uuid)}/middleware',
-                    headers=auth_headers,
-                    content_type='application/json',
-                )
-                self.assertEqual(response.status_code, 202)
-                data = json.loads(response.data.decode())
-                self.assertIn('middleware', data['data'])
-                conductor.assert_called_once()
+            endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
+            middleware_tester(self, auth_headers, conductor, endpoint)
