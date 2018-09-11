@@ -11,27 +11,56 @@ from ..utils import add_sample_group, add_sample
 from .base import BaseAnalysisModuleTest
 
 
-def sample_factory(analysis_module, i):
+def processes_samples(module):
+    """Return true if a module processes SampleToolResults."""
+    try:
+        # pylint: disable=assignment-from-no-return
+        _ = module.group_tool_processor()
+        return False
+    except UnsupportedAnalysisMode:
+        return True
+
+
+def seed_samples(module, samples):
     """Create single sample."""
-    metadata = {'foobar': f'baz{i}'}
-    sample = add_sample(f'Test Sample {i}', metadata=metadata)
-    tool_modules = analysis_module.required_tool_results()
+    tool_modules = module.required_tool_results()
     for tool in tool_modules:
         name = tool.name()
         factory = unpack_tool(tool)[2]
-        setattr(sample, name, factory.create_result())
-    sample.save()
+        for sample in samples:
+            setattr(sample, name, factory.create_result())
+            sample.save()
+
+
+def numbered_sample(i):
+    """Create numbered sample with metadata."""
+    metadata = {'foobar': f'baz{i}'}
+    sample = add_sample(f'Test Sample {i}', metadata=metadata)
     return sample
+
+
+def seed_module(module, sample_group, samples):
+    """Seed testing values for moduke."""
+    if processes_samples(module):
+        # Prepate Samples with ToolResults, if applicable
+        seed_samples(module, samples)
+    else:
+        # Prepare GroupToolResult(s), if applicable
+        factory = unpack_tool(module)[2]
+        tool_result = factory.create_result(save=False)
+        tool_result.sample_group_uuid = sample_group.id
+        tool_result.save()
 
 
 class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
     """Test running middleware fully."""
 
-    def test_single_ags(self):
-        """Test middleware for Average Genome Size."""
+    def test_single_sample(self):
+        """Test middleware for single Sample analyses."""
         analysis_module = AGSAnalysisModule
 
-        sample = sample_factory(analysis_module, 0)
+        sample = numbered_sample(0)
+        seed_samples(analysis_module, [sample])
         module_name = analysis_module.name()
         task_signatures = conduct_sample(str(sample.uuid), [module_name])
         ags_task = task_signatures[0]
@@ -40,38 +69,28 @@ class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
         analysis_result = sample.analysis_result.fetch()
         self.assertNotIn(module_name, analysis_result)
 
-    def test_group_ags(self):
-        """Test middleware for Average Genome Size."""
+    def test_sample_group(self):
+        """Test middleware for SampleGroup analyses."""
         analysis_module = AGSAnalysisModule
+
+        # Seed test values
         sample_group = add_sample_group('Test Group')
+        samples = [numbered_sample(i) for i in range(5)]
+        sample_group.samples = samples
+        db.session.commit()
+        seed_module(analysis_module, sample_group, samples)
 
-        # Prepate Samples with ToolResults, if applicable
-        try:
-            _ = analysis_module.samples_processor()
-            samples = [sample_factory(analysis_module, i) for i in range(5)]
-            sample_group.samples = samples
-            db.session.commit()
-        except UnsupportedAnalysisMode:
-            pass
-
-        # Prepare GroupToolResult(s), if applicable
-        try:
-            # pylint: disable=assignment-from-no-return
-            _ = analysis_module.group_tool_processor()
-            for tool in analysis_module.required_tool_results():
-                factory = unpack_tool(tool)[2]
-                tool_result = factory.create_result(save=False)
-                tool_result.sample_group_uuid = sample_group.id
-                tool_result.save()
-        except UnsupportedAnalysisMode:
-            pass
-
+        # Execute task
         module_name = analysis_module.name()
         task_signatures = conduct_sample_group(sample_group.id, [module_name])
         ags_task = task_signatures[0]
         ags_task()
 
-        self.assertIn(module_name, sample_group.analysis_result)
-        ags_result = getattr(sample_group.analysis_result, module_name).fetch()
-        self.assertEqual(ags_result.status, 'S')
-        self.assertIn('data', ags_result)
+        if processes_samples(analysis_module):
+            self.assertIn(module_name, sample_group.analysis_result)
+            result = getattr(sample_group.analysis_result, module_name).fetch()
+        else:
+            model = analysis_module.result_model()
+            result = model.objects.get(sample_group_uuid=sample_group.id)
+        self.assertEqual(result.status, 'S')
+        self.assertIn('data', result)
