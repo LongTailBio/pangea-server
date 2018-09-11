@@ -1,6 +1,7 @@
 """Utilities for the Conductor module."""
 
 from uuid import UUID
+import json
 from pprint import pformat
 
 from flask import current_app

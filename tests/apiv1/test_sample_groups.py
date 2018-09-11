@@ -1,6 +1,7 @@
 """Test suite for Sample Group module."""
 
 import json
+from unittest import mock
 from uuid import UUID
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -260,12 +261,15 @@ class TestSampleGroupModule(BaseTestCase):
         """Ensure all middleware can be kicked off for group."""
         sample_group = self.prepare_middleware_test()
 
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/sample_groups/{str(sample_group.id)}/middleware',
-                headers=auth_headers,
-                content_type='application/json',
-            )
-            self.assertEqual(response.status_code, 202)
-            data = json.loads(response.data.decode())
-            self.assertEqual(data['data']['message'], 'Started middleware')
+        patch_path = 'app.api.v1.sample_groups.conduct_sample_group'
+        with mock.patch(patch_path) as conductor:
+            with self.client:
+                response = self.client.post(
+                    f'/api/v1/sample_groups/{str(sample_group.id)}/middleware',
+                    headers=auth_headers,
+                    content_type='application/json',
+                )
+                self.assertEqual(response.status_code, 202)
+                data = json.loads(response.data.decode())
+                self.assertIn('middleware', data['data'])
+                conductor.assert_called_once()

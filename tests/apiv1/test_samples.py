@@ -1,13 +1,14 @@
 """Test suite for Sample module."""
 
 import json
+from unittest import mock
 from uuid import UUID, uuid4
 
+from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from tool_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
 from app.samples.sample_models import Sample
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user
@@ -110,31 +111,15 @@ class TestSampleModule(BaseTestCase):
         """Ensure all middleware can be kicked off for sample."""
         sample = self.prepare_middleware_test()
 
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/samples/{str(sample.uuid)}/middleware',
-                headers=auth_headers,
-                content_type='application/json',
-            )
-            self.assertEqual(response.status_code, 202)
-            data = json.loads(response.data.decode())
-            self.assertEqual(data['data']['message'], 'Started middleware')
-
-    @with_user
-    def test_kick_off_single_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure single middleware can be kicked off for sample."""
-        sample = self.prepare_middleware_test()
-
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/samples/{str(sample.uuid)}/middleware',
-                headers=auth_headers,
-                content_type='application/json',
-                data=json.dumps({
-                    'tools': ['ancestry_summary'],
-                }),
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 202)
-            self.assertIn('success', data['status'])
-            self.assertEqual(data['data']['message'], 'Started middleware')
+        patch_path = 'app.api.v1.samples.conduct_sample'
+        with mock.patch(patch_path) as conductor:
+            with self.client:
+                response = self.client.post(
+                    f'/api/v1/samples/{str(sample.uuid)}/middleware',
+                    headers=auth_headers,
+                    content_type='application/json',
+                )
+                self.assertEqual(response.status_code, 202)
+                data = json.loads(response.data.decode())
+                self.assertIn('middleware', data['data'])
+                conductor.assert_called_once()

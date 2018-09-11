@@ -1,5 +1,7 @@
 """AnalysisModule classes."""
 
+from .exceptions import UnsupportedAnalysisMode
+
 
 class AnalysisModule:
     """
@@ -46,7 +48,7 @@ class AnalysisModule:
         it was called to process a Sample or a SampleGroup and raise a UnsupportedAnalysisMode
         exception where appropriate.
         """
-        return None
+        raise UnsupportedAnalysisMode
 
     @staticmethod
     def group_tool_processor():
@@ -55,4 +57,4 @@ class AnalysisModule:
 
         Ex. Ancestry, Beta Diversity
         """
-        return None
+        raise UnsupportedAnalysisMode
