@@ -106,7 +106,11 @@ def run_sample(sample_uuid, module_name):
         # This should raise a AnalysisNotFound exception to be handled by clean_error
         return
 
-    task_body_sample(sample_uuid, module)
+    try:
+        _ = module.sample_processor()
+        task_body_sample(sample_uuid, module)
+    except UnsupportedAnalysisMode:
+        pass
 
 
 def conduct_sample(sample_uuid, module_names):
