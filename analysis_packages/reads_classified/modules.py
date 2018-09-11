@@ -1,6 +1,6 @@
 """Reads Classified Module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.reads_classified import ReadsClassifiedResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import ReadsClassifiedResult
 
 
-class ReadsClassifiedAnalysisModule(SampleToolAnalysisModule):
+class ReadsClassifiedAnalysisModule(AnalysisModule):
     """Reads Classified AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,11 @@ class ReadsClassifiedAnalysisModule(SampleToolAnalysisModule):
         return [ReadsClassifiedResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Reads Classified sample data."""
+        return processor
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Reads Classified sample data."""
         return processor

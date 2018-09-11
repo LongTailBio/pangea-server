@@ -36,6 +36,5 @@ def collate_microbe_directory(samples):
 
 def processor(*samples):
     """Handle Microbe Directory component calculations."""
-    samples = list(samples)
     collated_data = collate_microbe_directory(samples)
     return {'samples': collated_data}

@@ -1,6 +1,6 @@
 """Taxon Tree AnalysisModule."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
@@ -10,7 +10,7 @@ from .constants import MODULE_NAME
 from .models import TaxaTreeResult
 
 
-class TaxaTreeAnalysisModule(SampleToolAnalysisModule):
+class TaxaTreeAnalysisModule(AnalysisModule):
     """Read Stats AnalysisModule."""
 
     @staticmethod
@@ -29,6 +29,6 @@ class TaxaTreeAnalysisModule(SampleToolAnalysisModule):
         return [Metaphlan2ResultModule, KrakenResultModule, KrakenHLLResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Taxon Tree sample data."""
         return processor

@@ -59,9 +59,8 @@ def filter_gene_results(samples, source_tool_name, top_n):
 
 def make_gene_processor(source_tool_name, top_n):
     """Make processor from arguments."""
-    def processor(*sample_data):
+    def processor(*samples):
         """Wrap Gene Set component calculations."""
-        samples = list(sample_data)
         return filter_gene_results(samples, source_tool_name, top_n)
 
     return processor

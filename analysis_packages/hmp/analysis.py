@@ -53,9 +53,8 @@ def make_distributions(categories, samples):
     return result_data
 
 
-def processor(*sample_data):
+def processor(*samples):
     """Handle HMP component calculations."""
-    samples = list(*sample_data)
     categories = categories_from_metadata(samples)
     distributions = make_distributions(categories, samples)
     return distributions

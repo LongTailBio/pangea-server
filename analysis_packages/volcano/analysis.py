@@ -5,7 +5,6 @@ import pandas as pd
 from scipy.stats import mannwhitneyu
 
 from analysis_packages.base.utils import categories_from_metadata
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
@@ -183,9 +182,5 @@ def make_volcanos(categories, samples):
 
 def processor(*samples):
     """Handle Volcano component calculations."""
-    if len(samples) <= 1:
-        raise UnsupportedAnalysisMode
-
-    samples = list(samples)
     categories = categories_from_metadata(samples, min_size=1)
     return make_volcanos(categories, samples)

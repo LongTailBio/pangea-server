@@ -1,6 +1,6 @@
 """Alpha Diversity AnalysisModule."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.alpha_diversity import AlphaDiversityResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .models import AlphaDiversityResult
 from .constants import MODULE_NAME
 
 
-class AlphaDivAnalysisModule(SampleToolAnalysisModule):
+class AlphaDivAnalysisModule(AnalysisModule):
     """Alpha Diversity AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,6 @@ class AlphaDivAnalysisModule(SampleToolAnalysisModule):
         return [AlphaDiversityResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Alpha Diversity sample data."""
         return processor

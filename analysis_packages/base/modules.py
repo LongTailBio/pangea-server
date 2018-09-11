@@ -1,14 +1,14 @@
-"""
-Base AnalysisModule classes.
+"""AnalysisModule classes."""
 
-AnalysisModules take ToolResult data as input and perform additional analysis.
-"""
-
-from .constants import DEFAULT_MINIMUM_SAMPLE_COUNT
+from .exceptions import UnsupportedAnalysisMode
 
 
 class AnalysisModule:
-    """Base AnalysisModule class."""
+    """
+    Base AnalysisModule class.
+
+    AnalysisModules take ToolResult data as input and perform additional analysis.
+    """
 
     @staticmethod
     def name():
@@ -25,45 +25,49 @@ class AnalysisModule:
         """Enumerate which ToolResult modules a sample must have for this task to run."""
         raise NotImplementedError()
 
-    @staticmethod
-    def transmission_hooks():
-        """Return a list of hooks to run before transmission to the client."""
-        return []
-
     @classmethod
     def is_dependent_on_tool(cls, tool_result_cls):
         """Return True if this AnalysisModule is dependent on a given Tool Result type."""
         required_tools = cls.required_tool_results()
         return tool_result_cls in required_tools
 
-
-class SampleToolAnalysisModule(AnalysisModule):  # pylint: disable=abstract-method
-    """AnalysisModule dependent on single-sample tool results."""
+    @staticmethod
+    def transmission_hooks():
+        """Return a list of hooks to run before transmission to the client."""
+        return []
 
     @staticmethod
-    def processor():
+    def single_sample_processor():
         """
-        Return function(*sample_data) for proccessing sample data.
+        Return function(sample_data) for proccessing sample data.
 
-        Where sample_data is one or more dictionary dumps (with appropriate ToolResults)
-        of either a single Sample or all Samples in a SampleGroup.
+        Where sample_data is a dictionary dump of a single Sample with appropriate ToolResults.
 
         It is up to the returned function to check the length of *sample_data to see if
-        it was called to process a Sample or a SampleGroup and raise a NotImplementedError
-        where appropriate.
+        it was called to process a Sample or a SampleGroup and raise a UnsupportedAnalysisMode
+        exception where appropriate.
         """
-        raise NotImplementedError()
+        raise UnsupportedAnalysisMode
 
     @staticmethod
-    def minimum_samples():
-        """Return middleware wrangler for AnalysisModule type."""
-        return DEFAULT_MINIMUM_SAMPLE_COUNT
+    def samples_processor():
+        """
+        Return function(sample_data) for proccessing sample data.
 
+        Where sample_data is one or more dictionary dumps (with appropriate ToolResults)
+        of all Samples in a SampleGroup.
 
-class GroupToolAnalysisModule(AnalysisModule):  # pylint: disable=abstract-method
-    """AnalysisModule dependent on a sample group tool result (ex. Ancestry, Beta Diversity)."""
+        It is up to the returned function to check the length of sample_data to see if
+        it was called with an appropriate number of Samples and raise an EmptyGroupResult
+        exception where appropriate.
+        """
+        raise UnsupportedAnalysisMode
 
     @staticmethod
-    def processor():
-        """Return function(group_tool_result) for proccessing a GroupToolAnalysisModule."""
-        raise NotImplementedError()
+    def group_tool_processor():
+        """
+        Return function(group_tool_result) for proccessing a AnalysisModule.
+
+        Ex. Ancestry, Beta Diversity
+        """
+        raise UnsupportedAnalysisMode

@@ -1,6 +1,6 @@
 """Module for Macrobe results."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.macrobes import MacrobeResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import MacrobeResult
 
 
-class MacrobeAnalysisModule(SampleToolAnalysisModule):
+class MacrobeAnalysisModule(AnalysisModule):
     """Microbe Directory display module."""
 
     @staticmethod
@@ -27,6 +27,11 @@ class MacrobeAnalysisModule(SampleToolAnalysisModule):
         return [MacrobeResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Macrobe sample data."""
+        return processor
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Macrobe sample data."""
         return processor

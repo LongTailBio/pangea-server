@@ -1,6 +1,6 @@
 """Pathwaytransferase AnlysisModule."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.humann2 import Humann2ResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import PathwayResult
 
 
-class PathwaysAnalysisModule(SampleToolAnalysisModule):
+class PathwaysAnalysisModule(AnalysisModule):
     """Pathwaytransferase AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,11 @@ class PathwaysAnalysisModule(SampleToolAnalysisModule):
         return [Humann2ResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Pathways sample data."""
+        return processor
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Pathways sample data."""
         return processor

@@ -5,7 +5,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 
 from analysis_packages.base.utils import scrub_category_val, categories_from_metadata
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.card_amrs import CARDAMRResultModule
 from tool_packages.humann2_normalize import Humann2NormalizeResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
@@ -89,10 +88,6 @@ def multi_axis_reducer(axes, categories, samples):
 
 def processor(*samples):
     """Handle Multi-Axis component calculations."""
-    samples = list(samples)
-    if len(samples) <= 1:
-        raise UnsupportedAnalysisMode
-
     axes = make_axes(samples)
     categories = categories_from_metadata(samples)
     return multi_axis_reducer(axes, categories, samples)

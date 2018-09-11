@@ -1,6 +1,6 @@
 """Read Stats AnalysisModule."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.read_stats import ReadStatsToolResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import ReadStatsResult
 
 
-class ReadStatsAnalysisModule(SampleToolAnalysisModule):
+class ReadStatsAnalysisModule(AnalysisModule):
     """Read Stats AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,6 @@ class ReadStatsAnalysisModule(SampleToolAnalysisModule):
         return [ReadStatsToolResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Read Stats sample data."""
         return processor

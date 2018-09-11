@@ -3,14 +3,14 @@
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
 from .models import TopTaxaResult
 
 
-class TopTaxaAnalysisModule(SampleToolAnalysisModule):
+class TopTaxaAnalysisModule(AnalysisModule):
     """TopTaxa AnalysisModule."""
 
     @staticmethod
@@ -29,6 +29,6 @@ class TopTaxaAnalysisModule(SampleToolAnalysisModule):
         return [KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Top Taxa sample data."""
         return processor

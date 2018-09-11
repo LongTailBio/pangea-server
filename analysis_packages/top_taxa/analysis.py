@@ -2,7 +2,6 @@
 
 from pandas import DataFrame
 
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 
@@ -78,9 +77,5 @@ def find_top_taxa(samples):
 
 def processor(*samples):
     """Handle Top Taxa component calculations."""
-    if len(samples) <= 1:
-        raise UnsupportedAnalysisMode
-
-    samples = list(samples)
     top_taxa = find_top_taxa(samples)
     return {'categories': top_taxa}

@@ -1,6 +1,6 @@
 """HMP Module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.hmp_sites import HmpSitesResultModule
 
 from .analysis import processor
@@ -8,7 +8,7 @@ from .constants import MODULE_NAME
 from .models import HMPResult
 
 
-class HMPAnalysisModule(SampleToolAnalysisModule):
+class HMPAnalysisModule(AnalysisModule):
     """HMP AnalysisModule."""
 
     @staticmethod
@@ -27,6 +27,11 @@ class HMPAnalysisModule(SampleToolAnalysisModule):
         return [HmpSitesResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing HMP sample data."""
+        return processor
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing HMP sample data."""
         return processor

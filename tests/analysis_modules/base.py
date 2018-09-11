@@ -70,6 +70,24 @@ class BaseAnalysisModuleTest(BaseTestCase):
         wrangled = getattr(analysis_result, endpt).fetch()
         self.assertEqual(wrangled.status, 'S')
 
+    def new_run_group(self, module, sample_builder, group_builder=None, nsamples=6):
+        """Help run tests for a sample group."""
+        if group_builder is not None:
+            sample_group = group_builder()
+            samples = []
+        else:
+            sample_group = add_sample_group(name='SampleGroup01')
+            samples = [sample_builder(i) for i in range(nsamples)]
+            sample_group.samples = samples
+        task_sig = module.group_signature(sample_group.id)
+        task_sig()
+
+        module_name = module.name()
+        analysis_result = sample_group.analysis_result
+        self.assertIn(module_name, analysis_result)
+        wrangled = getattr(analysis_result, module_name).fetch()
+        self.assertEqual(wrangled.status, 'S')
+
 
 def generic_create_sample(tool_name, values_factory):
     """Return a generic sample creator function."""

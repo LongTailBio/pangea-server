@@ -1,6 +1,6 @@
 """Sample Similarity module."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
@@ -10,7 +10,7 @@ from .constants import MODULE_NAME
 from .models import SampleSimilarityResult
 
 
-class SampleSimilarityAnalysisModule(SampleToolAnalysisModule):
+class SampleSimilarityAnalysisModule(AnalysisModule):
     """Sample Similarity AnalysisModule."""
 
     @staticmethod
@@ -29,6 +29,6 @@ class SampleSimilarityAnalysisModule(SampleToolAnalysisModule):
         return [KrakenResultModule, KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Sample Similarity sample data."""
         return processor

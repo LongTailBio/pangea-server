@@ -1,6 +1,6 @@
 """CARD Genes AnalysisModule."""
 
-from analysis_packages.base import SampleToolAnalysisModule
+from analysis_packages.base import AnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
 from tool_packages.card_amrs import CARDAMRResultModule
 
@@ -8,7 +8,10 @@ from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import CARDGenesResult
 
 
-class CARDGenesAnalysisModule(SampleToolAnalysisModule):
+PROCESSOR = make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+
+
+class CARDGenesAnalysisModule(AnalysisModule):
     """CARD Genes factors AnalyisModule."""
 
     @staticmethod
@@ -27,6 +30,11 @@ class CARDGenesAnalysisModule(SampleToolAnalysisModule):
         return [CARDAMRResultModule]
 
     @staticmethod
-    def processor():
-        """Return function(*sample_data) for proccessing sample data."""
-        return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing CARD sample data."""
+        return PROCESSOR
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing CARD sample data."""
+        return PROCESSOR
