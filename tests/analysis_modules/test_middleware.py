@@ -22,15 +22,13 @@ def processes_samples(analysis_module):
         return True
 
 
-def seed_samples(analysis_module, samples):
+def seed_samples(tool, samples):
     """Create single sample."""
-    tool_modules = analysis_module.required_tool_results()
-    for tool in tool_modules:
-        name = tool.name()
-        factory = unpack_tool(tool)[2]
-        for sample in samples:
-            setattr(sample, name, factory.create_result())
-            sample.save()
+    name = tool.name()
+    factory = unpack_tool(tool)[2]
+    for sample in samples:
+        setattr(sample, name, factory.create_result())
+        sample.save()
 
 
 def numbered_sample(i):
@@ -42,15 +40,17 @@ def numbered_sample(i):
 
 def seed_module(analysis_module, sample_group, samples):
     """Seed testing values for moduke."""
-    if processes_samples(analysis_module):
-        # Prepate Samples with ToolResults, if applicable
-        seed_samples(analysis_module, samples)
-    else:
-        # Prepare GroupToolResult(s), if applicable
-        factory = unpack_tool(analysis_module)[2]
-        tool_result = factory.create_result(save=False)
-        tool_result.sample_group_uuid = sample_group.id
-        tool_result.save()
+    tool_modules = analysis_module.required_tool_results()
+    for tool in tool_modules:
+        if processes_samples(analysis_module):
+            # Prepate Samples with ToolResults, if applicable
+            seed_samples(tool, samples)
+        else:
+            # Prepare GroupToolResult(s), if applicable
+            factory = unpack_tool(tool)[2]
+            tool_result = factory.create_result(save=False)
+            tool_result.sample_group_uuid = sample_group.id
+            tool_result.save()
 
 
 class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
@@ -66,7 +66,9 @@ for module in all_analysis_modules:
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
         sample = numbered_sample(0)
-        seed_samples(analysis_module, [sample])
+        if processes_samples(analysis_module):
+            for tool in analysis_module.required_tool_results():
+                seed_samples(tool, [sample])
         module_name = analysis_module.name()
         task_signatures = conduct_sample(str(sample.uuid), [module_name])
         ags_task = task_signatures[0]
@@ -98,12 +100,8 @@ for module in all_analysis_modules:
         ags_task = task_signatures[0]
         ags_task()
 
-        if processes_samples(analysis_module):
-            self.assertIn(module_name, sample_group.analysis_result)
-            result = getattr(sample_group.analysis_result, module_name).fetch()
-        else:
-            model = analysis_module.result_model()
-            result = model.objects.get(sample_group_uuid=sample_group.id)
+        self.assertIn(module_name, sample_group.analysis_result)
+        result = getattr(sample_group.analysis_result, module_name).fetch()
         self.assertEqual(result.status, 'S')
         self.assertIn('data', result)
 
