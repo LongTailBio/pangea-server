@@ -71,8 +71,8 @@ for module in all_analysis_modules:
                 seed_samples(tool, [sample])
         module_name = analysis_module.name()
         task_signatures = conduct_sample(str(sample.uuid), [module_name])
-        ags_task = task_signatures[0]
-        ags_task()
+        analysis_task = task_signatures[0]
+        analysis_task()
 
         analysis_result = sample.analysis_result.fetch()
         try:
@@ -97,8 +97,8 @@ for module in all_analysis_modules:
         # Execute task
         module_name = analysis_module.name()
         task_signatures = conduct_sample_group(sample_group.id, [module_name])
-        ags_task = task_signatures[0]
-        ags_task()
+        analysis_task = task_signatures[0]
+        analysis_task()
 
         self.assertIn(module_name, sample_group.analysis_result)
         result = getattr(sample_group.analysis_result, module_name).fetch()
