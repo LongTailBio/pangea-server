@@ -2,6 +2,7 @@
 
 from tool_packages.base import SampleToolResultModule
 
+from .constants import MODULE_NAME
 from .models import MethylToolResult
 
 
@@ -11,7 +12,7 @@ class MethylResultModule(SampleToolResultModule):
     @classmethod
     def name(cls):
         """Return Methyltransferase module's unique identifier string."""
-        return 'align_to_methyltransferases'
+        return MODULE_NAME
 
     @classmethod
     def result_model(cls):

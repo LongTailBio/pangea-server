@@ -7,17 +7,14 @@ from flask_api.exceptions import ParseError, NotFound, PermissionDenied
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.analysis_modules.utils import conduct_sample_group
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
-from app.conductor import SampleConductor
-from app.display_modules import all_display_modules
 from app.extensions import db
 from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
-
-# from .utils import kick_off_middleware
 
 
 sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disable=invalid-name
@@ -178,18 +175,17 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     """Run display modules for sample group."""
     try:
         safe_uuid = UUID(uuid)
-        group = SampleGroup.query.filter_by(id=safe_uuid).first()
+        _ = SampleGroup.query.filter_by(id=safe_uuid).first()
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except NoResultFound:
         raise NotFound('Sample Group does not exist.')
 
-    for module in all_display_modules:
-        try:
-            SampleConductor('', display_modules=[module]).direct_sample_group(group)
-        except Exception:  # pylint: disable=broad-except
-            current_app.logger.exception('Exception while coordinating display modules.')
+    analysis_names = request.args.getlist('analysis_names')
+    signatures = conduct_sample_group(uuid, analysis_names)
+    for signature in signatures:
+        signature.delay()
 
-    result = {'message': 'Started middleware'}
+    result = {'middleware': analysis_names}
 
     return result, 202

@@ -1,8 +1,8 @@
 """Test suite for AnalysisResultMeta model."""
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
-from app.display_modules.ags import MODULE_NAME
-from app.display_modules.ags.tests.factory import AGSFactory
+from analysis_packages.ags.constants import MODULE_NAME
+from analysis_packages.ags.tests.factory import AGSFactory
 
 from tests.base import BaseTestCase
 

@@ -3,11 +3,11 @@
 import json
 import os
 
-from app.display_modules.hmp import HMPResult
-from app.display_modules.reads_classified import ReadsClassifiedResult
-from app.display_modules.sample_similarity import SampleSimilarityResult
-from app.display_modules.taxon_abundance import TaxonAbundanceResult
-from app.display_modules.ags import AGSResult
+from analysis_packages.hmp.models import HMPResult
+from analysis_packages.reads_classified.models import ReadsClassifiedResult
+from analysis_packages.sample_similarity.models import SampleSimilarityResult
+from analysis_packages.taxon_abundance.models import TaxonAbundanceResult
+from analysis_packages.ags.models import AGSResult
 
 
 LOCATION = os.path.realpath(os.path.join(os.getcwd(),
