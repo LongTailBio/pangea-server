@@ -1,6 +1,5 @@
 """Tasks for TaxaTree Wrangler."""
 
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
@@ -90,8 +89,5 @@ def trees_from_sample(sample):
 
 def processor(*samples):
     """Handle Taxa Tree component calculations."""
-    if len(samples) > 1:
-        raise UnsupportedAnalysisMode
-
     sample = samples[0]
     return trees_from_sample(sample)

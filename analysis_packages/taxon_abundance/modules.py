@@ -34,6 +34,6 @@ class TaxonAbundanceAnalysisModule(AnalysisModule):
         return taxa_modules
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Taxon Abundance sample data."""
         return processor

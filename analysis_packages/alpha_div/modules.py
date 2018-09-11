@@ -27,6 +27,6 @@ class AlphaDivAnalysisModule(AnalysisModule):
         return [AlphaDiversityResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Alpha Diversity sample data."""
         return processor

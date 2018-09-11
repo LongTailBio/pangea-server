@@ -24,8 +24,7 @@ def collate_macrobes(samples, reverse):
     return sample_dict
 
 
-def processor(*sample_data):
+def processor(*samples):
     """Handle Macrobe Directory component calculations."""
-    samples = list(sample_data)
     reverse = len(samples) > 1
     return collate_macrobes(samples, reverse)

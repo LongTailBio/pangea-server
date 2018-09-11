@@ -7,7 +7,6 @@ from .constants import TOOL_MODULE_NAME
 
 def processor(*samples):
     """Handle Reads Classified component calculations."""
-    samples = list(samples)
     collate_fields = ['viral', 'archaeal', 'bacterial', 'host',
                       'nonhost_macrobial', 'fungal', 'nonfungal_eukaryotic',
                       'unknown']

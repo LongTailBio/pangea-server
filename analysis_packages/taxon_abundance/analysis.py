@@ -2,7 +2,6 @@
 
 import pandas as pd
 
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
@@ -124,8 +123,4 @@ def make_all_flows(samples):
 
 def processor(*samples):
     """Handle Taxon Abundance component calculations."""
-    if len(samples) <= 1:
-        raise UnsupportedAnalysisMode
-
-    samples = list(samples)
     return make_all_flows(samples)

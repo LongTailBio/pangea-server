@@ -31,6 +31,6 @@ class VolcanoAnalysisModule(AnalysisModule):
         ]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Volcano sample data."""
         return processor

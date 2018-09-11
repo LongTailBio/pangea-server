@@ -8,6 +8,9 @@ from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import VFDBResult
 
 
+PROCESSOR = make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+
+
 class VirulenceFactorsAnalysisModule(AnalysisModule):
     """Virulence factors AnalysisModule."""
 
@@ -27,6 +30,11 @@ class VirulenceFactorsAnalysisModule(AnalysisModule):
         return [VFDBResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
-        return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Virulence Factors sample data."""
+        return PROCESSOR
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Virulence Factors sample data."""
+        return PROCESSOR

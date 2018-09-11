@@ -37,15 +37,28 @@ class AnalysisModule:
         return []
 
     @staticmethod
-    def sample_processor():
+    def single_sample_processor():
         """
-        Return function(*sample_data) for proccessing sample data.
+        Return function(sample_data) for proccessing sample data.
 
-        Where sample_data is one or more dictionary dumps (with appropriate ToolResults)
-        of either a single Sample or all Samples in a SampleGroup.
+        Where sample_data is a dictionary dump of a single Sample with appropriate ToolResults.
 
         It is up to the returned function to check the length of *sample_data to see if
         it was called to process a Sample or a SampleGroup and raise a UnsupportedAnalysisMode
+        exception where appropriate.
+        """
+        raise UnsupportedAnalysisMode
+
+    @staticmethod
+    def samples_processor():
+        """
+        Return function(sample_data) for proccessing sample data.
+
+        Where sample_data is one or more dictionary dumps (with appropriate ToolResults)
+        of all Samples in a SampleGroup.
+
+        It is up to the returned function to check the length of sample_data to see if
+        it was called with an appropriate number of Samples and raise an EmptyGroupResult
         exception where appropriate.
         """
         raise UnsupportedAnalysisMode

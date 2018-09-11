@@ -38,6 +38,6 @@ class MultiAxisAnalysisModule(AnalysisModule):
         ]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Multi-Axis sample data."""
         return processor

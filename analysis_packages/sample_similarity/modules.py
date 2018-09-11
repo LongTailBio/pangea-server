@@ -29,6 +29,6 @@ class SampleSimilarityAnalysisModule(AnalysisModule):
         return [KrakenResultModule, KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing Sample Similarity sample data."""
         return processor

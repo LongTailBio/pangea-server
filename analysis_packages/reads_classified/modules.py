@@ -27,6 +27,11 @@ class ReadsClassifiedAnalysisModule(AnalysisModule):
         return [ReadsClassifiedResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Reads Classified sample data."""
+        return processor
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Reads Classified sample data."""
         return processor

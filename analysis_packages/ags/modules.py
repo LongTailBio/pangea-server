@@ -28,6 +28,6 @@ class AGSAnalysisModule(AnalysisModule):
         return [MicrobeCensusResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def samples_processor():
+        """Return function(sample_data) for proccessing AGS sample data."""
         return processor

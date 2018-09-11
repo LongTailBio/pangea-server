@@ -1,7 +1,6 @@
 """Functions for generating Average Genome Size results."""
 
 from analysis_packages.base.utils import boxplot, categories_from_metadata
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 from tool_packages.microbe_census import MicrobeCensusResultModule
 
 
@@ -29,10 +28,6 @@ def ags_distributions(samples):
 
 def processor(*samples):
     """Handle AGS component calculations."""
-    if len(samples) <= 1:
-        raise UnsupportedAnalysisMode
-
-    samples = list(samples)
     categories = categories_from_metadata(samples)
     ags_dists = ags_distributions(samples)
     result = {

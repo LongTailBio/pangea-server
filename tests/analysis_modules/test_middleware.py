@@ -47,7 +47,7 @@ class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
 
         # Prepate Samples with ToolResults, if applicable
         try:
-            _ = analysis_module.sample_processor()
+            _ = analysis_module.samples_processor()
             samples = [sample_factory(analysis_module, i) for i in range(5)]
             sample_group.samples = samples
             db.session.commit()
@@ -56,6 +56,7 @@ class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
 
         # Prepare GroupToolResult(s), if applicable
         try:
+            # pylint: disable=assignment-from-no-return
             _ = analysis_module.group_tool_processor()
             for tool in analysis_module.required_tool_results():
                 factory = unpack_tool(tool)[2]

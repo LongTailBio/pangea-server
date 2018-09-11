@@ -8,6 +8,9 @@ from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import FunctionalGenesResult
 
 
+PROCESSOR = make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+
+
 class FunctionalGenesAnalysisModule(AnalysisModule):
     """Functional Genes module."""
 
@@ -27,6 +30,11 @@ class FunctionalGenesAnalysisModule(AnalysisModule):
         return [Humann2NormalizeResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
-        return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Functional Genes sample data."""
+        return PROCESSOR
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing Functional Genes sample data."""
+        return PROCESSOR

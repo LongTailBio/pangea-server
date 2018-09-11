@@ -8,6 +8,9 @@ from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import CARDGenesResult
 
 
+PROCESSOR = make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+
+
 class CARDGenesAnalysisModule(AnalysisModule):
     """CARD Genes factors AnalyisModule."""
 
@@ -27,6 +30,11 @@ class CARDGenesAnalysisModule(AnalysisModule):
         return [CARDAMRResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
-        return make_gene_processor(SOURCE_TOOL_NAME, TOP_N)
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing CARD sample data."""
+        return PROCESSOR
+
+    @staticmethod
+    def samples_processor():
+        """Return function(sample_data) for proccessing CARD sample data."""
+        return PROCESSOR

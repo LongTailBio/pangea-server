@@ -93,7 +93,7 @@ def task_body_sample(sample_uuid, module):
     analysis_result = sample.analysis_result.fetch()
     analysis_result.set_module_status(module.name(), 'W')
     samples = filter_samples([sample], module)
-    data = module.sample_processor()(*samples)
+    data = module.single_sample_processor()(*samples)
     persist_result_helper(analysis_result, module, data)
 
 
@@ -107,7 +107,7 @@ def run_sample(sample_uuid, module_name):
         return
 
     try:
-        _ = module.sample_processor()
+        _ = module.single_sample_processor()
         task_body_sample(sample_uuid, module)
     except UnsupportedAnalysisMode:
         pass
@@ -131,7 +131,7 @@ def task_body_sample_group(sample_group_uuid, module):
     samples = filter_samples(sample_group.samples, module)
     tool_names = [tool.name() for tool in module.required_tool_results()]
     samples = [sample.fetch_safe(tool_names) for sample in samples]
-    data = module.sample_processor()(*samples)
+    data = module.samples_processor()(*samples)
     analysis_result_uuid = sample_group.analysis_result_uuid
     analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
     persist_result_helper(analysis_result, module, data)
@@ -166,7 +166,7 @@ def run_sample_group(sample_group_uuid, module_name):
         pass
 
     try:
-        _ = module.sample_processor()
+        _ = module.samples_processor()
         task_body_sample_group(sample_group_uuid, module)
     except UnsupportedAnalysisMode:
         pass

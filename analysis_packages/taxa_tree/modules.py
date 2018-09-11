@@ -29,6 +29,6 @@ class TaxaTreeAnalysisModule(AnalysisModule):
         return [Metaphlan2ResultModule, KrakenResultModule, KrakenHLLResultModule]
 
     @staticmethod
-    def sample_processor():
-        """Return function(*sample_data) for proccessing sample data."""
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Taxon Tree sample data."""
         return processor
