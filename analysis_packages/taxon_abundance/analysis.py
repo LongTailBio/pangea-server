@@ -6,18 +6,21 @@ from tool_packages.kraken import KrakenResultModule
 from tool_packages.metaphlan2 import Metaphlan2ResultModule
 from tool_packages.krakenhll import KrakenHLLResultModule
 
+from .exceptions import InvalidRank
+
 
 TAXA_RANKS = 'kpcofgs'  # kingdom, phylum, classus...
 
 
-def get_ranks(*tkns):
+def get_ranks(*tokens):
     """Return a rank code from a taxon ID."""
     out = []
-    for tkn in tkns:
-        rank = tkn.strip()[0].lower()
+    for token in tokens:
+        rank = token.strip()[0].lower()
         if rank == 'd':
             rank = 'k'
-        assert rank in TAXA_RANKS, rank + ' ' + ' '.join(tkns).strip()
+        if rank not in TAXA_RANKS:
+            raise InvalidRank(rank + ' ' + ' '.join(tokens).strip())
         out.append(rank)
     return out
 
