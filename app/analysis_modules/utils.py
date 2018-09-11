@@ -92,8 +92,9 @@ def task_body_sample(sample_uuid, module):
     sample = Sample.objects.get(uuid=uuid)
     analysis_result = sample.analysis_result.fetch()
     analysis_result.set_module_status(module.name(), 'W')
-    samples = filter_samples([sample], module)
-    data = module.single_sample_processor()(*samples)
+    tool_names = [tool.name() for tool in module.required_tool_results()]
+    sample = sample.fetch_safe(tool_names)
+    data = module.single_sample_processor()(sample)
     persist_result_helper(analysis_result, module, data)
 
 
