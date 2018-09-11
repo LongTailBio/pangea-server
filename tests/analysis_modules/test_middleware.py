@@ -100,10 +100,13 @@ for module in all_analysis_modules:
         analysis_task = task_signatures[0]
         analysis_task()
 
-        self.assertIn(module_name, sample_group.analysis_result)
-        result = getattr(sample_group.analysis_result, module_name).fetch()
-        self.assertEqual(result.status, 'S')
-        self.assertIn('data', result)
+        try:
+            _ = analysis_module.single_sample_processor()
+        except UnsupportedAnalysisMode:
+            self.assertIn(module_name, sample_group.analysis_result)
+            result = getattr(sample_group.analysis_result, module_name).fetch()
+            self.assertEqual(result.status, 'S')
+            self.assertIn('data', result)
 
     sample_group_test.__doc__ = f'Test {analysis_name} middleware SampleGroup.'
     test_name = f'test_{analysis_name}_sample_group'
