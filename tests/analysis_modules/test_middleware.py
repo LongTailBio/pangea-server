@@ -1,5 +1,7 @@
 """Test running middleware fully."""
 
+import math
+
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules.wrangler import all_analysis_modules
@@ -10,6 +12,9 @@ from ..tool_results.utils import unpack_module as unpack_tool
 from ..utils import add_sample_group, add_sample
 from .base import BaseAnalysisModuleTest
 from .utils import unpack_module
+
+
+SAMPLE_TEST_COUNT = 40
 
 
 def processes_samples(analysis_module):
@@ -31,9 +36,9 @@ def seed_samples(tool, samples):
         sample.save()
 
 
-def numbered_sample(i):
+def numbered_sample(i=0, j=0):
     """Create numbered sample with metadata."""
-    metadata = {'foobar': f'baz{i}'}
+    metadata = {'foobar': f'baz{j}'}
     sample = add_sample(f'Test Sample {i}', metadata=metadata)
     return sample
 
@@ -65,7 +70,7 @@ for module in all_analysis_modules:
 
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
-        sample = numbered_sample(0)
+        sample = numbered_sample()
         if processes_samples(analysis_module):
             for tool in analysis_module.required_tool_results():
                 seed_samples(tool, [sample])
@@ -89,7 +94,9 @@ for module in all_analysis_modules:
         """Test middleware for SampleGroup analyses."""
         # Seed test values
         sample_group = add_sample_group('Test Group')
-        samples = [numbered_sample(i) for i in range(5)]
+        meta_choices = [0, 1, 2]
+        meta_choices = meta_choices * math.ceil(SAMPLE_TEST_COUNT / len(meta_choices))
+        samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
         sample_group.samples = samples
         db.session.commit()
         seed_module(analysis_module, sample_group, samples)
