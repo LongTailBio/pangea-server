@@ -56,8 +56,8 @@ def get_nlps(tool_df, cases, controls):
 
     def mwu(col_cases, col_controls):
         """Perform MWU test on a column of the dataframe."""
-        col_cases_array = col_cases.as_matrix()
-        col_controls_array = col_controls.as_matrix()
+        col_cases_array = col_cases.values()
+        col_controls_array = col_controls.values()
         try:
             _, pval = mannwhitneyu(col_cases_array, col_controls_array, alternative='two-sided')
         except ValueError:
