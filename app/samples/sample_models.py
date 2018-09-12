@@ -4,7 +4,7 @@ import datetime
 
 from uuid import uuid4
 
-from marshmallow import fields, pre_dump
+from marshmallow import fields
 from mongoengine import Document, LazyReferenceField
 from analysis_packages.base.utils import jsonify
 
