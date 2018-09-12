@@ -59,7 +59,7 @@ def get_nlps(tool_df, cases, controls):
         col_cases_array = col_cases.as_matrix()
         col_controls_array = col_controls.as_matrix()
         try:
-            _, pval = mannwhitneyu(col_cases_array, col_controls_array)
+            _, pval = mannwhitneyu(col_cases_array, col_controls_array, alternative='two-sided')
         except ValueError:
             return 0
         pval *= 2  # correct for two sided
