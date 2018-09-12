@@ -63,7 +63,7 @@ def get_nlps(tool_df, cases, controls):
         except ValueError:
             return 0
         pval *= 2  # correct for two sided
-        assert 0.0 < pval <= 1.0, f'cases: {col_cases}\ncontrols: {col_controls}'
+        assert 0.0 <= pval <= 1.0, f'cases: {col_cases}\ncontrols: {col_controls}'
         pvals.append(pval)
         nlp = -np.log10(pval)
         return nlp
