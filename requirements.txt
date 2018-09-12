@@ -8,6 +8,7 @@ flask-bcrypt==0.7.1
 flask-cors==3.0.6
 marshmallow==3.0.0b13
 mongoengine==0.15.3
+pymongo==2.9.5
 psycopg2==2.7.5
 gunicorn==19.9.0
 pyjwt==1.6.4
