@@ -50,7 +50,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
                         metadata={'name': sample_name}).save()
         library.sample_ids.append(sample.uuid)
         db.session.commit()
-        result = sample_schema.dump(sample).data
+        result = sample_schema.dump(sample)
         return result, 201
     except ValidationError as validation_error:
         current_app.logger.exception('Sample could not be created.')
@@ -68,7 +68,7 @@ def get_single_sample(sample_uuid):
         uuid = UUID(sample_uuid)
         sample = Sample.objects.get(uuid=uuid)
         fields = ('uuid', 'name', 'analysis_result_uuid', 'created_at')
-        result = SampleSchema(only=fields).dump(sample).data
+        result = SampleSchema(only=fields).dump(sample)
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
@@ -112,7 +112,7 @@ def add_sample_metadata(resp):  # pylint: disable=unused-argument
     try:
         sample.metadata = metadata
         sample.save()
-        result = sample_schema.dump(sample).data
+        result = sample_schema.dump(sample)
         return result, 200
     except ValidationError as validation_error:
         current_app.logger.exception('Sample metadata could not be updated.')

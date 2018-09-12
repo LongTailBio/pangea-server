@@ -88,7 +88,7 @@ def register_tool_result(cls, router):
         """Wrap receive_upload to provide class."""
         if issubclass(cls, SampleToolResultModule):
             return receive_sample_tool_upload(cls, resp, uuid)
-        elif issubclass(cls, GroupToolResultModule):
+        if issubclass(cls, GroupToolResultModule):
             return receive_group_tool_upload(cls, resp, uuid)
         raise ParseError('Tool Result of unrecognized type.')
 

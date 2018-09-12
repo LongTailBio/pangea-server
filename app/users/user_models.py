@@ -59,7 +59,7 @@ class User(db.Model):
             return jwt.encode(
                 payload,
                 current_app.config.get('SECRET_KEY'),
-                algorithm='HS256'
+                algorithm='HS512',
             )
         except Exception as e:  # pylint: disable=broad-except
             return e
@@ -69,7 +69,7 @@ class User(db.Model):
         """Decode the auth token - :param auth_token: - :return: UUID|string."""
         try:
             secret = current_app.config.get('SECRET_KEY')
-            payload = jwt.decode(auth_token, secret)
+            payload = jwt.decode(auth_token, secret, algorithms=['HS512'])
             return uuid.UUID(payload['sub'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Signature expired. Please log in again.')

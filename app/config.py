@@ -16,7 +16,7 @@ BASE_CELERY = {
 }
 
 
-class Config(object):
+class Config():
     """Parent configuration class."""
 
     DEBUG = False

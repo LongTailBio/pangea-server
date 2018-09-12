@@ -59,7 +59,7 @@ def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
         if organization:
             organization.sample_groups.append(sample_group)
         db.session.commit()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('Sample Group could not be created.')
@@ -73,7 +73,7 @@ def get_single_result(group_uuid):
     try:
         sample_group_id = UUID(group_uuid)
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 200
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
@@ -120,7 +120,7 @@ def get_samples_for_group(group_uuid):
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
         samples = sample_group.samples
         current_app.logger.info(f'Found {len(samples)} samples for group {group_uuid}')
-        result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True).data
+        result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True)
         return result, 200
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
@@ -147,7 +147,7 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
             sample = Sample.objects.get(uuid=sample_uuid)
             sample_group.sample_ids.append(sample.uuid)
         db.session.commit()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 200
     except NoResultFound:
         db.session.rollback()
