@@ -78,7 +78,7 @@ def persist_result_helper(result_base, module, data):
         result_base.save()
     except ValidationError:
         contents = pformat(data)
-        celery_logger.exception(f'Could not save result with contents:\n{contents}')
+        celery_logger.exception('Could not save result with contents:\n%s', contents)
 
         result_wrapper.data = None
         result_wrapper.status = 'E'
