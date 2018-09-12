@@ -48,7 +48,7 @@ def add_organization(resp):  # pylint: disable=unused-argument
         db.session.add(organization)
         db.session.commit()
         organization.add_admin(auth_user)
-        result = organization_schema.dump(organization).data
+        result = organization_schema.dump(organization)
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('There was a problem adding an organization.')
@@ -69,7 +69,7 @@ def get_single_organization(organization_uuid):
     except NoResultFound:
         raise NotFound('Organization does not exist')
 
-    result = organization_schema.dump(organization).data
+    result = organization_schema.dump(organization)
     return result, 200
 
 
@@ -101,7 +101,7 @@ def get_organization_users(organization_uuid):
     except NoResultFound:
         raise NotFound('Organization does not exist')
 
-    result = user_schema.dump(organization.users, many=True).data
+    result = user_schema.dump(organization.users, many=True)
     return result, 200
 
 
@@ -205,7 +205,7 @@ def get_organization_sample_groups(organization_uuid, page=1):
         raise NotFound('Organization does not exist')
 
     sample_groups = organization.sample_groups.paginate(page, PAGE_SIZE, False).items
-    result = sample_group_schema.dump(sample_groups, many=True).data
+    result = sample_group_schema.dump(sample_groups, many=True)
     return result, 200
 
 
@@ -215,7 +215,7 @@ def get_all_organizations(auth_user_id):
     """Get all organizations."""
     if not auth_user_id:
         organizations = Organization.query.filter_by(access_scheme='public').all()
-        result = organization_schema.dump(organizations, many=True).data
+        result = organization_schema.dump(organizations, many=True)
         return result, 200
 
     organizations = db.session.query(Organization) \
@@ -226,5 +226,5 @@ def get_all_organizations(auth_user_id):
         .order_by(asc(Organization.created_at)) \
         .all()
 
-    result = organization_schema.dump(organizations, many=True).data
+    result = organization_schema.dump(organizations, many=True)
     return result, 200

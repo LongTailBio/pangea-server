@@ -75,7 +75,7 @@ class AnalysisResultMetaSchema(BaseSchema):
     __model__ = AnalysisResultMeta
 
     uuid = fields.Str()
-    result_types = fields.List(fields.Str())
+    result_types = fields.Function(lambda obj: obj.result_types)
     created_at = fields.Date()
 
 

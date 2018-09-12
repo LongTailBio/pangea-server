@@ -18,7 +18,7 @@ def get_single_result(result_uuid):
     try:
         uuid = UUID(result_uuid)
         analysis_result = AnalysisResultMeta.objects.get(uuid=uuid)
-        result = analysis_result_schema.dump(analysis_result).data
+        result = analysis_result_schema.dump(analysis_result)
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
@@ -31,7 +31,7 @@ def get_all_analysis_results():
     """Get all analysis result models."""
     try:
         analysis_results = AnalysisResultMeta.objects.all()
-        result = analysis_result_schema.dump(analysis_results, many=True).data
+        result = analysis_result_schema.dump(analysis_results, many=True)
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')

@@ -27,7 +27,7 @@ def scrub_object(obj):
     """Remove protected fields from object (dict or list)."""
     if isinstance(obj, list):
         return [scrub_object(item) for item in obj]
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         clean_dict = {key: scrub_object(value)
                       for key, value in obj.items()
                       if not key.startswith('_')}

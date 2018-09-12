@@ -56,14 +56,14 @@ def get_nlps(tool_df, cases, controls):
 
     def mwu(col_cases, col_controls):
         """Perform MWU test on a column of the dataframe."""
-        col_cases_array = col_cases.as_matrix()
-        col_controls_array = col_controls.as_matrix()
+        col_cases_array = col_cases.values
+        col_controls_array = col_controls.values
         try:
-            _, pval = mannwhitneyu(col_cases_array, col_controls_array)
+            _, pval = mannwhitneyu(col_cases_array, col_controls_array, alternative=None)
         except ValueError:
             return 0
         pval *= 2  # correct for two sided
-        assert (pval <= 1.0) and (pval > 0), f'cases: {col_cases}\ncontrols: {col_controls}'
+        assert 0.0 <= pval <= 1.0, f'cases: {col_cases}\ncontrols: {col_controls}'
         pvals.append(pval)
         nlp = -np.log10(pval)
         return nlp
@@ -87,7 +87,7 @@ def pval_hist(pvals, bin_width=0.05):
     for pval in pvals:
         for bin_start in bins:
             bin_end = bin_start + bin_width
-            if (pval >= bin_start) and (pval < bin_end):
+            if bin_start <= pval < bin_end:
                 bins[bin_start] += 1
                 break
     pts = [{'name': f'histo_{bin_start}', 'xval': bin_start, 'yval': nps}

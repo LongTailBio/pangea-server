@@ -4,7 +4,7 @@ import datetime
 
 from uuid import uuid4
 
-from marshmallow import fields, pre_dump
+from marshmallow import fields
 from mongoengine import Document, LazyReferenceField
 from analysis_packages.base.utils import jsonify
 
@@ -68,15 +68,9 @@ class SampleSchema(BaseSchema):
     uuid = fields.Str()
     name = fields.Str()
     metadata = fields.Dict()
-    analysis_result_uuid = fields.Str()
+    analysis_result_uuid = fields.Function(lambda obj: obj.analysis_result.pk)
     theme = fields.Str()
     created_at = fields.Date()
-
-    @pre_dump(pass_many=False)
-    def add_analysis_result_uuid(self, data):  # pylint: disable=no-self-use
-        """Dump analysis_result's UUID."""
-        data.analysis_result_uuid = data.analysis_result.pk
-        return data
 
 
 sample_schema = SampleSchema()   # pylint: disable=invalid-name
