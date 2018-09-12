@@ -73,7 +73,7 @@ class SampleConductor(DisplayModuleConductor):
         """
         valid_modules = []
         for module in self.display_modules:
-            dependencies = set([tool.name() for tool in module.required_tool_results()])
+            dependencies = {tool.name() for tool in module.required_tool_results()}
             if dependencies <= tools_present:
                 valid_modules.append(module)
         return valid_modules
@@ -82,7 +82,7 @@ class SampleConductor(DisplayModuleConductor):
         """Filter list of samples to only those supporting the given module."""
         current_app.logger.info('Filtering samples')
 
-        dependencies = set([tool.name() for tool in module.required_tool_results()])
+        dependencies = {tool.name() for tool in module.required_tool_results()}
 
         current_app.logger.info(f'Module: {module.name()}')
         current_app.logger.info(f'Dependencies: {dependencies}')
@@ -178,12 +178,12 @@ class GroupConductor(DisplayModuleConductor):
             result = query.count() > 0
             return result
 
-        group_results_present = set([tool.name() for tool in all_group_results
-                                     if test_tool(tool)])
+        group_results_present = {tool.name() for tool in all_group_results
+                                 if test_tool(tool)}
 
         def test_module(module):
             """Test a single module to see if all required tools are present."""
-            dependencies = set([tool.name() for tool in module.required_tool_results()])
+            dependencies = {tool.name() for tool in module.required_tool_results()}
             result = dependencies <= group_results_present
             return result
 

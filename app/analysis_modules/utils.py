@@ -28,13 +28,13 @@ def fetch_samples(sample_group_id):
 
 def filter_samples(samples, module):
     """Filter list of samples to only those supporting the given module."""
-    dependencies = set([tool.name() for tool in module.required_tool_results()])
+    dependencies = {tool.name() for tool in module.required_tool_results()}
 
     def test_sample(sample):
         """Test a single sample to see if it has all tools required by the display module."""
         all_fields = [mod.name() for mod in all_tool_results]
-        tools_present = set([field for field in all_fields
-                             if getattr(sample, field, None) is not None])
+        tools_present = {field for field in all_fields
+                         if getattr(sample, field, None) is not None}
         is_valid = dependencies <= tools_present
         sample_name = sample.name
         current_app.logger.debug(f'Testing sample: {sample_name}')
