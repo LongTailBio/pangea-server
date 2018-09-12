@@ -20,7 +20,7 @@ class TestSampleModel(BaseTestCase):
         sample = Sample(name='SMPL_01', metadata={'subject_group': 1}).save()
         # Check for runtime ID alias
         self.assertTrue(sample.id)  # pylint: disable=no-member
-        
+
         self.assertTrue(sample.uuid)
         self.assertEqual(sample.name, 'SMPL_01')
         self.assertEqual(sample.metadata, {'subject_group': 1})
