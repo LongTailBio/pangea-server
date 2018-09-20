@@ -2,7 +2,7 @@
 
 from analysis_packages.base import AnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
-from tool_packages.methyltransferases import MethylResultModule
+from  analysis_packages.base_data.methyltransferases import MethylResultModule
 
 from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import MethylResult
@@ -25,7 +25,7 @@ class MethylsAnalysisModule(AnalysisModule):
         return MethylResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [MethylResultModule]
 

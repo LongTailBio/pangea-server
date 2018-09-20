@@ -1,7 +1,7 @@
 """Module for Macrobe results."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.macrobes import MacrobeResultModule
+from analysis_packages.base_data.macrobes import MacrobeResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class MacrobeAnalysisModule(AnalysisModule):
         return MacrobeResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [MacrobeResultModule]
 

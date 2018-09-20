@@ -1,9 +1,9 @@
 """Taxon Tree AnalysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.kraken import KrakenResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -24,7 +24,7 @@ class TaxaTreeAnalysisModule(AnalysisModule):
         return TaxaTreeResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules for taxa tree."""
         return [Metaphlan2ResultModule, KrakenResultModule, KrakenHLLResultModule]
 

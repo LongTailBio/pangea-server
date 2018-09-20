@@ -1,7 +1,7 @@
 """Top Taxa AnalysisModule."""
 
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
 
 from analysis_packages.base import AnalysisModule
 
@@ -24,7 +24,7 @@ class TopTaxaAnalysisModule(AnalysisModule):
         return TopTaxaResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """List requires ToolResult modules."""
         return [KrakenHLLResultModule, Metaphlan2ResultModule]
 

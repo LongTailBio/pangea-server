@@ -1,7 +1,7 @@
 """Read Stats AnalysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.read_stats import ReadStatsToolResultModule
+from analysis_packages.base_data.read_stats import ReadStatsToolResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class ReadStatsAnalysisModule(AnalysisModule):
         return ReadStatsResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [ReadStatsToolResultModule]
 
