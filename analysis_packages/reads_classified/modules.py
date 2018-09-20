@@ -1,7 +1,7 @@
 """Reads Classified Module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.reads_classified import ReadsClassifiedResultModule
+from analysis_packages.base_data.reads_classified import ReadsClassifiedResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class ReadsClassifiedAnalysisModule(AnalysisModule):
         return ReadsClassifiedResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Enumerate which ToolResult modules a sample must have."""
         return [ReadsClassifiedResultModule]
 

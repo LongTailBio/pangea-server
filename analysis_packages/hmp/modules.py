@@ -1,7 +1,7 @@
 """HMP Module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.hmp_sites import HmpSitesResultModule
+from analysis_packages.base_data.hmp_sites import HmpSitesResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class HMPAnalysisModule(AnalysisModule):
         return HMPResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Enumerate which ToolResult modules a sample must have."""
         return [HmpSitesResultModule]
 

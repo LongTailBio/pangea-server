@@ -5,6 +5,27 @@
 from mongoengine import ValidationError, EmbeddedDocument, FloatField
 
 
+class ModuleResult(EmbeddedDocument):
+    """
+    Base mongo result class.
+
+    This will be referenced using a ReferenceField or LazyReferenceField.
+    """
+
+    # Turns out there isn't much in common between SampleToolResult types...
+    meta = {'abstract': True}
+
+    @classmethod
+    def scalar_variables(cls):
+        """Return a list of all scalar variable names in the class."""
+        return []
+
+    @classmethod
+    def vector_variables(cls):
+        """Return a list of all vector variable names in the class."""
+        return []
+
+
 class DistributionResult(EmbeddedDocument):
     """Distribution for a boxplot."""
 

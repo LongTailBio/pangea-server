@@ -1,11 +1,11 @@
 """Multi Axis module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.card_amrs import CARDAMRResultModule
-from tool_packages.humann2_normalize import Humann2NormalizeResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
-from tool_packages.microbe_census import MicrobeCensusResultModule
+from analysis_packages.base_data.card_amrs import CARDAMRResultModule
+from analysis_packages.base_data.humann2_normalize import Humann2NormalizeResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.microbe_census import MicrobeCensusResultModule
 
 
 from .analysis import processor
@@ -27,7 +27,7 @@ class MultiAxisAnalysisModule(AnalysisModule):
         return MultiAxisResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Enumerate which ToolResult modules a sample must have."""
         return [
             KrakenHLLResultModule,

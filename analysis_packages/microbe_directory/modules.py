@@ -1,7 +1,7 @@
 """Module for Microbe Directory results."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.microbe_directory import MicrobeDirectoryResultModule
+from  analysis_packages.base_data.microbe_directory import MicrobeDirectoryResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class MicrobeDirectoryAnalysisModule(AnalysisModule):
         return MicrobeDirectoryResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [MicrobeDirectoryResultModule]
 

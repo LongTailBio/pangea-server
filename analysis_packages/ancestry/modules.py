@@ -1,7 +1,7 @@
 """Module for Ancestry results."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.ancestry import AncestryResultModule
+from analysis_packages.base_data.ancestry import AncestryResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -12,7 +12,7 @@ class AncestryAnalysisModule(AnalysisModule):
     """Ancestry display module."""
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [AncestryResultModule]
 

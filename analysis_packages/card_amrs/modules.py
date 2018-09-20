@@ -2,7 +2,7 @@
 
 from analysis_packages.base import AnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
-from tool_packages.card_amrs import CARDAMRResultModule
+from analysis_packages.base_data.card_amrs import CARDAMRResultModule
 
 from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import CARDGenesResult
@@ -25,7 +25,7 @@ class CARDGenesAnalysisModule(AnalysisModule):
         return CARDGenesResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [CARDAMRResultModule]
 

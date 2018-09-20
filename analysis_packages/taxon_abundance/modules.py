@@ -1,9 +1,9 @@
 """Taxon Abundance module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.kraken import KrakenResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -24,7 +24,7 @@ class TaxonAbundanceAnalysisModule(AnalysisModule):
         return TaxonAbundanceResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Enumerate which ToolResult modules a taxon abundance sample must have."""
         taxa_modules = [
             Metaphlan2ResultModule,

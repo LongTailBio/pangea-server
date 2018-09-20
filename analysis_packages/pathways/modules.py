@@ -1,7 +1,7 @@
 """Pathwaytransferase AnlysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.humann2 import Humann2ResultModule
+from  analysis_packages.base_data.humann2 import Humann2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -22,7 +22,7 @@ class PathwaysAnalysisModule(AnalysisModule):
         return PathwayResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Return a list of the necessary result modules."""
         return [Humann2ResultModule]
 
