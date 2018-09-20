@@ -249,7 +249,7 @@ def build_module_digraph(uuid, module_names, signature_builder):
         for module_name in depend_graph.nodes()
         if depend_graph.in_degree(module_name) == 0
     ]
-    retur task_signatures
+    return task_signatures
 
 
 
