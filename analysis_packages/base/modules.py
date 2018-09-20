@@ -21,6 +21,11 @@ class AnalysisModule:
         raise NotImplementedError()
 
     @staticmethod
+    def required_modules():
+        """List which analysis modules must be complete for this module to run."""
+        return []
+
+    @staticmethod
     def required_tool_results():
         """Enumerate which ToolResult modules a sample must have for this task to run."""
         raise NotImplementedError()
