@@ -2,6 +2,7 @@
 
 from uuid import UUID
 from pprint import pformat
+from time import sleep
 
 from flask import current_app
 from mongoengine.errors import ValidationError
@@ -17,6 +18,8 @@ from app.tool_results import all_tool_results
 from app.utils import lock_function
 
 from .tasks import clean_error
+
+BLOCK_TIME = 100
 
 
 def fetch_samples(sample_group_id):
@@ -86,11 +89,24 @@ def persist_result_helper(result_base, module, data):
         result_base.save()
 
 
+def block_if_analysis_result_exists(module, analysis_result):
+    """Block while A.R. exists but is not complete, return False iff A.R. should be rerun."""
+    if (module.name() in analysis_result.result_types() and
+            getattr(analysis_result, module.name()).fetch() != 'E'):
+        # Block if the result exists and isn't in error then return early
+        while getattr(analysis_result, module.name()).fetch() not in ['S', 'E']:
+            sleep(BLOCK_TIME)
+        return True
+    return False
+
+
 def task_body_sample(sample_uuid, module):
     """Wrap analysis work with status update operations."""
     uuid = UUID(sample_uuid)
     sample = Sample.objects.get(uuid=uuid)
     analysis_result = sample.analysis_result.fetch()
+    if block_if_analysis_result_exists(module, analysis_result):
+        return
     analysis_result.set_module_status(module.name(), 'W')
     tool_names = [tool.name() for tool in module.required_tool_results()]
     sample = sample.fetch_safe(tool_names)
@@ -128,6 +144,8 @@ def conduct_sample(sample_uuid, module_names):
 def task_body_sample_group(sample_group_uuid, module):
     """Wrap analysis work for SampleGroup."""
     sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    if block_if_analysis_result_exists(module, sample_group.analysis_result):
+        return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     samples = filter_samples(sample_group.samples, module)
     tool_names = [tool.name() for tool in module.required_tool_results()]
