@@ -1,5 +1,7 @@
 """Utilities for the Conductor module."""
 
+import networkx as nx
+
 from uuid import UUID
 from pprint import pformat
 from time import sleep
@@ -132,12 +134,19 @@ def run_sample(sample_uuid, module_name):
 
 def conduct_sample(sample_uuid, module_names):
     """Orchestrate tasks to be run for a Sample middleware call."""
+
+    def build_sample_sig(sample_uuid, module_name):
+        """Return a signature for a sample task."""
+        return run_sample.s(sample_uuid, module_name).on_error(clean_error.s())
+
     if not module_names:
         module_names = list(MODULES_BY_NAME.keys())
 
-    task_signatures = [run_sample.s(sample_uuid, module_name)
-                       for module_name in module_names]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    task_signatures = build_module_digraph(
+        sample_uuid,
+        module_names,
+        build_sample_sig,
+    )
     return task_signatures
 
 
@@ -192,10 +201,59 @@ def run_sample_group(sample_group_uuid, module_name):
 
 def conduct_sample_group(sample_group_uuid, module_names):
     """Orchestrate tasks to be run for a SampleGroup middleware call."""
+
+    def build_sample_group_sig(sample_group_uuid, module_name):
+        """Return a signature for a sample group task."""
+        return run_sample_group.s(sample_group_uuid, module_name).on_error(clean_error.s())
+
     if not module_names:
         module_names = list(MODULES_BY_NAME.keys())
 
-    task_signatures = [run_sample_group.s(sample_group_uuid, module_name)
-                       for module_name in module_names]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    task_signatures = build_module_digraph(
+        sample_group_uuid,
+        module_names,
+        build_sample_group_sig,
+    )
     return task_signatures
+
+
+def build_module_digraph(uuid, module_names, signature_builder):
+
+    def recurse_depends(source_module, depend_graph):
+        """Recursively add dependency edges to the depend graph."""
+        for depends_module in source_module.required_modules():
+            depend_graph.add_edge(source_module.name(), depends_module.name())
+            recurse_depends(depends_module, depend_graph)
+
+    depend_graph = nx.DiGraph()
+    for module_name in module_names:
+        module = MODULES_BY_NAME[module_name]
+        recurse_depends(source_module, depend_graph)
+
+    def recurse_chords(source_module_name):
+        try:
+            source_signature = signature_tbl[source_module_name]
+        except KeyError:
+            source_signature = signature_builder(uuid, source_module_name)
+            signature_tbl[source_module_name] = source_signature
+        depends_on_chord = [
+            recurse_chords(upstream_name)
+            for upstream_name in nx.descendants(depends_graph, source_module_name)
+        ]
+        if not depends_on_chord:
+            return source_signature
+        return chord(depends_on_chord) | source_signature
+
+    task_signatures = [
+        recurse_chords(module_name)
+        for module_name in depend_graph.nodes()
+        if depend_graph.in_degree(module_name) == 0
+    ]
+    retur task_signatures
+
+
+
+
+
+
+
