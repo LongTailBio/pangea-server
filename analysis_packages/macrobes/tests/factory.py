@@ -4,7 +4,7 @@
 
 import factory
 
-from tool_packages.macrobes.tests.factory import create_values
+from analysis_packages.base_data.macrobes.tests.factory import create_values
 
 from ..models import MacrobeResult
 

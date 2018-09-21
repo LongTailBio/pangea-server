@@ -6,10 +6,10 @@ from random import random
 
 import factory
 
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
-from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.krakenhll.tests.factory import create_result as create_krakenhll
+from analysis_packages.base_data.metaphlan2.tests.factory import create_result as create_metaphlan2
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
 
 from ..models import TopTaxaResult
 
