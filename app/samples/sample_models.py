@@ -11,7 +11,6 @@ from analysis_packages.base.utils import jsonify
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
 from app.extensions import mongoDB
-from app.tool_results import all_tool_results
 
 from tool_packages.base import SampleToolResultModule
 
@@ -30,13 +29,6 @@ class BaseSample(Document):
 
     meta = {'allow_inheritance': True}
 
-    @property
-    def tool_result_names(self):
-        """Return a list of all tool results present for this Sample."""
-        all_fields = [mod.name() for mod in all_tool_results]
-        return [field for field in all_fields
-                if getattr(self, field, None) is not None]
-
     def fetch_safe(self, tools=None):
         """Return the sample with all tool result documents fetched and jsonified."""
         if not tools:
@@ -54,7 +46,8 @@ class BaseSample(Document):
 Sample = type('Sample', (BaseSample,), {
     module.name(): LazyReferenceField(module.result_model())
     for module in all_tool_results
-    if issubclass(module, SampleToolResultModule)})
+    if issubclass(module, SampleToolResultModule)
+})
 
 
 class SampleSchema(BaseSchema):

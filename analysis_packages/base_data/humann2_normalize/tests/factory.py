@@ -42,4 +42,5 @@ class Humann2NormalizeToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def genes(self):
+        """Return genes."""
         return create_values()

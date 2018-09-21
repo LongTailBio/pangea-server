@@ -60,16 +60,20 @@ class ReadStatsToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def num_reads(self):
+            """Return random num reads."""
             return randint(100 * 1000, 1000 * 1000)
 
         @factory.lazy_attribute
         def gc_content(self):
+            """Return random gc content."""
             return random()
 
         @factory.lazy_attribute
         def codons(self):
+            """Return random codon vector."""
             return create_codons()
 
         @factory.lazy_attribute
         def tetramers(self):
+            """Return random tetramer vector."""
             return create_tetramers()

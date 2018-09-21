@@ -26,4 +26,5 @@ class Metaphlan2ResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def taxa(self):
+        """Return taxa."""
         return create_values()

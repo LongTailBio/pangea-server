@@ -42,4 +42,5 @@ class MethylToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def genes(self):
+        """Return random genes."""
         return create_values()

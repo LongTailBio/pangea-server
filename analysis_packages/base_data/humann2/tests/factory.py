@@ -39,4 +39,5 @@ class Humann2ResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def pathways(self):
+        """Return pathways."""
         return create_values()

@@ -77,6 +77,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def gram_stain(self):
+            """Return microbe directory stuff."""
             return {
                 'gram_positive': random(),
                 'gram_negative': random(),
@@ -85,6 +86,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def microbiome_location(self):
+            """Return microbe directory stuff."""
             return {
                 'human': random(),
                 'non_human': random(),
@@ -93,6 +95,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def antimicrobial_susceptibility(self):
+            """Return microbe directory stuff."""
             return {
                 'known_abx': random(),
                 'unknown': random(),
@@ -100,6 +103,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def optimal_temperature(self):
+            """Return microbe directory stuff."""
             return {
                 '37c': random(),
                 'unknown': random(),
@@ -107,6 +111,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def extreme_environment(self):
+            """Return microbe directory stuff."""
             return {
                 'mesophile': random(),
                 'unknown': random(),
@@ -114,6 +119,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def biofilm_forming(self):
+            """Return microbe directory stuff."""
             return {
                 'yes': random(),
                 'unknown': random(),
@@ -121,18 +127,21 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def optimal_ph(self):
+            """Return microbe directory stuff."""
             return {
                 'unknown': random(),
             }
 
         @factory.lazy_attribute
         def animal_pathogen(self):
+            """Return microbe directory stuff."""
             return {
                 'unknown': random(),
             }
 
         @factory.lazy_attribute
         def spore_forming(self):
+            """Return microbe directory stuff."""
             return {
                 'no': random(),
                 'unknown': random(),
@@ -140,6 +149,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def pathogenicity(self):
+            """Return microbe directory stuff."""
             return {
                 'cogem_1': random(),
                 'cogem_2': random(),
@@ -148,6 +158,7 @@ class MicrobeDirectoryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         @factory.lazy_attribute
         def plant_pathogen(self):
+            """Return microbe directory stuff."""
             return {
                 'no': random(),
                 'unknown': random(),
