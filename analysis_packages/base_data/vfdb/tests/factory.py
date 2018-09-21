@@ -2,6 +2,8 @@
 
 from random import randint
 
+import factory
+
 from ..models import VFDBToolResult
 
 
@@ -28,3 +30,16 @@ def create_result(save=True):
     if save:
         result.save()
     return result
+
+
+class VFDBToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = VFDBToolResult
+
+    @factory.lazy_attribute
+    def genes(self):
+        return create_values()

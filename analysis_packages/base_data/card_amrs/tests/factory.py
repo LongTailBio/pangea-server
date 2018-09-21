@@ -2,6 +2,8 @@
 
 from random import randint
 
+import factory
+
 from ..models import CARDAMRToolResult
 
 
@@ -21,10 +23,14 @@ def create_values():
     return out
 
 
-def create_result(save=True):
-    """Create CARD AMR Alignment ToolResult with randomized field data."""
-    packed_data = create_values()
-    result = CARDAMRToolResult(genes=packed_data)
-    if save:
-        result.save()
-    return result
+class CARDAMRToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = CARDAMRToolResult
+
+    @factory.lazy_attribute
+    def genes(self):
+        return create_values()

@@ -2,6 +2,8 @@
 
 from random import random, randint
 
+import factory
+
 from ..models import AlphaDiversityToolResult
 
 
@@ -50,23 +52,24 @@ def taxa_level(read_sep=False):
     }
 
 
-def create_values():
-    """Return simulated alpha diversity data."""
-    return {
-        'metaphlan2': {
+class AlphaDiversityToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base alpha diversity data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = AlphaDiversityToolResult
+
+    @factory.lazy_attribute
+    def metaphlan2(self):
+        return {
             'species': taxa_level(),
             'genus': taxa_level(),
-        }, 'kraken': {
+        }
+
+    @factory.lazy_attribute
+    def kraken(self):
+        return {
             'species': taxa_level(read_sep=True),
             'genus': taxa_level(read_sep=True),
         }
-    }
-
-
-def create_result(save=True):
-    """Return an alpha diversity result with simulated data."""
-    packed_data = create_values()
-    result = AlphaDiversityToolResult(**packed_data)
-    if save:
-        result.save()
-    return result

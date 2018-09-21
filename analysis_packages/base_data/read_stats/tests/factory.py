@@ -2,6 +2,8 @@
 
 from random import randint, random
 
+import factory
+
 from .. import ReadStatsToolResult
 
 
@@ -46,3 +48,28 @@ def create_result(save=True):
     if save:
         result.save()
     return result
+
+
+class ReadStatsToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = ReadStatsToolResult
+
+        @factory.lazy_attribute
+        def num_reads(self):
+            return randint(100 * 1000, 1000 * 1000)
+
+        @factory.lazy_attribute
+        def gc_content(self):
+            return random()
+
+        @factory.lazy_attribute
+        def codons(self):
+            return create_codons()
+
+        @factory.lazy_attribute
+        def tetramers(self):
+            return create_tetramers()

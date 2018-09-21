@@ -2,6 +2,8 @@
 
 from tool_packages.kraken.tests.factory import create_values
 
+import factory
+
 from ..models import Metaphlan2Result
 
 
@@ -12,3 +14,16 @@ def create_result(taxa_count=10, save=True):
     if save:
         result.save()
     return result
+
+
+class Metaphlan2ResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = Metaphlan2Result
+
+    @factory.lazy_attribute
+    def taxa(self):
+        return create_values()
