@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating Microbe Census result models for testing."""
 
 import random

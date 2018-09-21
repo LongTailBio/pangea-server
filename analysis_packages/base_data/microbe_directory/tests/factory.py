@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating Kraken result models for testing."""
 
 from random import random

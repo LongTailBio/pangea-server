@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating Humann2 Normalize result models for testing."""
 
 from random import randint
