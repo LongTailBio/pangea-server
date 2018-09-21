@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating VFDB result models for testing."""
 
 from random import randint

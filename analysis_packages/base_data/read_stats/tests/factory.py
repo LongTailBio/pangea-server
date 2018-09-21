@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating Read Stat result models for testing."""
 
 from random import randint, random

@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating Metaphlan2 result models for testing."""
 
 from tool_packages.kraken.tests.factory import create_values

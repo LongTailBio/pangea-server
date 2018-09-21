@@ -1,3 +1,5 @@
+# pylint: disable=too-few-public-methods disable=no-self-use
+
 """Factory for generating artificial Alpha Diversity data."""
 
 from random import random, randint
