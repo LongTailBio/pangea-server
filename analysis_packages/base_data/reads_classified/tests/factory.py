@@ -41,12 +41,12 @@ class ReadsClassifiedToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
         model = ReadsClassifiedToolResult
 
-    viral = random(),
-    archaeal = random(),
-    bacterial = random(),
-    host = random(),
-    nonhost_macrobial = random(),
-    fungal = random(),
-    nonfungal_eukaryotic = random(),
-    unknown = random(),
+    viral = random()
+    archaeal = random()
+    bacterial = random()
+    host = random()
+    nonhost_macrobial = random()
+    fungal = random()
+    nonfungal_eukaryotic = random()
+    unknown = random()
     total = random()

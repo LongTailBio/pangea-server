@@ -2,7 +2,7 @@
 
 """Factory for generating Metaphlan2 result models for testing."""
 
-from tool_packages.kraken.tests.factory import create_values
+from analysis_packages.base_data.kraken.tests.factory import create_values
 
 import factory
 

@@ -2,7 +2,7 @@
 
 from analysis_packages.top_taxa import TopTaxaAnalysisModule
 from analysis_packages.top_taxa.tests.factory import create_values
-from tool_packages.krakenhll.constants import MODULE_NAME as KRAKENHLL_NAME
+from analysis_packages.base_data.krakenhll.constants import MODULE_NAME as KRAKENHLL_NAME
 
 from app.analysis_modules.utils import fetch_samples, filter_samples
 from app.extensions import db
