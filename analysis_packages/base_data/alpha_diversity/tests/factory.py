@@ -62,6 +62,7 @@ class AlphaDiversityToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def metaphlan2(self):
+        """Return taxa."""
         return {
             'species': taxa_level(),
             'genus': taxa_level(),
@@ -69,6 +70,7 @@ class AlphaDiversityToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def kraken(self):
+        """Return taxa."""
         return {
             'species': taxa_level(read_sep=True),
             'genus': taxa_level(read_sep=True),

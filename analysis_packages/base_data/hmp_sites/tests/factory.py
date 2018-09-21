@@ -28,20 +28,25 @@ class HmpSitesResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def skin(self):
+        """Return list of similarities."""
         return [random() for _ in range(randint(3, 10))]
 
     @factory.lazy_attribute
     def oral(self):
+        """Return list of similarities."""
         return [random() for _ in range(randint(3, 10))]
 
     @factory.lazy_attribute
     def urogenital_tract(self):
+        """Return list of similarities."""
         return [random() for _ in range(randint(3, 10))]
 
     @factory.lazy_attribute
     def airways(self):
+        """Return list of similarities."""
         return [random() for _ in range(randint(3, 10))]
 
     @factory.lazy_attribute
     def gastrointestinal(self):
+        """Return list of similarities."""
         return [random() for _ in range(randint(3, 10))]

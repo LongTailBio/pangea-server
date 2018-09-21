@@ -21,8 +21,6 @@ from app.api.v1.sample_groups import sample_groups_blueprint
 from app.api.v1.users import users_blueprint
 from app.config import app_config
 from app.extensions import mongoDB, db, migrate, bcrypt, celery
-from app.tool_results import all_tool_results
-from app.tool_results.register import register_tool_result
 
 
 def create_app(environment=None):

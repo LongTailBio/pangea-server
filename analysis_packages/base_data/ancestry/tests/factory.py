@@ -28,4 +28,5 @@ class AncestryToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def populations(self):
+        """Return populations."""
         return create_values()

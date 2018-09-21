@@ -42,4 +42,5 @@ class MacrobeToolResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def macrobes(self):
+        """Return macrobes."""
         return create_values()

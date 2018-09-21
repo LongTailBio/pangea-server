@@ -1,10 +1,10 @@
 """Utilities for the Conductor module."""
 
-import networkx as nx
-
 from uuid import UUID
 from pprint import pformat
 from time import sleep
+
+import networkx as nx
 
 from flask import current_app
 from mongoengine.errors import ValidationError
@@ -218,6 +218,7 @@ def conduct_sample_group(sample_group_uuid, module_names):
 
 
 def build_module_digraph(uuid, module_names, signature_builder):
+    """Build a tree of tasks based on module dependencies."""
 
     def recurse_depends(source_module, depend_graph):
         """Recursively add dependency edges to the depend graph."""
@@ -227,10 +228,12 @@ def build_module_digraph(uuid, module_names, signature_builder):
 
     depend_graph = nx.DiGraph()
     for module_name in module_names:
-        module = MODULES_BY_NAME[module_name]
+        source_module = MODULES_BY_NAME[module_name]
         recurse_depends(source_module, depend_graph)
+    signature_tbl = {}
 
     def recurse_chords(source_module_name):
+        """Build a tree of tasks."""
         try:
             source_signature = signature_tbl[source_module_name]
         except KeyError:

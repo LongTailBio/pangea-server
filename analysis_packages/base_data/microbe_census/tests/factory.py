@@ -35,12 +35,15 @@ class MicrobeCensusResultFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def average_genome_size(self):
+        """Return random ags."""
         return random.random() * 10e8
 
     @factory.lazy_attribute
     def total_bases(self):
+        """Return random total bases."""
         return random.randint(10e8, 10e10)
 
     @factory.lazy_attribute
     def genome_equivalents(self):
+        """Return random number of genome equivalents."""
         return random.random() * 10e2

@@ -25,11 +25,6 @@ class AnalysisModule:
         """List which analysis modules must be complete for this module to run."""
         return []
 
-    @staticmethod
-    def required_tool_results():
-        """Enumerate which ToolResult modules a sample must have for this task to run."""
-        raise NotImplementedError()
-
     @classmethod
     def is_dependent_on_tool(cls, tool_result_cls):
         """Return True if this AnalysisModule is dependent on a given Tool Result type."""
