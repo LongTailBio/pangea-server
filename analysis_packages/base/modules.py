@@ -1,5 +1,7 @@
 """AnalysisModule classes."""
 
+import pandas as pd
+
 from .exceptions import UnsupportedAnalysisMode
 
 
