@@ -3,7 +3,7 @@
 from numpy import percentile
 
 from analysis_packages.base.utils import categories_from_metadata, scrub_category_val
-from tool_packages.hmp_sites import HmpSitesResultModule
+from analysis_packages.base_data.hmp_sites import HmpSitesResultModule
 
 
 def make_dist_table(hmp_results, site_names):
