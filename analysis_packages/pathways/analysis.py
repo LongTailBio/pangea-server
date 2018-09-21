@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 
-from tool_packages.humann2 import Humann2ResultModule
+from analysis_packages.base_data.humann2 import Humann2ResultModule
 
 from .constants import TOP_N
 

@@ -2,7 +2,7 @@
 
 from pandas import DataFrame
 
-from tool_packages.macrobes import MacrobeResultModule
+from analysis_packages.base_data.macrobes import MacrobeResultModule
 
 
 def collate_macrobes(samples, reverse):

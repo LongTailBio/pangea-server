@@ -4,9 +4,9 @@ from numpy import percentile
 
 from analysis_packages.base.utils import categories_from_metadata, scrub_category_val
 
-from tool_packages.alpha_diversity import AlphaDiversityToolResult
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.alpha_diversity import AlphaDiversityToolResult
+from analysis_packages.base_data.kraken import KrakenResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
 
 # Define aliases
 ADivRes = AlphaDiversityToolResult  # pylint: disable=invalid-name

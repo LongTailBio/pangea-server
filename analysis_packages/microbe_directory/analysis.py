@@ -2,7 +2,7 @@
 
 from pandas import DataFrame
 
-from tool_packages.microbe_directory import (
+from analysis_packages.base_data.microbe_directory import (
     MicrobeDirectoryToolResult,
     MicrobeDirectoryResultModule,
 )

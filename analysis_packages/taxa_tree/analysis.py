@@ -1,8 +1,8 @@
 """Tasks for TaxaTree Wrangler."""
 
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
+from analysis_packages.base_data.kraken import KrakenResultModule
+from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
 
 
 def get_total(taxa_list, delim):
