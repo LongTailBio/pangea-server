@@ -1,6 +1,8 @@
 """Factory for generating KrakenHLL result models for testing."""
 
-from tool_packages.kraken.tests.factory import create_values
+from analysis_packages.base_data.kraken.tests.factory import create_values
+
+import factory
 
 from ..models import KrakenHLLResult
 
@@ -12,3 +14,16 @@ def create_result(taxa_count=10, save=True):
     if save:
         result.save()
     return result
+
+
+class KrakenHLLResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = KrakenHLLResult
+
+    @factory.lazy_attribute
+    def taxa(self):
+        return create_values()

@@ -2,6 +2,8 @@
 
 from random import random
 
+import factory
+
 from .. import ReadsClassifiedToolResult
 
 
@@ -27,3 +29,22 @@ def create_result(save=True):
     if save:
         result.save()
     return result
+
+
+class ReadsClassifiedToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = ReadsClassifiedToolResult
+
+    viral = random(),
+    archaeal = random(),
+    bacterial = random(),
+    host = random(),
+    nonhost_macrobial = random(),
+    fungal = random(),
+    nonfungal_eukaryotic = random(),
+    unknown = random(),
+    total = random()

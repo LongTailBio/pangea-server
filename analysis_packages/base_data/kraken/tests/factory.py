@@ -1,6 +1,7 @@
 """Factory for generating Kraken result models for testing."""
 
 import random
+import factory
 
 from ..models import KrakenResult
 
@@ -50,3 +51,16 @@ def create_result(taxa_count=10, save=True):
     if save:
         result.save()
     return result
+
+
+class KrakenResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = KrakenResult
+
+    @factory.lazy_attribute
+    def taxa(self):
+        return create_values()

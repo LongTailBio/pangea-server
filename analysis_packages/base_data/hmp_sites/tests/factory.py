@@ -2,6 +2,8 @@
 
 from random import random, randint
 
+import factory
+
 from .. import HmpSitesResult
 
 
@@ -16,10 +18,30 @@ def create_values():
     }
 
 
-def create_result(save=True):
-    """Create HmpSitesResult with randomized fields."""
-    packed_data = create_values()
-    result = HmpSitesResult(**packed_data)
-    if save:
-        result.save()
-    return result
+class HmpSitesResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = HmpSitesResult
+
+    @factory.lazy_attribute
+    def skin(self):
+        return [random() for _ in range(randint(3, 10))]
+
+    @factory.lazy_attribute
+    def oral(self):
+        return [random() for _ in range(randint(3, 10))]
+
+    @factory.lazy_attribute
+    def urogenital_tract(self):
+        return [random() for _ in range(randint(3, 10))]
+
+    @factory.lazy_attribute
+    def airways(self):
+        return [random() for _ in range(randint(3, 10))]
+
+    @factory.lazy_attribute
+    def gastrointestinal(self):
+        return [random() for _ in range(randint(3, 10))]

@@ -27,3 +27,16 @@ def create_result(save=True):
     if save:
         result.save()
     return result
+
+
+class Humann2ResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = Humann2Result
+
+    @factory.lazy_attribute
+    def pathways(self):
+        return create_values()

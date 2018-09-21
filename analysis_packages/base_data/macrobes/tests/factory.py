@@ -2,6 +2,8 @@
 
 from random import randint
 
+import factory
+
 from ..models import MacrobeToolResult
 
 
@@ -28,3 +30,16 @@ def create_result(save=True):
     if save:
         result.save()
     return result
+
+
+class MacrobeToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = MacrobeToolResult
+
+    @factory.lazy_attribute
+    def macrobes(self):
+        return create_values()

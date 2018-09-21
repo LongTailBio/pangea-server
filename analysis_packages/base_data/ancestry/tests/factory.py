@@ -18,10 +18,14 @@ def create_values(dropout=0.25):
     return {loc: val / tot for loc, val in result.items()}
 
 
-def create_result(save=True):
-    """Create AncestryToolResult with randomized field data."""
-    packed_data = {'populations': create_values()}
-    result = AncestryToolResult(**packed_data)
-    if save:
-        result.save()
-    return result
+class AncestryToolResultFactory(factory.mongoengine.MongoEngineFactory):
+    """Factory for base ancestry data."""
+
+    class Meta:
+        """Factory metadata."""
+
+        model = AncestryToolResult
+
+    @factory.lazy_attribute
+    def populations(self):
+        return create_values()
