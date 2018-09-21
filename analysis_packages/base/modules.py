@@ -71,3 +71,31 @@ class AnalysisModule:
         Ex. Ancestry, Beta Diversity
         """
         raise UnsupportedAnalysisMode
+
+    @classmethod
+    def promote_scalars(cls, samples):
+        """Return the promoted form of all scalars as a pandas series."""
+        return {
+            scalar_var: pd.Series({
+                sample['name']: sample[cls.name()][scalar_var]
+                for sample in samples
+            })
+            for scalar_var in cls.result_model().scalar_variables()
+        }
+
+    @classmethod
+    def promote_vectors(cls, samples, normalize_rows=False, extractor=lambda x: x):
+        """Return the promoted form of all vectors as a pandas dataframe."""
+        all_vars = {}
+        for vector_var in cls.result_model().vector_variables():
+            data_tbl = pd.DataFrame.from_dict({
+                sample['name']: {
+                    feature: extractor(val)
+                    for feature, val in sample[cls.name()][vector_var].items()
+                }
+                for sample in samples
+            }, orient='index')
+            if normalize_rows:
+                data_tbl = data_tbl.div(data_tbl.sum(axis=1), axis=0)
+            all_vars[vector_var] = data_tbl
+        return all_vars
