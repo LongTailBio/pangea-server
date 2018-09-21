@@ -4,7 +4,7 @@
 
 import factory
 
-from tool_packages.microbe_directory.tests.factory import create_values
+from analysis_packages.base_data.microbe_directory.tests.factory import create_values
 
 from ..models import MicrobeDirectoryResult
 

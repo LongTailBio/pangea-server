@@ -4,13 +4,13 @@
 
 import factory
 
-from tool_packages.card_amrs.tests.factory import create_result as create_card_amr
-from tool_packages.humann2_normalize.tests.factory import (
+from analysis_packages.base_data.card_amrs.tests.factory import create_result as create_card_amr
+from analysis_packages.base_data.humann2_normalize.tests.factory import (
     create_result as create_humann2_normalize,
 )
-from tool_packages.krakenhll.tests.factory import create_result as create_krakenhll
-from tool_packages.metaphlan2.tests.factory import create_result as create_metaphlan2
-from tool_packages.microbe_census.tests.factory import create_result as create_microbe_census
+from analysis_packages.base_data.krakenhll.tests.factory import create_result as create_krakenhll
+from analysis_packages.base_data.metaphlan2.tests.factory import create_result as create_metaphlan2
+from analysis_packages.base_data.microbe_census.tests.factory import create_result as create_microbe_census
 
 from ..models import MultiAxisResult
 
