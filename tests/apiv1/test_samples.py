@@ -79,6 +79,24 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 
+    def test_get_single_sample_metadata(self):  # pylint: disable=invalid-name
+        """Ensure get metadata for a single sample behaves correctly."""
+        metadata = {'foo': 'bar'}
+        sample = add_sample(name='SMPL_01', metadata=metadata)
+        sample_uuid = str(sample.uuid)
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/samples/{sample_uuid}/metadata',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            sample = data['data']['sample']
+            self.assertIn('uuid', sample)
+            self.assertIn('name', sample)
+            self.assertEqual(sample['metadata'], metadata)
+
     def test_get_sample_uuid_from_name(self):
         """Ensure get sample uuid behaves correctly."""
         sample_name = 'SMPL_01'
