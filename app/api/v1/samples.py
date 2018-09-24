@@ -83,7 +83,7 @@ def get_single_sample_metadata(sample_uuid):
         uuid = UUID(sample_uuid)
         sample = Sample.objects.get(uuid=uuid)
         fields = ('uuid', 'name', 'metadata')
-        result = SampleSchema(only=fields).dump(sample).data
+        result = SampleSchema(only=fields).dump(sample)
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')

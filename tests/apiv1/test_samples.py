@@ -79,7 +79,7 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 
-    def test_get_single_sample_metadata(self):  # pylint: disable=invalid-name
+    def test_get_single_sample_metadata(self):
         """Ensure get metadata for a single sample behaves correctly."""
         metadata = {'foo': 'bar'}
         sample = add_sample(name='SMPL_01', metadata=metadata)
