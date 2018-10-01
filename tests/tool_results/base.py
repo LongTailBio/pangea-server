@@ -1,6 +1,7 @@
 """Base test suite and utilities for tool result modules."""
 
 import json
+from uuid import uuid4
 
 from app.samples.sample_models import Sample
 
@@ -15,6 +16,7 @@ class BaseToolResultTest(BaseTestCase):
         """Ensure tool result model is created correctly."""
         result.save()
         sample = Sample(name='SMPL_01',
+                        library_uuid=uuid4(),
                         **{tool_result_name: result}).save()
         self.assertTrue(getattr(sample, tool_result_name))
 

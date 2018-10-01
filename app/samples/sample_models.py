@@ -21,7 +21,8 @@ class BaseSample(Document):
 
     uuid = mongoDB.UUIDField(required=True, primary_key=True,
                              binary=False, default=uuid4)
-    name = mongoDB.StringField(unique=True)
+    library_uuid = mongoDB.UUIDField(required=True, binary=False)
+    name = mongoDB.StringField(required=True, unique_with='library_uuid')
     metadata = mongoDB.DictField(default={})
     analysis_result = mongoDB.LazyReferenceField(AnalysisResultMeta)
     theme = mongoDB.StringField(default='')

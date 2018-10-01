@@ -2,6 +2,7 @@
 
 import datetime
 import json
+from uuid import uuid4
 
 from functools import wraps
 
@@ -35,14 +36,19 @@ def add_organization(name, admin_email, access_scheme='public',
     return organization
 
 
-def add_sample(name, analysis_result=None, metadata={},  # pylint: disable=dangerous-default-value
-               created_at=datetime.datetime.utcnow(), sample_kwargs={}):
+# pylint: disable=too-many-arguments,dangerous-default-value
+def add_sample(name, library_uuid=None, analysis_result=None,
+               metadata={}, created_at=datetime.datetime.utcnow(),
+               sample_kwargs={}):
     """Wrap functionality for adding sample."""
+    if not library_uuid:
+        library_uuid = uuid4()
     if not analysis_result:
         analysis_result = AnalysisResultMeta().save()
-    return Sample(name=name, metadata=metadata,
+    return Sample(library_uuid=library_uuid, name=name, metadata=metadata,
                   analysis_result=analysis_result, created_at=created_at,
                   **sample_kwargs).save()
+# pylint: enable=too-many-arguments,dangerous-default-value
 
 
 def add_sample_group(name, analysis_result=None,

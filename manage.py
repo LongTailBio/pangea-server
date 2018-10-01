@@ -22,7 +22,7 @@ manager.add_command('db', MigrateCommand)
 
 # These must be imported AFTER Mongo connection has been established during app creation
 from seed import abrf_analysis_result, uw_analysis_result, reads_classified
-from seed.fuzz import create_saved_group
+from seed.fuzz import generate_metadata, create_saved_group
 
 
 @manager.command
@@ -70,27 +70,34 @@ def seed_db():
     """Seed the database."""
     default_user = get_user()
 
-    abrf_analysis_result_01 = AnalysisResultMeta(reads_classified=reads_classified).save()
-    abrf_sample_01 = Sample(name='SomethingUnique_A',
-                            analysis_result=abrf_analysis_result_01).save()
-    abrf_analysis_result_02 = AnalysisResultMeta(reads_classified=reads_classified).save()
-    abrf_sample_02 = Sample(name='SomethingUnique_B',
-                            analysis_result=abrf_analysis_result_02).save()
-    abrf_analysis_result.save()
-
     abrf_uuid = UUID('00000000-0000-4000-8000-000000000000')
     abrf_description = 'ABRF San Diego Mar 24th-29th 2017'
     abrf_2017_group = SampleGroup(name='ABRF 2017',
                                   analysis_result=abrf_analysis_result,
                                   description=abrf_description)
     abrf_2017_group.id = abrf_uuid
+    abrf_analysis_result.save()
+
+    abrf_analysis_result_01 = AnalysisResultMeta(reads_classified=reads_classified).save()
+    abrf_sample_01 = Sample(name='SomethingUnique_A',
+                            library_uuid=abrf_uuid,
+                            analysis_result=abrf_analysis_result_01,
+                            metadata=generate_metadata()).save()
+    abrf_analysis_result_02 = AnalysisResultMeta(reads_classified=reads_classified).save()
+    abrf_sample_02 = Sample(name='SomethingUnique_B',
+                            library_uuid=abrf_uuid,
+                            analysis_result=abrf_analysis_result_02,
+                            metadata=generate_metadata()).save()
+
     abrf_2017_group.samples = [abrf_sample_01, abrf_sample_02]
 
-    uw_analysis_result.save()
-    uw_sample = Sample(name='UW_Madison_00', analysis_result=uw_analysis_result).save()
     uw_group_result = AnalysisResultMeta().save()
     uw_madison_group = SampleGroup(name='The UW Madison Project',
                                    analysis_result=uw_group_result)
+    uw_analysis_result.save()
+    uw_sample = Sample(library_uuid=uw_madison_group.id,
+                       name='UW_Madison_00',
+                       analysis_result=uw_analysis_result).save()
     uw_madison_group.samples = [uw_sample]
 
     fuzz_uuid = UUID('00000000-0000-4000-8000-000000000001')
