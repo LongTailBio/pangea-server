@@ -1,6 +1,9 @@
 """Test suite for Sample Group module."""
 
 import json
+from uuid import UUID
+
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
 from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
@@ -9,7 +12,7 @@ from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results.ancestry.tests.factory import create_ancestry
 
 from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user
+from tests.utils import add_sample, add_sample_group, with_user, add_organization
 
 
 class TestSampleGroupModule(BaseTestCase):
@@ -37,6 +40,104 @@ class TestSampleGroupModule(BaseTestCase):
             sample_group_id = data['data']['sample_group']['uuid']
             sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
             self.assertTrue(sample_group.analysis_result)
+
+    def create_group_for_organization(self, auth_headers, organization_uuid):
+        """Create sample group for organization."""
+        group_name = 'The Most Sampled of Groups'
+        with self.client:
+            response = self.client.post(
+                '/api/v1/sample_groups',
+                headers=auth_headers,
+                data=json.dumps(dict(
+                    name=group_name,
+                    organization_uuid=str(organization_uuid),
+                )),
+                content_type='application/json',
+            )
+            return response
+
+    @with_user
+    def test_add_group_with_organization(self, auth_headers, login_user):  # pylint: disable=invalid-name
+        """Ensure a new sample group can be added with an organization."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        organization.users.append(login_user)
+        db.session.commit()
+        response = self.create_group_for_organization(auth_headers, organization.id)
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 201)
+        sample_group_id = UUID(data['data']['sample_group']['uuid'])
+
+        organization_groups = organization.sample_groups
+        sample_group_ids = [group.id for group in organization_groups]
+        self.assertIn(sample_group_id, sample_group_ids)
+
+    @with_user
+    def test_unauthorized_add_group_with_organization(self, auth_headers, *_):  # pylint: disable=invalid-name
+        """
+        Ensure a new sample group cannot be added to an organization to the user is not part of.
+        """
+        organization = add_organization('Organization', 'admin@organization.org')
+        response = self.create_group_for_organization(auth_headers, organization.id)
+        self.assertEqual(response.status_code, 403)
+
+    def delete_sample_group(self, auth_headers, sample_group_id):
+        """Perform request to delete sample group."""
+        with self.client:
+            response = self.client.delete(
+                f'/api/v1/sample_groups/{sample_group_id}',
+                headers=auth_headers,
+                content_type='application/json',
+            )
+            return response
+
+    @with_user
+    def test_delete_sample_group(self, auth_headers, *_):
+        """Ensure an unowned sample group can be removed from the database."""
+        sample_group = add_sample_group(name='The Least Sampled of Groups')
+        sample = add_sample(name='SMPL_01')
+        sample_group.samples = [sample]
+        db.session.commit()
+        response = self.delete_sample_group(auth_headers, sample_group.id)
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('success', data['status'])
+
+        # Ensure Sample Group was removed
+        query = SampleGroup.query.filter_by(id=sample_group.id)
+        self.assertRaises(NoResultFound, query.one)
+
+    @with_user
+    def test_delete_owned_sample_group(self, auth_headers, login_user):
+        """Ensure an owned sample group can be removed from the database by an authorized user."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        organization.users.append(login_user)
+        sample_group = add_sample_group(name='Owned Sample Group')
+        organization.sample_groups.append(sample_group)
+        db.session.commit()
+        response = self.delete_sample_group(auth_headers, sample_group.id)
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('success', data['status'])
+
+        # Ensure Sample Group was removed
+        query = SampleGroup.query.filter_by(id=sample_group.id)
+        self.assertRaises(NoResultFound, query.one)
+
+    @with_user
+    def test_unauthorized_delete_sample_group(self, auth_headers, *_):  # pylint: disable=invalid-name
+        """Ensure an owned sample group cannot be removed by an unauthorized user."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        sample_group = add_sample_group(name='Owned Sample Group')
+        organization.sample_groups.append(sample_group)
+        db.session.commit()
+        response = self.delete_sample_group(auth_headers, sample_group.id)
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 403)
+        self.assertIn('error', data['status'])
+
+        # Ensure Sample Group still exists
+        group = SampleGroup.query.filter_by(id=sample_group.id).one()
+        self.assertTrue(group)
 
     @with_user
     def test_add_samples_to_group(self, auth_headers, *_):

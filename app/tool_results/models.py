@@ -12,6 +12,16 @@ class ToolResult(mongoDB.Document):
 
     meta = {'abstract': True}
 
+    @classmethod
+    def scalar_variables(cls):
+        """Return a list of all scalar variable names in the class."""
+        return []
+
+    @classmethod
+    def vector_variables(cls):
+        """Return a list of all vector variable names in the class."""
+        return []
+
 
 # This is a Document (not an EmbeddedDocument) because it is
 # attached to a SQL SampleGroup, not nested within a Mongo Sample

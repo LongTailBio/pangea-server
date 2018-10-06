@@ -10,6 +10,8 @@ HMP_NAME = 'hmp'
 MACROBES_NAME = 'macrobe_abundance'
 METHYLS_NAME = 'methyltransferases'
 MICROBE_DIR_NAME = 'microbe_directory'
+MULTI_AXIS_NAME = 'multi_axis_abundance'
+TOP_TAXA_NAME = 'top_taxa'
 PATHWAYS_NAME = 'pathways'
 READ_STATS_NAME = 'read_stats'
 READS_CLASSIFIED_NAME = 'reads_classified'
@@ -30,12 +32,14 @@ ALL_MODULE_NAMES = [
     MACROBES_NAME,
     METHYLS_NAME,
     MICROBE_DIR_NAME,
+    MULTI_AXIS_NAME,
     READ_STATS_NAME,
     PATHWAYS_NAME,
     READS_CLASSIFIED_NAME,
     SAMPLE_SIMILARITY_NAME,
     TAXA_TREE_NAME,
     TAXON_ABUNDANCE_NAME,
+    TOP_TAXA_NAME,
     VFDB_NAME,
     VOLCANO_NAME,
 ]

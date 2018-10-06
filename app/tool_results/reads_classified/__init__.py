@@ -33,3 +33,8 @@ class ReadsClassifiedResultModule(SampleToolResultModule):
     def result_model(cls):
         """Return Reads Classified module's model class."""
         return ReadsClassifiedToolResult
+
+    @classmethod
+    def upload_hooks(cls):
+        """Return hook for top level key, genes."""
+        return [lambda payload: payload['proportions']]

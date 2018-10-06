@@ -51,7 +51,7 @@ class BaseDisplayModuleTest(BaseTestCase):
         wrangled_sample = getattr(analysis_result, endpt).fetch()
         self.assertEqual(wrangled_sample.status, 'S')
 
-    def generic_run_group_test(self, sample_builder, module, group_builder=None):
+    def generic_run_group_test(self, sample_builder, module, group_builder=None, nsamples=6):
         """Check that we can run a wrangler on a set of samples."""
         wrangler = module.get_wrangler()
         endpt = module.name()
@@ -60,7 +60,7 @@ class BaseDisplayModuleTest(BaseTestCase):
             samples = []
         else:
             sample_group = add_sample_group(name='SampleGroup01')
-            samples = [sample_builder(i) for i in range(6)]
+            samples = [sample_builder(i) for i in range(nsamples)]
             sample_group.samples = samples
         db.session.commit()
         wrangler.help_run_sample_group(sample_group, samples, module).get()
