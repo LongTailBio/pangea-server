@@ -11,9 +11,9 @@ from .utils import run_sample, run_sample_group
 
 class TaskConductor:
 
-    def __init__(self, uuid, module_names=None, sample_group=False):
+    def __init__(self, uuid, module_names=None, group=False):
         self.uuid = uuid
-        self.sample_group = sample_group
+        self.group = group
         self.module_names = module_names
         if not self.module_names:
             self.module_names = list(MODULES_BY_NAME.keys())
@@ -22,7 +22,7 @@ class TaskConductor:
 
     def build_sig(self, module_name):
         """Build a signature for a single module."""
-        if self.sample_group:
+        if self.group:
             return run_sample_group.s(self.uuid, module_name).on_error(clean_error.s())
         return run_sample.s(self.uuid, module_name).on_error(clean_error.s())
 
