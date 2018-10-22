@@ -5,7 +5,7 @@ import math
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules.wrangler import all_analysis_modules
-from app.analysis_modules.utils import conduct_sample, conduct_sample_group
+from app.analysis_modules.task_graph import TaskConductor
 from app.extensions import db
 
 from ..tool_results.utils import unpack_module as unpack_tool
@@ -75,7 +75,8 @@ for module in all_analysis_modules:
             for tool in analysis_module.required_tool_results():
                 seed_samples(tool, [sample])
         module_name = analysis_module.name()
-        task_signatures = conduct_sample(str(sample.uuid), [module_name])
+        task_conductor = TaskConductor(str(sample.uuid), module_names=[module_name])
+        task_signatures = task_conductor.build_task_signatures()
         analysis_task = task_signatures[0]
         analysis_task()
 
@@ -103,7 +104,8 @@ for module in all_analysis_modules:
 
         # Execute task
         module_name = analysis_module.name()
-        task_signatures = conduct_sample_group(sample_group.id, [module_name])
+        task_conductor = TaskConductor(sample_group.id, module_names=[module_name])
+        task_signatures = task_conductor.build_task_signatures()
         analysis_task = task_signatures[0]
         analysis_task()
 

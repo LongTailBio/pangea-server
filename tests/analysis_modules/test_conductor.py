@@ -1,12 +1,13 @@
-"""Test suite for DisplayModuleConductors."""
+"""Test suite for TaskConductor."""
 
+import networkx as nx
 from uuid import uuid4
 
 from analysis_packages.base_data.kraken import KrakenResultModule
 from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
 from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
 
-from app.analysis_modules.conductor import DisplayModuleConductor, SampleConductor
+from app.analysis_modules.task_graph import TaskConductor
 from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
 from tests.base import BaseTestCase
 
@@ -14,40 +15,22 @@ from tests.base import BaseTestCase
 KRAKEN_NAME = KrakenResultModule.name()
 KRAKENHLL_NAME = KrakenHLLResultModule.name()
 METAPHLAN2_NAME = Metaphlan2ResultModule.name()
+SAMPLE_SIMILARITY_NAME = SampleSimilarityAnalysisModule.name()
 
 
-class TestDisplayModuleConductor(BaseTestCase):
+class TestTaskConductor(BaseTestCase):
     """Test suite for display module Conductor."""
 
-    def test_downstream_modules(self):
-        """Ensure downstream_modules is computed correctly."""
-        downstream_modules = DisplayModuleConductor.downstream_modules(KrakenResultModule)
-        self.assertIn(SampleSimilarityAnalysisModule, downstream_modules)
+    def test_build_depend_digraph(self):
+        """Ensure the dependency digraph is built correctly."""
+        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
+        depend_graph = task_conductor.build_depend_digraph()
+        upstream_modules = nx.descendants(depend_graph, SAMPLE_SIMILARITY_NAME)
+        self.assertIn(KRAKEN_NAME, upstream_modules)
+        self.assertIn(KRAKENHLL_NAME, upstream_modules)
+        self.assertIn(METAPHLAN2_NAME, upstream_modules)
 
-
-class TestSampleConductor(BaseTestCase):
-    """Test suite for display module Conductor."""
-
-    def test_get_valid_modules(self):
-        """Ensure valid_modules is computed correctly."""
-        tools_present = set([KRAKEN_NAME, KRAKENHLL_NAME, METAPHLAN2_NAME])
-        downstream_modules = SampleConductor.downstream_modules(KrakenResultModule)
-        sample_id = str(uuid4())
-        conductor = SampleConductor(sample_id, downstream_modules)
-        valid_modules = conductor.get_valid_modules(tools_present)
-        self.assertIn(SampleSimilarityAnalysisModule, valid_modules)
-
-    def test_partial_valid_modules(self):
-        """Ensure valid_modules is computed correctly if tools are missing."""
-        tools_present = set([KRAKEN_NAME])
-        downstream_modules = SampleConductor.downstream_modules(KrakenResultModule)
-        sample_id = str(uuid4())
-        conductor = SampleConductor(sample_id, downstream_modules)
-        valid_modules = conductor.get_valid_modules(tools_present)
-        self.assertTrue(SampleSimilarityAnalysisModule not in valid_modules)
-
-
-class TestGroupConductor(BaseTestCase):
-    """Test suite for display module Conductor."""
-
-    pass
+    def test_build_task_signatures(self):
+        """Ensure task signatures are built correctly."""
+        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
+        task_conductor.build_task_signatures()  # TODO: explicit checks for issues
