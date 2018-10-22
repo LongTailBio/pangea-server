@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
-from app.analysis_modules.utils import conduct_sample
+from app.analysis_modules.task_graph import TaskConductor
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
@@ -131,9 +131,7 @@ def run_sample_display_modules(uuid):
         raise NotFound('Sample does not exist.')
 
     analysis_names = request.args.getlist('analysis_names')
-    signatures = conduct_sample(uuid, analysis_names)
-    for signature in signatures:
-        signature.delay()
+    TaskConductor(uuid, analysis_names).shake_that_baton()
 
     result = {'middleware': analysis_names}
 

@@ -7,7 +7,7 @@ from flask_api.exceptions import ParseError, NotFound, PermissionDenied
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.analysis_modules.utils import conduct_sample_group
+from app.analysis_modules.task_graph import TaskConductor
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db
@@ -182,9 +182,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
         raise NotFound('Sample Group does not exist.')
 
     analysis_names = request.args.getlist('analysis_names')
-    signatures = conduct_sample_group(uuid, analysis_names)
-    for signature in signatures:
-        signature.delay()
+    TaskConductor(uuid, analysis_names).shake_that_baton()
 
     result = {'middleware': analysis_names}
 
