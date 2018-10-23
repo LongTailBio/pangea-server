@@ -27,6 +27,11 @@ class ReadStatsAnalysisModule(AnalysisModule):
         return [ReadStatsToolResultModule]
 
     @staticmethod
+    def single_sample_processor():
+        """Return function(sample_data) for proccessing Reads Stats sample data."""
+        return processor
+
+    @staticmethod
     def samples_processor():
         """Return function(sample_data) for proccessing Read Stats sample data."""
         return processor
