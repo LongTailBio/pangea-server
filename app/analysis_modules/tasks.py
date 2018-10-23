@@ -5,14 +5,15 @@ from app.extensions import celery
 
 
 @celery.task(bind=True)
-def clean_error(self):
+def clean_error(self, uuid):
     """
     Handle expected error types cleanly.
 
     To be used like: module_task.s(sample_group_id).on_error(clean_error.s()).delay()
     """
     # Try to get analysis_result.id from parent tasks metadata
-    parent_meta = self.parent.result.info
+    result = AsyncResult(uuid)
+    parent_meta = result.info
     analysis_result_id = parent_meta['analysis_result_id']
     module_name = parent_meta['module_name']
     analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_id)

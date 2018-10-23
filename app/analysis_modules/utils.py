@@ -16,7 +16,10 @@ from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_tool_results
 from app.utils import lock_function
 
-from .tasks import clean_error
+
+def apply_errback(signatures):
+    """Add error callback to list of signatures."""
+    return [sig for sig in signatures if sig is not None]
 
 
 def fetch_samples(sample_group_id):
@@ -61,7 +64,7 @@ def sample_group_middleware(sample_group_id, *module_names):
         modules = [MODULES_BY_NAME[module_name] for module_name in module_names]
 
     task_signatures = [module.group_signature(sample_group_id) for module in modules]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures if sig is not None]
+    task_signatures = apply_errback(task_signatures)
     return task_signatures
 
 
@@ -121,7 +124,7 @@ def conduct_sample(sample_uuid, module_names):
 
     task_signatures = [run_sample.s(sample_uuid, module_name)
                        for module_name in module_names]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    task_signatures = apply_errback(task_signatures)
     return task_signatures
 
 
@@ -179,5 +182,5 @@ def conduct_sample_group(sample_group_uuid, module_names):
 
     task_signatures = [run_sample_group.s(sample_group_uuid, module_name)
                        for module_name in module_names]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures]
+    task_signatures = apply_errback(task_signatures)
     return task_signatures
