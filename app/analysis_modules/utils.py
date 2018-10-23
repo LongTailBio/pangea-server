@@ -16,6 +16,8 @@ from app.sample_groups.sample_group_models import SampleGroup
 from app.tool_results import all_tool_results
 from app.utils import lock_function
 
+from .tasks import PluginTask
+
 
 def apply_errback(signatures):
     """Add error callback to list of signatures."""
@@ -101,7 +103,7 @@ def task_body_sample(sample_uuid, module):
     persist_result_helper(analysis_result, module, data)
 
 
-@celery.task()
+@celery.task(base=PluginTask)
 def run_sample(sample_uuid, module_name):
     """Wrap analysis work for single Sample."""
     try:
@@ -153,7 +155,7 @@ def task_body_group_tool_result(sample_group_uuid, module):
     persist_result_helper(analysis_result, module, data)
 
 
-@celery.task()
+@celery.task(base=PluginTask)
 def run_sample_group(sample_group_uuid, module_name):
     """Run middleware for a sample group."""
     try:
