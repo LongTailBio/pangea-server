@@ -1,7 +1,7 @@
 """Pathwaytransferase AnlysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from  analysis_packages.base_data.humann2 import Humann2ResultModule
+from analysis_packages.base_data.humann2 import Humann2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
