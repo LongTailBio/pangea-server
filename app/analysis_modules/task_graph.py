@@ -13,6 +13,7 @@ class TaskConductor:
     """Build chains of tasks."""
 
     def __init__(self, uuid, module_names=None, group=False):
+        """Build a TaskConductor."""
         self.uuid = uuid
         self.group = group
         self.module_names = module_names
@@ -29,7 +30,6 @@ class TaskConductor:
 
     def build_depend_digraph(self):
         """Build a digraph representing module dependencies."""
-
         def recurse_depends(source_module, depend_graph):
             """Recursively add dependency edges to the depend graph."""
             for depends_module in source_module.required_modules():
