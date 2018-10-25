@@ -1,7 +1,7 @@
 """Module for Microbe Directory results."""
 
 from analysis_packages.base import AnalysisModule
-from  analysis_packages.base_data.microbe_directory import MicrobeDirectoryResultModule
+from analysis_packages.base_data.microbe_directory import MicrobeDirectoryResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME

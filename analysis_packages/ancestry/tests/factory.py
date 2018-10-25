@@ -20,6 +20,7 @@ def create_result():
     samples = DataFrame(samples).fillna(0).to_dict()
     return samples
 
+
 class AncestryFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for generating Ancestry models for testing."""
 
