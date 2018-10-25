@@ -2,48 +2,43 @@
 
 from collections import namedtuple
 
-from celery import Celery as BaseCelery
-from flask import Flask
+from celery import Celery
+import flask
 
 
-class Celery(BaseCelery):
+class FlaskCelery(Celery):
     """Main class used for initialization of Flask-Celery."""
 
-    def __init__(self, *args, app=None, config=None, **kwargs):
-        """Initialize Celery."""
-        self.app = None
+    def __init__(self, *args, **kwargs):
+        """Initialize FlaskCelery instance."""
+        super(FlaskCelery, self).__init__(*args, **kwargs)
+        self.patch_task()
 
-        super(Celery, self).__init__(*args, **kwargs)
+        if 'app' in kwargs:
+            self.init_app(kwargs['app'])
 
-        if app is not None:
-            self.init_app(app, config)
+    def patch_task(self):
+        """Patch base task to use application context."""
+        TaskBase = self.Task  # pylint: disable=invalid-name
+        _celery = self
 
-    def init_app(self, app, config=None):
-        """Initialize with Flask app."""
-        if not app or not isinstance(app, Flask):
-            raise Exception('Invalid Flask application instance')
+        class ContextTask(TaskBase):  # pylint: disable=too-few-public-methods
+            """Celery Task that runs within application context."""
 
+            abstract = True
+
+            def __call__(self, *args, **kwargs):
+                if flask.has_app_context():
+                    return TaskBase.__call__(self, *args, **kwargs)
+                with _celery.app.app_context():
+                    return TaskBase.__call__(self, *args, **kwargs)
+
+        self.Task = ContextTask  # pylint: disable=invalid-name
+
+    def init_app(self, app):
+        """Initialize Celery instance from Flask app."""
         self.app = app
-
-        app.extensions = getattr(app, 'extensions', {})
-
-        if 'celery' not in app.extensions:
-            app.extensions['celery'] = {}
-
-        if self in app.extensions['celery']:
-            # Raise an exception if extension already initialized as
-            # potentially new configuration would not be loaded.
-            raise Exception('Extension already initialized')
-
-        if not config:
-            # If not passed a config then we read the connection settings
-            # from the app config.
-            self.update_from_app(app)
-
-        # Store objects in application instance so that multiple apps do not
-        # end up accessing the same objects.
-        store = {'app': app}
-        app.extensions['celery'][self] = store
+        self.update_from_app(app)
 
     def update_from_app(self, app):
         """Update Celery configuration from Flask app."""
