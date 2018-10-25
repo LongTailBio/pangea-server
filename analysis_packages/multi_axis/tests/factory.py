@@ -10,7 +10,7 @@ from analysis_packages.base_data.humann2_normalize.tests.factory import (
 )
 from analysis_packages.base_data.krakenhll.tests.factory import create_result as create_krakenhll
 from analysis_packages.base_data.metaphlan2.tests.factory import create_result as create_metaphlan2
-from analysis_packages.base_data.microbe_census.tests.factory import create_result as create_microbe_census
+from analysis_packages.base_data.microbe_census.tests.factory import create_result as create_mc
 
 from ..models import MultiAxisResult
 
@@ -22,7 +22,7 @@ def create_values():
         'krakenhll_taxonomy_profiling': create_krakenhll(),
         'align_to_amr_genes': create_card_amr(),
         'humann2_normalize_genes': create_humann2_normalize(),
-        'microbe_census': create_microbe_census(),
+        'microbe_census': create_mc(),
     }
 
 

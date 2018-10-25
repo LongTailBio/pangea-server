@@ -3,13 +3,14 @@
 import networkx as nx
 
 from app.analysis_modules import MODULES_BY_NAME
-from app.extensions.celery import chord
+from celery import group
 
 from .tasks import clean_error
 from .utils import run_sample, run_sample_group
 
 
 class TaskConductor:
+    """Build chains of tasks."""
 
     def __init__(self, uuid, module_names=None, group=False):
         self.uuid = uuid
@@ -53,13 +54,13 @@ class TaskConductor:
         ]
         if not depends_on_chord:
             return source_signature
-        return chord(depends_on_chord) | source_signature
+        return group(depends_on_chord) | source_signature
 
     def build_task_signatures(self):
         """Return a list of signatures for each origin task."""
         depend_graph = self.build_depend_digraph()
         task_signatures = [
-            self.recurse_chords(module_name)
+            self.recurse_chords(module_name, depend_graph)
             for module_name in depend_graph.nodes()
             if depend_graph.in_degree(module_name) == 0
         ]

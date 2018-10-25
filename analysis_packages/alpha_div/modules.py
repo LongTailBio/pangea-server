@@ -1,7 +1,7 @@
 """Alpha Diversity AnalysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.alpha_diversity import AlphaDiversityResultModule
+from analysis_packages.base_data.alpha_diversity import AlphaDiversityToolResult
 
 from .analysis import processor
 from .models import AlphaDiversityResult
@@ -24,7 +24,7 @@ class AlphaDivAnalysisModule(AnalysisModule):
     @staticmethod
     def required_modules():
         """Return a list of the necessary result modules."""
-        return [AlphaDiversityResultModule]
+        return [AlphaDiversityToolResult]
 
     @staticmethod
     def samples_processor():

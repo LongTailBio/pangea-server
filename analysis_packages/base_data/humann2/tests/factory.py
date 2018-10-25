@@ -4,6 +4,8 @@
 
 from random import randint, random
 
+import factory
+
 from .. import Humann2Result
 
 

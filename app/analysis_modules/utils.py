@@ -4,8 +4,6 @@ from uuid import UUID
 from pprint import pformat
 from time import sleep
 
-import networkx as nx
-
 from flask import current_app
 from mongoengine.errors import ValidationError
 
@@ -16,7 +14,6 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.extensions import celery, celery_logger, persist_result_lock
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
-from app.tool_results import all_tool_results
 from app.utils import lock_function
 
 from .tasks import clean_error
@@ -33,16 +30,15 @@ def fetch_samples(sample_group_id):
 
 def filter_samples(samples, module):
     """Filter list of samples to only those supporting the given module."""
-    dependencies = {tool.name() for tool in module.required_tool_results()}
+    dependencies = {upstream.name() for upstream in module.required_modules()}
 
     def test_sample(sample):
-        """Test a single sample to see if it has all tools required by the display module."""
-        all_fields = [mod.name() for mod in all_tool_results]
-        tools_present = {field for field in all_fields
-                         if getattr(sample, field, None) is not None}
+        """Return true if a sample has all upstreams required by the module."""
+        analysis_result_uuid = sample.analysis_result_uuid
+        analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+        tools_present = analysis_result.result_types()
         is_valid = dependencies <= tools_present
-        sample_name = sample.name
-        current_app.logger.debug(f'Testing sample: {sample_name}')
+        current_app.logger.debug(f'Testing sample: {sample.name}')
         current_app.logger.debug(f'Tools present: {tools_present}')
         current_app.logger.debug(f'Is valid: {is_valid}')
         return is_valid

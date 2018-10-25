@@ -2,14 +2,8 @@
 
 from mongoengine.errors import NotUniqueError
 
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.kraken.tests.factory import create_result as create_kraken
-
 from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
-
-
-KRAKEN_NAME = KrakenResultModule.name()
 
 
 class TestSampleModel(BaseTestCase):
@@ -31,10 +25,3 @@ class TestSampleModel(BaseTestCase):
         Sample(name='SMPL_01').save()
         duplicate = Sample(name='SMPL_01')
         self.assertRaises(NotUniqueError, duplicate.save)
-
-    def test_tool_result_names(self):
-        """Ensure tool_result_names property works as expected."""
-        sample_data = {'name': 'SMPL_01', KRAKEN_NAME: create_kraken()}
-        sample = Sample(**sample_data).save()
-        self.assertEqual(len(sample.tool_result_names), 1)
-        self.assertIn(KRAKEN_NAME, sample.tool_result_names)

@@ -18,7 +18,7 @@ def simulate_gene():
     return gene_name, {'rpkm': rpkm, 'rpk': rpk, 'rpkmg': rpkmg}
 
 
-def create_values():
+def create_result():
     """Create CARD AMR values."""
     genes = [simulate_gene() for _ in range(randint(4, 12))]
     out = {gene_name: row_val for gene_name, row_val in genes}
@@ -36,4 +36,4 @@ class CARDAMRToolResultFactory(factory.mongoengine.MongoEngineFactory):
     @factory.lazy_attribute
     def genes(self):
         """Return genes."""
-        return create_values()
+        return create_result()
