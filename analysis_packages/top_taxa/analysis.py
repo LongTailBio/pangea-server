@@ -25,6 +25,7 @@ def filter_to_species_and_normalize(taxa_vec):
         out = {'unknown': 1}
     return out
 
+
 def taxa_in_kingdom(sample, tool_name, kingdom):
     """Return taxa in the given kingdom."""
     if kingdom == 'all_kingdoms':
