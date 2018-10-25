@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 
-from worker.flask_celery import Celery
+from worker.flask_celery import FlaskCelery
 
 
 sample_upload_lock = Lock()
@@ -23,5 +23,5 @@ bcrypt = Bcrypt()
 
 # Celery w/ Flask facory pattern from:
 #   https://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern
-celery = Celery(main=__name__)
+celery = FlaskCelery(main=__name__)
 celery_logger = get_task_logger(__name__)
