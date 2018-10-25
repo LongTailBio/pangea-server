@@ -20,8 +20,10 @@ def filter_to_species_and_normalize(taxa_vec):
             last_taxa = ' '.join(last_taxa.split('__')[-1].split('_'))
             out[last_taxa] = val
             total_count += val
-    return {name: val / total_count for name, val in out.items()}
-
+    out = {name: val / total_count for name, val in out.items()}
+    if not out:
+        out = {'unknown': 1}
+    return out
 
 def taxa_in_kingdom(sample, tool_name, kingdom):
     """Return taxa in the given kingdom."""
