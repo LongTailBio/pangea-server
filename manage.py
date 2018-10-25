@@ -5,8 +5,6 @@ from uuid import UUID
 from flask_script import Manager
 from flask_migrate import MigrateCommand, upgrade
 
-from tool_packages.base.models import ToolResult, GroupToolResult
-
 from app import create_app, db
 from app.mongo import drop_mongo_collections
 from app.users.user_models import User
