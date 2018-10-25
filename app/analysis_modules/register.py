@@ -25,6 +25,8 @@ def get_result(display_module, result_uuid):
 
     module_results = getattr(analysis_result, display_module.name()).fetch()
     result = json.loads(module_results.to_json())
+    # Strip private fields
+    result = {key: value for key, value in result.items() if not key[0:1] == '_'}
     for transmission_hook in display_module.transmission_hooks():
         result = transmission_hook(result)
 
