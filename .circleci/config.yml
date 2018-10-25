@@ -1,5 +1,17 @@
 version: 2
 
+docker_build: &docker_build
+  command: |
+    docker build . -t $SERVICE_NAME:$COMMIT
+    docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$DOCKER_TAG
+    if [ "$PUSH_GIT_COMMIT" = true ] ; then \
+      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$COMMIT; \
+    fi
+    if [ "$PUSH_GIT_TAG" = true ] && [ -n "$CIRCLE_TAG" ] ; then \
+      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$(echo "$COMMIT_TAG" | cut -c 2-); \
+    fi
+    docker push $DOCKER_ORG/$SERVICE_NAME
+
 # Common steps for building server Docker images
 build_steps: &build_steps
   docker:
@@ -21,56 +33,38 @@ build_steps: &build_steps
     - run:
         name: Build and push mongo-db
         environment:
-          DB_SERVICE: mongo
-        command: |
-          docker build ./database_docker/mongo_db -t $DB_SERVICE:$COMMIT
-          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-          docker push $DOCKER_ORG/$DB_SERVICE
+          SERVICE_NAME: mongo
+        <<: *docker_build
 
     - run:
         name: Build and push metagenscope-db
         environment:
-          DB_SERVICE: metagenscope-db
-        command: |
-          docker build ./database_docker/postgres_db -t $DB_SERVICE:$COMMIT
-          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-          docker push $DOCKER_ORG/$DB_SERVICE
+          SERVICE_NAME: metagenscope-db
+        <<: *docker_build
 
     - run:
         name: Build and push redis
         environment:
-          DB_SERVICE: redis
-        command: |
-          docker build ./database_docker/redis -t $DB_SERVICE:$COMMIT
-          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-          docker push $DOCKER_ORG/$DB_SERVICE
+          SERVICE_NAME: redis
+        <<: *docker_build
 
     - run:
         name: Build and push rabbitmq
         environment:
-          DB_SERVICE: rabbitmq
-        command: |
-          docker build ./database_docker/rabbitmq -t $DB_SERVICE:$COMMIT
-          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-          docker push $DOCKER_ORG/$DB_SERVICE
+          SERVICE_NAME: rabbitmq
+        <<: *docker_build
 
     - run:
         name: Build and push metagenscope-worker
         environment:
-          DB_SERVICE: metagenscope-worker
-        command: |
-          docker build . -f Dockerfile-worker -t $DB_SERVICE:$COMMIT
-          docker tag $DB_SERVICE:$COMMIT $DOCKER_ORG/$DB_SERVICE:$TAG
-          docker push $DOCKER_ORG/$DB_SERVICE
+          SERVICE_NAME: metagenscope-worker
+        <<: *docker_build
 
     - run:
         name: Build and push metagenscope-service
         environment:
-          MAIN_SERVICE: metagenscope-service
-        command: |
-          docker build . -t $MAIN_SERVICE:$COMMIT
-          docker tag $MAIN_SERVICE:$COMMIT $DOCKER_ORG/$MAIN_SERVICE:$TAG
-          docker push $DOCKER_ORG/$MAIN_SERVICE
+          SERVICE_NAME: metagenscope-service
+        <<: *docker_build
 
 
 # CircleCI Jobs
@@ -145,7 +139,9 @@ jobs:
   build_staging:
     <<: *build_steps
     environment:
-      TAG: staging
+      DOCKER_TAG: staging
+      PUSH_GIT_COMMIT: true
+      PUSH_GIT_TAG: false
       DOCKER_ORG: metagenscope
 
   deploy_staging:
@@ -162,10 +158,12 @@ jobs:
             echo "$STAGING_MACHINE_IP $STAGING_MACHINE_HOST_KEY" > ~/tmp_auth_hosts
             ssh -A -o "UserKnownHostsFile ~/tmp_auth_hosts" $STAGING_MACHINE_USER@$STAGING_MACHINE_IP "cd /home/metagenscope/metagenscope-app && sh deploy.sh"
 
-  build_master:
+  build_release:
     <<: *build_steps
     environment:
-      TAG: latest
+      DOCKER_TAG: latest
+      PUSH_GIT_COMMIT: false
+      PUSH_GIT_TAG: true
       DOCKER_ORG: metagenscope
 
 
@@ -190,10 +188,12 @@ workflows:
               only: develop
           requires:
             - build_staging
-      - build_master:
+      - build_release:
           context: metagenscope-staging
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/
           requires:
             - test_app
