@@ -55,7 +55,7 @@ def create_result(taxa_count=10, save=True):
     return result
 
 
-class KrakenResultFactory(factory.mongoengine.MongoEngineFactory):
+class KrakenResultFactory(factory.mongoengine.MongoEngineFactory):  # pylint: disable=too-few-public-methods
     """Factory for base ancestry data."""
 
     class Meta:
@@ -64,6 +64,6 @@ class KrakenResultFactory(factory.mongoengine.MongoEngineFactory):
         model = KrakenResult
 
     @factory.lazy_attribute
-    def taxa(self):
+    def taxa(self):  # pylint: disable=no-self-use
         """Return taxa."""
         return create_values()

@@ -4,14 +4,8 @@ from uuid import uuid4
 
 from mongoengine.errors import NotUniqueError
 
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.kraken.tests.factory import create_result as create_kraken
-
 from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
-
-
-KRAKEN_NAME = KrakenResultModule.name()
 
 
 class TestSampleModel(BaseTestCase):

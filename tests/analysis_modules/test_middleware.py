@@ -6,9 +6,9 @@ from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules.wrangler import all_analysis_modules
 from app.analysis_modules.task_graph import TaskConductor
+from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.extensions import db
 
-from ..tool_results.utils import unpack_module as unpack_tool
 from ..utils import add_sample_group, add_sample
 from .base import BaseAnalysisModuleTest
 from .utils import unpack_module
@@ -27,12 +27,14 @@ def processes_samples(analysis_module):
         return True
 
 
-def seed_samples(tool, samples):
+def seed_samples(upstream, samples):
     """Create single sample."""
-    name = tool.name()
-    factory = unpack_tool(tool)[2]
+    factory = unpack_module(upstream)[2]
     for sample in samples:
-        setattr(sample, name, factory.create_result())
+        analysis_result_uuid = sample.analysis_result_uuid
+        analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+        analysis_result
+        setattr(sample, upstream.name(), factory.create_result())
         sample.save()
 
 
@@ -45,14 +47,14 @@ def numbered_sample(i=0, j=0):
 
 def seed_module(analysis_module, sample_group, samples):
     """Seed testing values for moduke."""
-    tool_modules = analysis_module.required_tool_results()
-    for tool in tool_modules:
+    upstream_modules = analysis_module.required_modules()
+    for upstream in upstream_modules:
         if processes_samples(analysis_module):
             # Prepate Samples with ToolResults, if applicable
-            seed_samples(tool, samples)
+            seed_samples(upstream, samples)
         else:
             # Prepare GroupToolResult(s), if applicable
-            factory = unpack_tool(tool)[2]
+            factory = unpack_module(upstream)[2]
             tool_result = factory.create_result(save=False)
             tool_result.sample_group_uuid = sample_group.id
             tool_result.save()

@@ -5,7 +5,7 @@ from unittest import mock
 from uuid import UUID, uuid4
 
 from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from tool_packages.ancestry.tests.factory import create_result as create_ancestry
+from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
 from app.samples.sample_models import Sample

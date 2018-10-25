@@ -1,14 +1,14 @@
 """Test suite for TaskConductor."""
 
-import networkx as nx
 from uuid import uuid4
+import networkx as nx
 
 from analysis_packages.base_data.kraken import KrakenResultModule
 from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
 from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
 
 from app.analysis_modules.task_graph import TaskConductor
-from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
 from tests.base import BaseTestCase
 
 
@@ -33,4 +33,5 @@ class TestTaskConductor(BaseTestCase):
     def test_build_task_signatures(self):
         """Ensure task signatures are built correctly."""
         task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
-        task_conductor.build_task_signatures()  # TODO: explicit checks for issues
+        task_sigs = task_conductor.build_task_signatures()
+        self.assertTrue(len(task_sigs) == 4)

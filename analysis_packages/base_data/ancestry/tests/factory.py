@@ -3,6 +3,7 @@
 """Factory for generating Ancestry result models for testing."""
 
 from random import random
+import factory
 
 from .. import AncestryToolResult
 from ..constants import KNOWN_LOCATIONS
