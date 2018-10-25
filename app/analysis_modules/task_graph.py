@@ -1,9 +1,9 @@
 """Run middleware tasks for a given sample or group."""
 
 import networkx as nx
+from celery import group as task_group
 
 from app.analysis_modules import MODULES_BY_NAME
-from celery import group
 
 from .tasks import clean_error
 from .utils import run_sample, run_sample_group
@@ -54,7 +54,7 @@ class TaskConductor:
         ]
         if not depends_on_chord:
             return source_signature
-        return group(depends_on_chord) | source_signature
+        return task_group(depends_on_chord) | source_signature
 
     def build_task_signatures(self):
         """Return a list of signatures for each origin task."""

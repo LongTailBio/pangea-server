@@ -33,8 +33,7 @@ def seed_samples(upstream, samples):
     for sample in samples:
         analysis_result_uuid = sample.analysis_result_uuid
         analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
-        analysis_result
-        setattr(sample, upstream.name(), factory.create_result())
+        setattr(analysis_result, upstream.name(), factory.create_result())
         sample.save()
 
 

@@ -11,6 +11,15 @@ from analysis_packages.base_data.ancestry.tests.factory import create_values
 from ..models import AncestryResult
 
 
+def create_result():
+    """Spoof ancestry result."""
+    samples = {}
+    for i in range(10):
+        samples[f'Sample{i}'] = {'populations': create_values()}
+
+    samples = DataFrame(samples).fillna(0).to_dict()
+    return samples
+
 class AncestryFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for generating Ancestry models for testing."""
 
@@ -21,10 +30,5 @@ class AncestryFactory(factory.mongoengine.MongoEngineFactory):
 
     @factory.lazy_attribute
     def samples(self):  # pylint: disable=no-self-use
-        """Generate random samples."""
-        samples = {}
-        for i in range(10):
-            samples[f'Sample{i}'] = {'populations': create_values()}
-
-        samples = DataFrame(samples).fillna(0).to_dict()
-        return samples
+        """Generate random Samples."""
+        return create_result()

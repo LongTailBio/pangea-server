@@ -175,13 +175,3 @@ def run_sample_group(sample_group_uuid, module_name):
         task_body_sample_group(sample_group_uuid, module)
     except UnsupportedAnalysisMode:
         pass
-
-
-
-
-
-
-
-
-
-
