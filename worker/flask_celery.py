@@ -30,9 +30,8 @@ class FlaskCelery(Celery):
             def __call__(self, *args, **kwargs):
                 if flask.has_app_context():
                     return TaskBase.__call__(self, *args, **kwargs)
-                else:
-                    with _celery.app.app_context():
-                        return TaskBase.__call__(self, *args, **kwargs)
+                with _celery.app.app_context():
+                    return TaskBase.__call__(self, *args, **kwargs)
 
         self.Task = ContextTask  # pylint: disable=invalid-name
 
