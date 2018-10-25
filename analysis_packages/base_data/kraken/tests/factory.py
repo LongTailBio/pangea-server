@@ -58,7 +58,7 @@ def create_result(taxa_count=10, save=True):
 class KrakenResultFactory(factory.mongoengine.MongoEngineFactory):  # pylint: disable=too-few-public-methods
     """Factory for base ancestry data."""
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         """Factory metadata."""
 
         model = KrakenResult
