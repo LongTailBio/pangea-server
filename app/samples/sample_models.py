@@ -26,7 +26,7 @@ class BaseSample(Document):
 
     meta = {'allow_inheritance': True}
 
-    def fetch_safe(self, tools=None):
+    def fetch_safe(self):
         """Return the sample with all tool result documents fetched and jsonified."""
         safe_sample = {}
         safe_sample['name'] = self.name

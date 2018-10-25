@@ -64,7 +64,6 @@ class TaskConductor:
         ]
         if not depends_on_chord:
             return source_signature
-
         return task_group(depends_on_chord) | source_signature
 
     def build_task_signatures(self):

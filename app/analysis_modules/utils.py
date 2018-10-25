@@ -249,10 +249,3 @@ def build_module_digraph(uuid, module_names, signature_builder):
         if depend_graph.in_degree(module_name) == 0
     ]
     return task_signatures
-
-
-
-
-
-
-

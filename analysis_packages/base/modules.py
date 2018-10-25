@@ -27,12 +27,6 @@ class AnalysisModule:
         """List which analysis modules must be complete for this module to run."""
         return []
 
-    @classmethod
-    def is_dependent_on_tool(cls, tool_result_cls):
-        """Return True if this AnalysisModule is dependent on a given Tool Result type."""
-        required_tools = cls.required_tool_results()
-        return tool_result_cls in required_tools
-
     @staticmethod
     def transmission_hooks():
         """Return a list of hooks to run before transmission to the client."""
