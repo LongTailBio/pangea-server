@@ -1,9 +1,8 @@
 # pylint: disable=too-few-public-methods,no-self-use
 
 """Factory for generating Metaphlan2 result models for testing."""
-
-import factory
 import random
+import factory
 
 from ..models import Metaphlan2Result
 

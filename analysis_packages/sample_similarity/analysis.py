@@ -143,14 +143,12 @@ def update_data_records(samples, categories,
 
 def sample_similarity_reducer(categories, tools, samples):
     """Combine Sample Similarity components."""
-    kraken_tool, kraken_labeled = tools[0]
-    krakenhll_tool, krakenhll_labeled = tools[1]
-    metaphlan_tool, metaphlan_labeled = tools[2]
+    krakenhll_tool, krakenhll_labeled = tools[0]
+    metaphlan_tool, metaphlan_labeled = tools[1]
 
     data_records = update_data_records(
         samples,
         categories,
-        kraken_labeled,
         krakenhll_labeled,
         metaphlan_labeled
     )
