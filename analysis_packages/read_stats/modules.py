@@ -1,7 +1,7 @@
 """Read Stats AnalysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.read_stats import ReadStatsToolResultModule
+from analysis_packages.read_stats_data import ReadStatsToolResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME

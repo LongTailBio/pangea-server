@@ -5,11 +5,11 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale as center_and_scale
 
 from analysis_packages.base.utils import scrub_category_val, categories_from_metadata
-from analysis_packages.base_data.card_amrs import CARDAMRResultModule
-from analysis_packages.base_data.humann2_normalize import Humann2NormalizeResultModule
-from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
-from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
-from analysis_packages.base_data.microbe_census import MicrobeCensusResultModule
+from analysis_packages.card_amrs_data import CARDAMRResultModule
+from analysis_packages.humann2_normalize_data import Humann2NormalizeResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
+from analysis_packages.microbe_census_data import MicrobeCensusResultModule
 
 
 def run_pca(data_matrix, n_components=3):

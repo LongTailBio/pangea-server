@@ -1,7 +1,7 @@
 """Alpha Diversity AnalysisModule."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.alpha_diversity import AlphaDiversityToolResult
+from analysis_packages.alpha_diversity_data import AlphaDiversityToolResult
 
 from .analysis import processor
 from .models import AlphaDiversityResult

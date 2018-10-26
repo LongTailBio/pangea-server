@@ -3,7 +3,7 @@
 from pandas import DataFrame
 
 from analysis_packages.base.utils import collate_samples
-from analysis_packages.base_data.ancestry import AncestryToolResult
+from analysis_packages.ancestry_data import AncestryToolResult
 
 from .constants import TOOL_MODULE_NAME
 

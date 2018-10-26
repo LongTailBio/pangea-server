@@ -2,9 +2,9 @@
 
 import pandas as pd
 
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
-from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
+from analysis_packages.kraken_data import KrakenResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
 
 from .exceptions import InvalidRank
 

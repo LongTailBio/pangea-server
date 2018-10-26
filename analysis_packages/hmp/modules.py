@@ -1,7 +1,7 @@
 """HMP Module."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.hmp_sites import HmpSitesResultModule
+from analysis_packages.hmp_sites_data import HmpSitesResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME

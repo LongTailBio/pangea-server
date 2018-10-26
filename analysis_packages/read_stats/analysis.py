@@ -2,7 +2,7 @@
 
 from analysis_packages.base.utils import collate_samples
 
-from analysis_packages.base_data.read_stats import ReadStatsToolResultModule
+from analysis_packages.read_stats_data import ReadStatsToolResultModule
 
 
 def processor(*samples):

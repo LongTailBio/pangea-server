@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 import factory
 
-from analysis_packages.base_data.ancestry.tests.factory import create_values
+from analysis_packages.ancestry_data.tests.factory import create_values
 
 from ..models import AncestryResult
 

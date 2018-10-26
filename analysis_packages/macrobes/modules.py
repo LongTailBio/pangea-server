@@ -1,7 +1,7 @@
 """Module for Macrobe results."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.macrobes import MacrobeResultModule
+from analysis_packages.macrobes_data import MacrobeResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME

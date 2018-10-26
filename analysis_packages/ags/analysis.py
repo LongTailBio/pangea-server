@@ -1,7 +1,7 @@
 """Functions for generating Average Genome Size results."""
 
 from analysis_packages.base.utils import boxplot, categories_from_metadata
-from analysis_packages.base_data.microbe_census import MicrobeCensusResultModule
+from analysis_packages.microbe_census_data import MicrobeCensusResultModule
 
 
 def ags_distributions(samples):

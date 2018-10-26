@@ -1,8 +1,8 @@
 """Volcano plot module."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.kraken_data import KrakenResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
