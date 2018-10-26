@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.manifold import TSNE
 
 from analysis_packages.base.utils import scrub_category_val, categories_from_metadata
-from analysis_packages.kraken_data import KrakenResultModule
 from analysis_packages.krakenhll_data import KrakenHLLResultModule
 from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
 
@@ -157,7 +156,6 @@ def sample_similarity_reducer(categories, tools, samples):
     )
 
     tools = {
-        KrakenResultModule.name(): kraken_tool,
         KrakenHLLResultModule.name(): krakenhll_tool,
         Metaphlan2ResultModule.name(): metaphlan_tool,
     }
@@ -173,8 +171,7 @@ def sample_similarity_reducer(categories, tools, samples):
 def processor(*samples):
     """Handle Sample Similarity component calculations."""
     categories = categories_from_metadata(samples)
-    kraken = taxa_tool_tsne(samples, KrakenResultModule.name())
     krakenhll = taxa_tool_tsne(samples, KrakenHLLResultModule.name())
     metaphlan2 = taxa_tool_tsne(samples, Metaphlan2ResultModule.name())
-    tools = [kraken, krakenhll, metaphlan2]
+    tools = [krakenhll, metaphlan2]
     return sample_similarity_reducer(categories, tools, samples)
