@@ -1,7 +1,7 @@
 """Average Genome Size Module."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.microbe_census import MicrobeCensusResultModule
+from analysis_packages.microbe_census_data import MicrobeCensusResultModule
 
 # Re-export modules
 from .analysis import processor

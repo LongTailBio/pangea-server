@@ -1,7 +1,7 @@
 """Reads Classified Module."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.reads_classified import ReadsClassifiedResultModule
+from analysis_packages.reads_classified_data import ReadsClassifiedResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME

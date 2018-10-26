@@ -4,7 +4,7 @@
 
 import factory
 
-from analysis_packages.base_data.reads_classified.tests.factory import create_values
+from analysis_packages.reads_classified_data.tests.factory import create_values
 
 from ..models import ReadsClassifiedResult
 

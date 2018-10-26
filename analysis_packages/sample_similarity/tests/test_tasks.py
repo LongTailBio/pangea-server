@@ -3,8 +3,8 @@
 from uuid import uuid4
 from unittest import TestCase
 
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.kraken.tests.factory import create_result as create_kraken
+from analysis_packages.kraken_data import KrakenResultModule
+from analysis_packages.kraken_data.tests.factory import create_result as create_kraken
 
 from ..analysis import (
     get_clean_samples,

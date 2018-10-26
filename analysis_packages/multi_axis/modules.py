@@ -1,11 +1,11 @@
 """Multi Axis module."""
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base_data.card_amrs import CARDAMRResultModule
-from analysis_packages.base_data.humann2_normalize import Humann2NormalizeResultModule
-from analysis_packages.base_data.krakenhll import KrakenHLLResultModule
-from analysis_packages.base_data.metaphlan2 import Metaphlan2ResultModule
-from analysis_packages.base_data.microbe_census import MicrobeCensusResultModule
+from analysis_packages.card_amrs_data import CARDAMRResultModule
+from analysis_packages.humann2_normalize_data import Humann2NormalizeResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
+from analysis_packages.microbe_census_data import MicrobeCensusResultModule
 
 
 from .analysis import processor

@@ -4,7 +4,7 @@
 
 import factory
 
-from analysis_packages.base_data.read_stats.tests.factory import create_values
+from analysis_packages.read_stats_data.tests.factory import create_values
 
 from ..models import ReadStatsResult
 

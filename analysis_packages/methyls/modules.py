@@ -2,7 +2,7 @@
 
 from analysis_packages.base import AnalysisModule
 from analysis_packages.generic_gene_set.analysis import make_gene_processor
-from analysis_packages.base_data.methyltransferases import MethylResultModule
+from analysis_packages.methyltransferases_data import MethylResultModule
 
 from .constants import MODULE_NAME, SOURCE_TOOL_NAME, TOP_N
 from .models import MethylResult
