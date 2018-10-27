@@ -28,7 +28,6 @@ def discover_local_packages():
 # pylint:disable=invalid-name
 
 all_analysis_packages = discover_local_packages()
-print(all_analysis_packages)
 
 
 all_analysis_modules = [get_primary_module(package) for package in all_analysis_packages]
