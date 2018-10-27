@@ -31,7 +31,7 @@ def seed_samples(upstream, samples):
     """Create single sample."""
     factory = unpack_module(upstream)[2]
     for sample in samples:
-        analysis_result_uuid = sample.analysis_result_uuid
+        analysis_result_uuid = sample.analysis_result.uuid
         analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
         setattr(analysis_result, upstream.name(), factory.create_result())
         sample.save()
