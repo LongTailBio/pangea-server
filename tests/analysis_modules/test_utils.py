@@ -1,7 +1,7 @@
 """Test suite for Conductor tasks."""
 
-from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
-from analysis_packages.sample_similarity.tests.factory import create_values
+from analysis_packages.top_taxa import TopTaxaAnalysisModule
+from analysis_packages.top_taxa.tests.factory import create_values
 from analysis_packages.krakenhll_data.constants import MODULE_NAME as KRAKENHLL_NAME
 
 from app.analysis_modules.utils import fetch_samples, filter_samples
@@ -35,7 +35,7 @@ class TestConductorTasks(BaseTestCase):
                                        metadata={'foo': f'bar'},
                                        sample_kwargs=incomplete_values)
         samples = [sample_complete, sample_incomplete]
-        module = SampleSimilarityAnalysisModule
+        module = TopTaxaAnalysisModule
         filtered_samples = filter_samples(samples, module)
         self.assertEqual(len(filtered_samples), 1)
         self.assertEqual(filtered_samples[0]['name'], 'Complete Sample')
