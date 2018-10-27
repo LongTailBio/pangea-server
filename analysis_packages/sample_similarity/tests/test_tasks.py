@@ -2,8 +2,8 @@
 
 from unittest import TestCase
 
-from analysis_packages.kraken_data import KrakenResultModule
-from analysis_packages.kraken_data.tests.factory import create_result as create_kraken
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.krakenhll_data.tests.factory import create_result as create_kraken
 
 from ..analysis import (
     get_clean_samples,
@@ -13,7 +13,7 @@ from ..analysis import (
 )
 
 
-KRAKEN_NAME = KrakenResultModule.name()
+KRAKEN_NAME = KrakenHLLResultModule.name()
 
 
 class TestSampleSimilarityTasks(TestCase):
