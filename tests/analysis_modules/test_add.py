@@ -12,10 +12,8 @@ class TestAddAnalysisModule(BaseAnalysisModuleTest):
     pass
 
 
-print(all_analysis_modules)
 for analysis_module in all_analysis_modules:
     # Grab top-level values we need
-    print(analysis_module)
     analysis_name = unpack_module(analysis_module)[1]
 
     def add_module(self, module=analysis_module):
