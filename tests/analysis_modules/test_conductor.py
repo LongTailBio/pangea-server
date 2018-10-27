@@ -31,4 +31,5 @@ class TestTaskConductor(BaseTestCase):
         """Ensure task signatures are built correctly."""
         task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
         task_sigs = task_conductor.build_task_signatures()
+        print(task_sigs)
         self.assertTrue(len(task_sigs) == 3)

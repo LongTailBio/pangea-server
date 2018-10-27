@@ -73,7 +73,7 @@ for module in all_analysis_modules:
         """Test middleware for single Sample analyses."""
         sample = numbered_sample()
         if processes_samples(analysis_module):
-            for tool in analysis_module.required_tool_results():
+            for tool in analysis_module.required_modules():
                 seed_samples(tool, [sample])
         module_name = analysis_module.name()
         task_conductor = TaskConductor(str(sample.uuid), module_names=[module_name])
@@ -107,6 +107,7 @@ for module in all_analysis_modules:
         module_name = analysis_module.name()
         task_conductor = TaskConductor(sample_group.id, module_names=[module_name])
         task_signatures = task_conductor.build_task_signatures()
+        print(task_signatures)
         analysis_task = task_signatures[0]
         analysis_task()
 
