@@ -55,7 +55,7 @@ def create_result(taxa_count=10, save=True):
     return result
 
 
-class Metaphlan2ResultFactory(factory.mongoengine.MongoEngineFactory):  # pylint: disable=too-few-public-methods,no-self-use
+class Metaphlan2ResultFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for base ancestry data."""
 
     class Meta:  # pylint: disable=too-few-public-methods
