@@ -29,13 +29,13 @@ class TestTaskConductor(BaseTestCase):
         self.assertIn(KRAKENHLL_NAME, upstream_modules)
         self.assertIn(METAPHLAN2_NAME, upstream_modules)
 
-    def test_build_task_signatures_sample(self):
+    def test_task_signatures_sample(self):
         """Ensure task signatures are built correctly."""
         task_conductor = TaskConductor(str(uuid4()), [ANCESTRY_NAME])
         task_sigs = task_conductor.build_task_signatures()
         self.assertTrue(len(task_sigs) == 1)
 
-    def test_build_task_signatures_group(self):
+    def test_task_signatures_group(self):
         """Ensure task signatures are built correctly."""
         task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
         task_sigs = task_conductor.build_task_signatures()
