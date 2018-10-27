@@ -14,7 +14,9 @@ def discover_local_packages():
 
     results = []
     for _, modname, _ in pkgutil.iter_modules(path, prefix):
-        blacklist = ['analysis_packages.base', 'analysis_packages.generic_gene_set']
+        blacklist = [
+            'analysis_packages', 'analysis_packages.base', 'analysis_packages.generic_gene_set'
+        ]
         if modname not in blacklist:
             # Pass dummy value to fromlist in order to import all module members
             module = __import__(modname, fromlist='dummy')
