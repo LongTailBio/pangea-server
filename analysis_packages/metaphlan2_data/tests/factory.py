@@ -58,12 +58,12 @@ def create_result(taxa_count=10, save=True):
 class Metaphlan2ResultFactory(factory.mongoengine.MongoEngineFactory):  # pylint: disable=too-few-public-methods,no-self-use
     """Factory for base ancestry data."""
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         """Factory metadata."""
 
         model = Metaphlan2Result
 
     @factory.lazy_attribute
-    def taxa(self):
+    def taxa(self):  # pylint: disable=no-self-use
         """Return taxa."""
         return create_values()
