@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from analysis_packages.krakenhll_data import KrakenResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
 from analysis_packages.krakenhll_data.tests.factory import create_result as create_kraken
 
 from analysis_packages.base.utils import (
@@ -11,7 +11,7 @@ from analysis_packages.base.utils import (
 )
 
 
-KRAKEN_NAME = KrakenResultModule.name()
+KRAKEN_NAME = KrakenHLLResultModule.name()
 
 
 class TestDisplayModuleUtilityTasks(TestCase):

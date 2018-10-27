@@ -124,13 +124,12 @@ def taxa_tool_tsne(samples, tool_name):
 
 
 def update_data_records(samples, categories,
-                        kraken_labeled, krakenhll_labeled, metaphlan_labeled):
+                        krakenhll_labeled, metaphlan_labeled):
     """Update data records."""
     data_records = []
     for sample in samples:
         sample_id = sample['name']
         data_record = {'SampleID': sample_id}
-        data_record.update(kraken_labeled[sample_id])
         data_record.update(krakenhll_labeled[sample_id])
         data_record.update(metaphlan_labeled[sample_id])
         for category_name in categories.keys():
@@ -150,7 +149,7 @@ def sample_similarity_reducer(categories, tools, samples):
         samples,
         categories,
         krakenhll_labeled,
-        metaphlan_labeled
+        metaphlan_labeled,
     )
 
     tools = {
