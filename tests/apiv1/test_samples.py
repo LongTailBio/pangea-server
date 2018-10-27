@@ -8,6 +8,7 @@ from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
+from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 
 from tests.base import BaseTestCase
@@ -115,12 +116,13 @@ class TestSampleModule(BaseTestCase):
 
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database forsample  middleware test."""
-        data = create_ancestry()
+        analysis_result = AnalysisResultMeta().save()
+        setattr(analysis_result, TOOL_MODULE_NAME, create_ancestry())
         args = {
             'name': 'AncestrySample',
             'library_uuid': uuid4(),
             'metadata': {'foobar': 'baz'},
-            TOOL_MODULE_NAME: data,
+            'analysis_result': analysis_result,
         }
         sample = Sample(**args).save()
         db.session.commit()

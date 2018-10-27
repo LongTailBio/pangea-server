@@ -10,6 +10,7 @@ from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
+from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
@@ -244,12 +245,13 @@ class TestSampleGroupModule(BaseTestCase):
         """Prepare database for middleware test."""
         def create_sample(i):
             """Create unique sample for index i."""
-            data = create_ancestry()
+            analysis_result = AnalysisResultMeta().save()
+            setattr(analysis_result, TOOL_MODULE_NAME, create_ancestry())
             args = {
                 'library_uuid': uuid4(),
+                'analysis_result': analysis_result,
                 'name': f'AncestrySample{i}',
                 'metadata': {'foobar': f'baz{i}'},
-                TOOL_MODULE_NAME: data,
             }
             return Sample(**args).save()
 
