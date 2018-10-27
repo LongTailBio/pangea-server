@@ -2,8 +2,8 @@
 
 from unittest import TestCase
 
-from analysis_packages.base_data.kraken import KrakenResultModule
-from analysis_packages.base_data.kraken.tests.factory import create_result as create_kraken
+from analysis_packages.krakenhll_data import KrakenResultModule
+from analysis_packages.krakenhll_data.tests.factory import create_result as create_kraken
 
 from analysis_packages.base.utils import (
     categories_from_metadata,

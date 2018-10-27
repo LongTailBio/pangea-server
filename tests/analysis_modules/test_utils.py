@@ -1,7 +1,7 @@
 """Test suite for Conductor tasks."""
 
 from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
-from analysis_packages.top_taxa.tests.factory import create_values
+from analysis_packages.sample_similarity.tests.factory import create_values
 from analysis_packages.krakenhll_data.constants import MODULE_NAME as KRAKENHLL_NAME
 
 from app.analysis_modules.utils import fetch_samples, filter_samples
