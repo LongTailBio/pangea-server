@@ -45,10 +45,12 @@ def add_sample(name, library_uuid=None, analysis_result=None,
         library_uuid = uuid4()
     if not analysis_result:
         analysis_result = AnalysisResultMeta().save()
+
+    for module_name, module_val in sample_kwargs.items():
+        setattr(analysis_result, module_name, module_val)
     return Sample(library_uuid=library_uuid, name=name, metadata=metadata,
                   analysis_result=analysis_result, created_at=created_at,
-                  **sample_kwargs).save()
-# pylint: enable=too-many-arguments,dangerous-default-value
+                  ).save()
 
 
 def add_sample_group(name, analysis_result=None,
