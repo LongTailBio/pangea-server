@@ -21,7 +21,7 @@ def create_values(dropout=0.25):
     return {loc: val / tot for loc, val in result.items()}
 
 
-def create_result(dropout=0.25, save=True):
+def create_result(dropout=0.25, save=False):
     """Create ancestry result."""
     pops = create_values(dropout=dropout)
     result = AncestryToolResult(populations=pops)

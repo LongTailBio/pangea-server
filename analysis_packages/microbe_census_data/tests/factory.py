@@ -18,7 +18,7 @@ def create_values():
     return values
 
 
-def create_result(save=True):
+def create_result(save=False):
     """Create MicrobeCensusResult with specified number of taxa."""
     packaged_values = create_values()
     result = MicrobeCensusResult(**packaged_values)
