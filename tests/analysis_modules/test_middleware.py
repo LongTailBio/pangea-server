@@ -99,7 +99,7 @@ for module in all_analysis_modules:
         if not processes_single_samples(analysis_module):
             self.assertEqual(len(task_signatures), 0)
             return
-        task_signatures[0]()  # Modules are test one at a time so only one task present
+        task_signatures[0].run()  # Modules are test one at a time so only one task present
         analysis_result = sample.analysis_result.fetch()
         self.assertIn(analysis_module.name(), analysis_result)
 
@@ -116,7 +116,7 @@ for module in all_analysis_modules:
         if not processes_sample_groups(analysis_module):
             self.assertEqual(len(task_signatures), 0)
             return
-        task_signatures[0]()  # Modules are test one at a time so only one task present
+        task_signatures[0].run()  # Modules are test one at a time so only one task present
         self.assertIn(analysis_module.name(), sample_group.analysis_result)
         result = getattr(sample_group.analysis_result, analysis_module.name()).fetch()
         self.assertEqual(result.status, 'S')
