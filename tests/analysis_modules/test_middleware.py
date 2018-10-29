@@ -56,15 +56,7 @@ def seed_module(analysis_module, sample_group, samples):
     """Seed testing values for moduke."""
     upstream_modules = analysis_module.required_modules()
     for upstream in upstream_modules:
-        if processes_sample_groups(analysis_module):
-            # Prepate Samples with ToolResults, if applicable
-            seed_samples(upstream, samples)
-        else:
-            # Prepare GroupToolResult(s), if applicable
-            factory = unpack_module(upstream)[2]
-            tool_result = factory.create_result(save=False)
-            tool_result.sample_group_uuid = sample_group.id
-            tool_result.save()
+        seed_samples(upstream, samples)
 
 
 def build_seeded_sample(analysis_module):
