@@ -103,7 +103,7 @@ for module in all_analysis_modules:
 
         # Execute task
         module_name = analysis_module.name()
-        task_conductor = TaskConductor(sample_group.id, module_names=[module_name])
+        task_conductor = TaskConductor(sample_group.id, module_names=[module_name], group=True)
         task_signatures = task_conductor.build_task_signatures()
         print(task_signatures)
         analysis_task = task_signatures[0]
