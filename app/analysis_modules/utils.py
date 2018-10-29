@@ -199,7 +199,7 @@ def processes_sample_groups(module_name):
     analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
-        _ = analysis_module.group_tool_processor()
+        _ = analysis_module.samples_processor()
         return True
     except UnsupportedAnalysisMode:
         return False
@@ -210,7 +210,7 @@ def processes_single_samples(module_name):
     analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
-        _ = analysis_module.samples_processor()
+        _ = analysis_module.single_sample_processor()
         return True
     except UnsupportedAnalysisMode:
         return False
