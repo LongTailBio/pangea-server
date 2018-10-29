@@ -21,6 +21,15 @@ def create_values(dropout=0.25):
     return {loc: val / tot for loc, val in result.items()}
 
 
+def create_result(dropout=0.25, save=True):
+    """Create ancestry result."""
+    pops = create_values(dropout=dropout)
+    result = AncestryToolResult(populations=pops)
+    if save:
+        result.save()
+    return result
+
+
 class AncestryToolResultFactory(factory.mongoengine.MongoEngineFactory):
     """Factory for base ancestry data."""
 
