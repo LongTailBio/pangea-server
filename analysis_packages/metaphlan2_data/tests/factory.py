@@ -46,7 +46,7 @@ def create_values(taxa_count=30):
     return taxa
 
 
-def create_result(taxa_count=10, save=True):
+def create_result(taxa_count=10, save=False):
     """Create Metaphlan2Result with specified number of taxa."""
     taxa = create_values(taxa_count=taxa_count)
     result = Metaphlan2Result(taxa=taxa)
