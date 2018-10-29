@@ -80,21 +80,19 @@ for module in all_analysis_modules:
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
         sample = numbered_sample()
-        if processes_sample_groups(analysis_module):
+        if processes_single_samples(analysis_module):
             for tool in analysis_module.required_modules():
                 seed_samples(tool, [sample])
         module_name = analysis_module.name()
         task_conductor = TaskConductor(str(sample.uuid), module_names=[module_name])
         task_signatures = task_conductor.build_task_signatures()
+        if not processes_single_samples(analysis_module):
+            self.assertEqual(len(task_signatures), 0)
+            return
         analysis_task = task_signatures[0]
         analysis_task()
-
         analysis_result = sample.analysis_result.fetch()
-        try:
-            _ = analysis_module.single_sample_processor()
-            self.assertIn(module_name, analysis_result)
-        except UnsupportedAnalysisMode:
-            self.assertNotIn(module_name, analysis_result)
+        self.assertIn(module_name, analysis_result)
 
     single_sample_test.__doc__ = f'Test {analysis_name} middleware for single Sample.'
     test_name = f'test_{analysis_name}_single_sample'
@@ -115,17 +113,16 @@ for module in all_analysis_modules:
         module_name = analysis_module.name()
         task_conductor = TaskConductor(sample_group.id, module_names=[module_name], group=True)
         task_signatures = task_conductor.build_task_signatures()
-        print(task_signatures)
+        if not processes_sample_groups(analysis_module):
+            self.assertEqual(len(task_signatures), 0)
+            return
         analysis_task = task_signatures[0]
         analysis_task()
 
-        try:
-            _ = analysis_module.single_sample_processor()
-        except UnsupportedAnalysisMode:
-            self.assertIn(module_name, sample_group.analysis_result)
-            result = getattr(sample_group.analysis_result, module_name).fetch()
-            self.assertEqual(result.status, 'S')
-            self.assertIn('data', result)
+        self.assertIn(module_name, sample_group.analysis_result)
+        result = getattr(sample_group.analysis_result, module_name).fetch()
+        self.assertEqual(result.status, 'S')
+        self.assertIn('data', result)
 
     sample_group_test.__doc__ = f'Test {analysis_name} middleware SampleGroup.'
     test_name = f'test_{analysis_name}_sample_group'
