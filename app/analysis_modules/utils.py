@@ -34,7 +34,7 @@ def filter_samples(samples, module):
 
     def test_sample(sample):
         """Return true if a sample has all upstreams required by the module."""
-        analysis_result_uuid = sample.analysis_result_uuid
+        analysis_result_uuid = sample.analysis_result.uuid
         analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
         tools_present = analysis_result.result_types()
         is_valid = dependencies <= tools_present
