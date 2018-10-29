@@ -115,7 +115,7 @@ class TestSampleModule(BaseTestCase):
         """Ensure all middleware can be kicked off for sample."""
         sample = self.prepare_middleware_test()
 
-        patch_path = 'app.api.v1.samples.conduct_sample'
+        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
         with mock.patch(patch_path) as conductor:
             endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
             middleware_tester(self, auth_headers, conductor, endpoint)

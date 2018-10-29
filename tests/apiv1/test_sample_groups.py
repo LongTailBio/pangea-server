@@ -265,7 +265,7 @@ class TestSampleGroupModule(BaseTestCase):
         """Ensure all middleware can be kicked off for group."""
         sample_group = self.prepare_middleware_test()
 
-        patch_path = 'app.api.v1.sample_groups.conduct_sample_group'
+        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
         with mock.patch(patch_path) as conductor:
             endpoint = f'/api/v1/sample_groups/{str(sample_group.id)}/middleware'
             middleware_tester(self, auth_headers, conductor, endpoint)
