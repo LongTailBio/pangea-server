@@ -16,11 +16,21 @@ from .utils import unpack_module
 SAMPLE_TEST_COUNT = 40
 
 
-def processes_samples(analysis_module):
-    """Return true if a module processes SampleToolResults."""
+def processes_sample_groups(analysis_module):
+    """Return true if a module processes SampleGroups"""
     try:
         # pylint: disable=assignment-from-no-return
         _ = analysis_module.group_tool_processor()
+        return False
+    except UnsupportedAnalysisMode:
+        return True
+
+
+def processes_single_samples(analysis_module):
+    """Return true if a module processes single Samples"""
+    try:
+        # pylint: disable=assignment-from-no-return
+        _ = analysis_module.samples_processor()
         return False
     except UnsupportedAnalysisMode:
         return True
@@ -46,7 +56,7 @@ def seed_module(analysis_module, sample_group, samples):
     """Seed testing values for moduke."""
     upstream_modules = analysis_module.required_modules()
     for upstream in upstream_modules:
-        if processes_samples(analysis_module):
+        if processes_sample_groups(analysis_module):
             # Prepate Samples with ToolResults, if applicable
             seed_samples(upstream, samples)
         else:
@@ -70,7 +80,7 @@ for module in all_analysis_modules:
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
         sample = numbered_sample()
-        if processes_samples(analysis_module):
+        if processes_sample_groups(analysis_module):
             for tool in analysis_module.required_modules():
                 seed_samples(tool, [sample])
         module_name = analysis_module.name()
