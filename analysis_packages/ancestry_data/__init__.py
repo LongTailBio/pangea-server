@@ -1,14 +1,13 @@
 """Ancestry tool module."""
 
-from mongoengine import ValidationError, MapField, FloatField
+from mongoengine import ValidationError, MapField, FloatField, EmbeddedDocument
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base.models import ModuleResult
 
 from .constants import MODULE_NAME, KNOWN_LOCATIONS
 
 
-class AncestryToolResult(ModuleResult):  # pylint: disable=too-few-public-methods
+class AncestryToolResult(EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Ancestry result type."""
 
     # Dict of form: {<location_id: string>: <percentage: float>}
