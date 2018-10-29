@@ -21,9 +21,9 @@ def processes_sample_groups(analysis_module):
     try:
         # pylint: disable=assignment-from-no-return
         _ = analysis_module.group_tool_processor()
-        return False
-    except UnsupportedAnalysisMode:
         return True
+    except UnsupportedAnalysisMode:
+        return False
 
 
 def processes_single_samples(analysis_module):
@@ -31,9 +31,9 @@ def processes_single_samples(analysis_module):
     try:
         # pylint: disable=assignment-from-no-return
         _ = analysis_module.samples_processor()
-        return False
-    except UnsupportedAnalysisMode:
         return True
+    except UnsupportedAnalysisMode:
+        return False
 
 
 def seed_samples(upstream, samples):
@@ -124,7 +124,6 @@ for module in all_analysis_modules:
         if not processes_sample_groups(analysis_module):
             self.assertEqual(len(task_signatures), 0)
             return
-        print(sample_group.analysis_result.__dict__)
         task_signatures[0]()  # Modules are test one at a time so only one task present
         self.assertIn(analysis_module.name(), sample_group.analysis_result)
         result = getattr(sample_group.analysis_result, analysis_module.name()).fetch()
