@@ -5,6 +5,7 @@ from celery import group as task_group
 
 from app.analysis_modules import MODULES_BY_NAME
 
+from .tasks import clean_error
 from .utils import run_sample, run_sample_group, processes_sample_groups, processes_single_samples
 
 
@@ -33,8 +34,8 @@ class TaskConductor:
     def build_sig(self, module_name):
         """Build a signature for a single module."""
         if self.group:
-            return run_sample_group.s(self.uuid, module_name)  # .on_error(clean_error.s())
-        return run_sample.s(self.uuid, module_name)  # .on_error(clean_error.s())
+            return run_sample_group.s(self.uuid, module_name).on_error(clean_error.s())
+        return run_sample.s(self.uuid, module_name).on_error(clean_error.s())
 
     def build_depend_digraph(self):
         """Build a digraph representing module dependencies."""
