@@ -16,10 +16,19 @@ class TaskConductor:
         """Build a TaskConductor."""
         self.uuid = uuid
         self.group = group
-        self.filter_func = processes_single_samples
+        self.module_names = module_names
+        if not self.module_names:
+            self.module_names = list(MODULES_BY_NAME.keys())
         if self.group:
-            self.filter_func = processes_sample_groups
-        self.module_names = self._filter_module_names(module_names)
+            self.module_names = [
+                module_name for module_name in module_names
+                if processes_sample_groups(module_name)
+            ]
+        else:
+            self.module_names = [
+                module_name for module_name in module_names
+                if processes_single_samples(module_name)
+            ]
         self.signature_tbl = {}
 
     def _filter_module_names(self, module_names):
