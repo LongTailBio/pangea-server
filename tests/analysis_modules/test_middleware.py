@@ -36,13 +36,12 @@ def processes_single_samples(analysis_module):
         return False
 
 
-def seed_samples(upstream, samples):
+def seed_sample(upstream, sample):
     """Create single sample."""
     factory = unpack_module(upstream)[2]
-    for sample in samples:
-        analysis_result = sample.analysis_result
-        setattr(analysis_result, upstream.name(), factory.create_result())
-        sample.save()
+    analysis_result = sample.analysis_result
+    setattr(analysis_result, upstream.name(), factory.create_result())
+    sample.save()
 
 
 def numbered_sample(i=0, j=0):
@@ -52,11 +51,12 @@ def numbered_sample(i=0, j=0):
     return sample
 
 
-def seed_module(analysis_module, sample_group, samples):
+def seed_module(analysis_module, sample_group):
     """Seed testing values for moduke."""
     upstream_modules = analysis_module.required_modules()
     for upstream in upstream_modules:
-        seed_samples(upstream, samples)
+        for sample in sample_group.samples:
+            seed_sample(upstream, sample)
 
 
 def build_seeded_sample(analysis_module):
@@ -64,7 +64,7 @@ def build_seeded_sample(analysis_module):
     sample = numbered_sample()
     if processes_single_samples(analysis_module):
         for tool in analysis_module.required_modules():
-            seed_samples(tool, [sample])
+            seed_sample(tool, sample)
     return sample
 
 
@@ -76,7 +76,7 @@ def build_seeded_sample_group(analysis_module):
     samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
     sample_group.samples = samples
     db.session.commit()
-    seed_module(analysis_module, sample_group, samples)
+    seed_module(analysis_module, sample_group)
     return sample_group
 
 
