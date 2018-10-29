@@ -5,6 +5,7 @@ from celery import group as task_group
 
 from app.analysis_modules import MODULES_BY_NAME
 
+from .tasks import clean_error
 from .utils import run_sample, run_sample_group, processes_sample_groups, processes_single_samples
 
 
