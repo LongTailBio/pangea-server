@@ -179,12 +179,7 @@ def run_sample_group(sample_group_uuid, module_name):
 
 def processes_sample_groups(module_name):
     """Return true if a module processes SampleGroups"""
-    try:
-        analysis_module = MODULES_BY_NAME[module_name]
-    except KeyError:
-        # This should raise a AnalysisNotFound exception to be handled by clean_error
-        return
-
+    analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
         _ = analysis_module.group_tool_processor()
@@ -195,16 +190,10 @@ def processes_sample_groups(module_name):
 
 def processes_single_samples(module_name):
     """Return true if a module processes single Samples"""
-    try:
-        analysis_module = MODULES_BY_NAME[module_name]
-    except KeyError:
-        # This should raise a AnalysisNotFound exception to be handled by clean_error
-        return
-
+    analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
         _ = analysis_module.samples_processor()
         return True
     except UnsupportedAnalysisMode:
         return False
-
