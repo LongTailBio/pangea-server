@@ -67,6 +67,27 @@ def seed_module(analysis_module, sample_group, samples):
             tool_result.save()
 
 
+def build_seeded_sample(analysis_module):
+    """Return a sample with the given module's prereqs."""
+    sample = numbered_sample()
+    if processes_single_samples(analysis_module):
+        for tool in analysis_module.required_modules():
+            seed_samples(tool, [sample])
+    return sample
+
+
+def build_seeded_sample_group(analysis_module):
+    """Return a group with samples with the given modules prereqs."""
+    sample_group = add_sample_group('Test Group')
+    meta_choices = [0, 1, 2]
+    meta_choices = meta_choices * math.ceil(SAMPLE_TEST_COUNT / len(meta_choices))
+    samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
+    sample_group.samples = samples
+    db.session.commit()
+    seed_module(analysis_module, sample_group, samples)
+    return sample_group
+
+
 class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
     """Test running middleware fully."""
 
@@ -79,20 +100,16 @@ for module in all_analysis_modules:
 
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
-        sample = numbered_sample()
-        if processes_single_samples(analysis_module):
-            for tool in analysis_module.required_modules():
-                seed_samples(tool, [sample])
-        module_name = analysis_module.name()
-        task_conductor = TaskConductor(str(sample.uuid), module_names=[module_name])
-        task_signatures = task_conductor.build_task_signatures()
+        sample = build_seeded_sample(analysis_module)
+        task_signatures = TaskConductor(
+            str(sample.uuid), module_names=[analysis_module.name()]
+        ).build_task_signatures()
         if not processes_single_samples(analysis_module):
             self.assertEqual(len(task_signatures), 0)
             return
-        analysis_task = task_signatures[0]
-        analysis_task()
+        task_signatures[0]()  # Modules are test one at a time so only one task present
         analysis_result = sample.analysis_result.fetch()
-        self.assertIn(module_name, analysis_result)
+        self.assertIn(analysis_module.name(), analysis_result)
 
     single_sample_test.__doc__ = f'Test {analysis_name} middleware for single Sample.'
     test_name = f'test_{analysis_name}_single_sample'
@@ -100,27 +117,17 @@ for module in all_analysis_modules:
 
     def sample_group_test(self, analysis_module=module):
         """Test middleware for SampleGroup analyses."""
-        # Seed test values
-        sample_group = add_sample_group('Test Group')
-        meta_choices = [0, 1, 2]
-        meta_choices = meta_choices * math.ceil(SAMPLE_TEST_COUNT / len(meta_choices))
-        samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
-        sample_group.samples = samples
-        db.session.commit()
-        seed_module(analysis_module, sample_group, samples)
-
-        # Execute task
-        module_name = analysis_module.name()
-        task_conductor = TaskConductor(sample_group.id, module_names=[module_name], group=True)
-        task_signatures = task_conductor.build_task_signatures()
+        sample_group = build_seeded_sample_group(analysis_module)
+        task_signatures = TaskConductor(
+            sample_group.id, module_names=[analysis_module.name()], group=True
+        ).build_task_signatures()
         if not processes_sample_groups(analysis_module):
             self.assertEqual(len(task_signatures), 0)
             return
-        analysis_task = task_signatures[0]
-        analysis_task()
-
-        self.assertIn(module_name, sample_group.analysis_result)
-        result = getattr(sample_group.analysis_result, module_name).fetch()
+        print(sample_group.analysis_result.__dict__)
+        task_signatures[0]()  # Modules are test one at a time so only one task present
+        self.assertIn(analysis_module.name(), sample_group.analysis_result)
+        result = getattr(sample_group.analysis_result, analysis_module.name()).fetch()
         self.assertEqual(result.status, 'S')
         self.assertIn('data', result)
 
