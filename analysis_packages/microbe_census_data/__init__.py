@@ -1,12 +1,11 @@
 """Microbe Census tool module."""
 
-from mongoengine import ValidationError, FloatField, IntField
+from mongoengine import ValidationError, FloatField, IntField, EmbeddedDocument
 
 from analysis_packages.base import AnalysisModule
-from analysis_packages.base.models import ModuleResult
 
 
-class MicrobeCensusResult(ModuleResult):  # pylint: disable=too-few-public-methods
+class MicrobeCensusResult(EmbeddedDocument):  # pylint: disable=too-few-public-methods
     """Mic Census tool's result type."""
 
     average_genome_size = FloatField(required=True)

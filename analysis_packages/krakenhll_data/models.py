@@ -2,12 +2,10 @@
 
 """Models for Kraken tool module."""
 
-from mongoengine import MapField, IntField
-
-from analysis_packages.base.models import ModuleResult
+from mongoengine import MapField, IntField, EmbeddedDocument
 
 
-class KrakenHLLResult(ModuleResult):
+class KrakenHLLResult(EmbeddedDocument):
     """Kraken tool's result type."""
 
     # Taxa is of the form: {<taxon_name>: <abundance_value>}

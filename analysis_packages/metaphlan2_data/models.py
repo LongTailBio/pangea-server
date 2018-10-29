@@ -1,11 +1,9 @@
 """Metaphlan 2 tool module."""
 
-from mongoengine import MapField, IntField
-
-from analysis_packages.base.models import ModuleResult
+from mongoengine import MapField, IntField, EmbeddedDocument
 
 
-class Metaphlan2Result(ModuleResult):     # pylint: disable=too-few-public-methods
+class Metaphlan2Result(EmbeddedDocument):     # pylint: disable=too-few-public-methods
     """Metaphlan 2 tool's result type."""
 
     # Taxa is of the form: {<taxon_name>: <abundance_value>}
