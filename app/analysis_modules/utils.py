@@ -178,7 +178,7 @@ def run_sample_group(sample_group_uuid, module_name):
 
 
 def processes_sample_groups(module_name):
-    """Return true if a module processes SampleGroups"""
+    """Return true if a module processes SampleGroups."""
     analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
@@ -189,7 +189,7 @@ def processes_sample_groups(module_name):
 
 
 def processes_single_samples(module_name):
-    """Return true if a module processes single Samples"""
+    """Return true if a module processes single Samples."""
     analysis_module = MODULES_BY_NAME[module_name]
     try:
         # pylint: disable=assignment-from-no-return
