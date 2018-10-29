@@ -175,3 +175,36 @@ def run_sample_group(sample_group_uuid, module_name):
         task_body_sample_group(sample_group_uuid, module)
     except UnsupportedAnalysisMode:
         pass
+
+
+def processes_sample_groups(module_name):
+    """Return true if a module processes SampleGroups"""
+    try:
+        analysis_module = MODULES_BY_NAME[module_name]
+    except KeyError:
+        # This should raise a AnalysisNotFound exception to be handled by clean_error
+        return
+
+    try:
+        # pylint: disable=assignment-from-no-return
+        _ = analysis_module.group_tool_processor()
+        return True
+    except UnsupportedAnalysisMode:
+        return False
+
+
+def processes_single_samples(module_name):
+    """Return true if a module processes single Samples"""
+    try:
+        analysis_module = MODULES_BY_NAME[module_name]
+    except KeyError:
+        # This should raise a AnalysisNotFound exception to be handled by clean_error
+        return
+
+    try:
+        # pylint: disable=assignment-from-no-return
+        _ = analysis_module.samples_processor()
+        return True
+    except UnsupportedAnalysisMode:
+        return False
+

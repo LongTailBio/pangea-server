@@ -6,7 +6,7 @@ from celery import group as task_group
 from app.analysis_modules import MODULES_BY_NAME
 
 from .tasks import clean_error
-from .utils import run_sample, run_sample_group
+from .utils import run_sample, run_sample_group, processes_sample_groups, processes_single_samples
 
 
 class TaskConductor:
@@ -19,6 +19,16 @@ class TaskConductor:
         self.module_names = module_names
         if not self.module_names:
             self.module_names = list(MODULES_BY_NAME.keys())
+        if self.group:
+            self.module_names = [
+                module_name for module_name in module_names
+                if processes_sample_groups(module_name)
+            ]
+        else:
+            self.module_names = [
+                module_name for module_name in module_names
+                if processes_single_samples(module_name)
+            ]
 
         self.signature_tbl = {}
 
