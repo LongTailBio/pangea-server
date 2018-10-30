@@ -16,6 +16,9 @@ class TaskConductor:
         """Build a TaskConductor."""
         self.uuid = uuid
         self.group = group
+        self.filter_func = processes_single_samples
+        if self.group:
+            self.filter_func = processes_sample_groups
         self.module_names = self._filter_module_names(module_names)
         self.signature_tbl = {}
 
