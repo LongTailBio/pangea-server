@@ -34,8 +34,12 @@ class TaskConductor:
     def build_sig(self, module_name):
         """Build a signature for a single module."""
         if self.group:
-            return run_sample_group.s(self.uuid, module_name).on_error(clean_error.s())
-        return run_sample.s(self.uuid, module_name).on_error(clean_error.s())
+            return run_sample_group.s(
+                self.uuid, module_name, immutable=True
+            ).on_error(clean_error.s())
+        return run_sample.s(
+            self.uuid, module_name, immutable=True
+        ).on_error(clean_error.s())
 
     def build_depend_digraph(self):
         """Build a digraph representing module dependencies."""
