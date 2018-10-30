@@ -105,7 +105,7 @@ def task_body_sample(sample_uuid, module):
     if block_if_analysis_result_exists(module, analysis_result):
         return
     analysis_result.set_module_status(module.name(), 'W')
-    tool_names = [tool.name() for tool in module.required_tool_results()]
+    tool_names = [tool.name() for tool in module.required_modules()]
     sample = sample.fetch_safe(tool_names)
     data = module.single_sample_processor()(sample)
     persist_result_helper(analysis_result, module, data)
@@ -152,7 +152,7 @@ def task_body_sample_group(sample_group_uuid, module):
         return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     samples = filter_samples(sample_group.samples, module)
-    tool_names = [tool.name() for tool in module.required_tool_results()]
+    tool_names = [tool.name() for tool in module.required_modules()]
     samples = [sample.fetch_safe(tool_names) for sample in samples]
     data = module.samples_processor()(*samples)
     analysis_result_uuid = sample_group.analysis_result_uuid
@@ -164,7 +164,7 @@ def task_body_group_tool_result(sample_group_uuid, module):
     """Wrap analysis work for a SampleGroup's GroupToolResult."""
     sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
     sample_group.analysis_result.set_module_status(module.name(), 'W')
-    group_tool_cls = module.required_tool_results()[0].result_model()
+    group_tool_cls = module.required_modules()[0].result_model()
     group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.id)
     data = module.group_tool_processor()(group_tool)
     analysis_result_uuid = sample_group.analysis_result_uuid
