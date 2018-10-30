@@ -8,7 +8,14 @@ docker_build: &docker_build
       docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$COMMIT; \
     fi
     if [ "$PUSH_GIT_TAG" = true ] && [ -n "$CIRCLE_TAG" ] ; then \
-      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$(echo "$COMMIT_TAG" | cut -c 2-); \
+      # Remove leading 'v'
+      SEMVER=${CIRCLE_TAG#v} && \
+      # Tag full semver
+      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$SEMVER && \
+      # Tag major.minor
+      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:${SEMVER%.*} && \
+      # Tag only major
+      docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:${SEMVER%.*.*}; \
     fi
     docker push $DOCKER_ORG/$SERVICE_NAME
 
