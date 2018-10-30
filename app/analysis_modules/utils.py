@@ -88,7 +88,7 @@ def persist_result_helper(result_base, module, data):
 
 def block_if_analysis_result_exists(module, analysis_result):
     """Block while A.R. exists but is not complete, return False iff A.R. should be rerun."""
-    if (module.name() in analysis_result.result_types() and
+    if (module.name() in analysis_result.result_types and
             getattr(analysis_result, module.name()).fetch() != 'E'):
         # Block if the result exists and isn't in error then return early
         while getattr(analysis_result, module.name()).fetch() not in ['S', 'E']:
