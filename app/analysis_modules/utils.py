@@ -35,7 +35,7 @@ def filter_samples(samples, module):
     def test_sample(sample):
         """Return true if a sample has all upstreams required by the module."""
         analysis_result = sample.analysis_result.fetch()
-        tools_present = analysis_result.result_types()
+        tools_present = analysis_result.result_types
         is_valid = dependencies <= tools_present
         current_app.logger.debug(f'Testing sample: {sample.name}')
         current_app.logger.debug(f'Tools present: {tools_present}')
