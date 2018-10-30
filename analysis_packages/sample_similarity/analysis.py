@@ -49,7 +49,8 @@ def get_clean_samples(sample_dict, no_zero_features=True, zero_threshold=0.00001
                 feature_total_score[feature_id] += value
         # Assign passing grade
         features_passing = {feature_id: value > zero_threshold
-                            for feature_id, value in features.items()}
+                            for feature_id, value in features.items()
+                            for features in samples.values()}
 
         # Filter features failing to meet threshold from all samples
         samples = {sample_id: {feature_id: value
