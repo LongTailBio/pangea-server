@@ -16,6 +16,9 @@ class TaskConductor:
         """Build a TaskConductor."""
         self.uuid = uuid
         self.group = group
+        self.filter_func = processes_single_samples
+        if self.group:
+            self.filter_func = processes_sample_groups
         self.module_names = self._filter_module_names(module_names)
         self.signature_tbl = {}
 
@@ -23,12 +26,9 @@ class TaskConductor:
         """Return a list of modules that can be processed at this level."""
         if not module_names:
             module_names = list(MODULES_BY_NAME.keys())
-        filter_func = processes_single_samples
-        if self.group:
-            filter_func = processes_sample_groups
         return [
             module_name for module_name in module_names
-            if filter_func(module_name)
+            if self.filter_func(module_name)
         ]
 
     def build_sig(self, module_name):
@@ -60,6 +60,7 @@ class TaskConductor:
         depends_on_chord = [
             self.recurse_chords(upstream_name, depend_graph)
             for upstream_name in nx.descendants(depend_graph, source_module_name)
+            if self.filter_func(upstream_name)
         ]
         if not depends_on_chord:
             return source_signature
