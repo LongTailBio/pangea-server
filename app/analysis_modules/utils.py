@@ -105,8 +105,7 @@ def task_body_sample(sample_uuid, module):
     if block_if_analysis_result_exists(module, analysis_result):
         return
     analysis_result.set_module_status(module.name(), 'W')
-    tool_names = [tool.name() for tool in module.required_modules()]
-    sample = sample.fetch_safe(tool_names)
+    sample = sample.fetch_safe()
     data = module.single_sample_processor()(sample)
     persist_result_helper(analysis_result, module, data)
 
@@ -152,11 +151,9 @@ def task_body_sample_group(sample_group_uuid, module):
         return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     samples = filter_samples(sample_group.samples, module)
-    tool_names = [tool.name() for tool in module.required_modules()]
-    samples = [sample.fetch_safe(tool_names) for sample in samples]
+    samples = [sample.fetch_safe() for sample in samples]
     data = module.samples_processor()(*samples)
-    analysis_result_uuid = sample_group.analysis_result_uuid
-    analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+    analysis_result = sample_group.analysis_result.fetch()
     persist_result_helper(analysis_result, module, data)
 
 
