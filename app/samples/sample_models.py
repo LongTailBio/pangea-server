@@ -4,16 +4,16 @@ import datetime
 
 from uuid import uuid4
 
-from marshmallow import fields, pre_dump
+from marshmallow import fields
 from mongoengine import Document, LazyReferenceField
+from analysis_packages.base.utils import jsonify
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
 from app.extensions import mongoDB
 from app.tool_results import all_tool_results
-from app.tool_results.modules import SampleToolResultModule
 
-from app.display_modules.utils import jsonify
+from tool_packages.base import SampleToolResultModule
 
 
 class BaseSample(Document):
@@ -21,7 +21,8 @@ class BaseSample(Document):
 
     uuid = mongoDB.UUIDField(required=True, primary_key=True,
                              binary=False, default=uuid4)
-    name = mongoDB.StringField(unique=True)
+    library_uuid = mongoDB.UUIDField(required=True, binary=False)
+    name = mongoDB.StringField(required=True, unique_with='library_uuid')
     metadata = mongoDB.DictField(default={})
     analysis_result = mongoDB.LazyReferenceField(AnalysisResultMeta)
     theme = mongoDB.StringField(default='')
@@ -68,15 +69,9 @@ class SampleSchema(BaseSchema):
     uuid = fields.Str()
     name = fields.Str()
     metadata = fields.Dict()
-    analysis_result_uuid = fields.Str()
+    analysis_result_uuid = fields.Function(lambda obj: obj.analysis_result.pk)
     theme = fields.Str()
     created_at = fields.Date()
-
-    @pre_dump(pass_many=False)
-    def add_analysis_result_uuid(self, data):  # pylint: disable=no-self-use
-        """Dump analysis_result's UUID."""
-        data.analysis_result_uuid = data.analysis_result.pk
-        return data
 
 
 sample_schema = SampleSchema()   # pylint: disable=invalid-name

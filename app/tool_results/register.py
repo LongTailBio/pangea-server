@@ -3,12 +3,10 @@
 from uuid import UUID
 
 from flask import request
-from flask import current_app
 from flask_api.exceptions import NotFound, ParseError, PermissionDenied
 from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.display_modules.conductor import SampleConductor, GroupConductor
 from app.extensions import sample_upload_lock
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
@@ -16,7 +14,7 @@ from app.users.user_models import User
 from app.users.user_helpers import authenticate
 from app.utils import lock_function
 
-from .modules import SampleToolResultModule, GroupToolResultModule
+from tool_packages.base import SampleToolResultModule, GroupToolResultModule
 
 
 @lock_function(sample_upload_lock)
@@ -47,15 +45,6 @@ def receive_sample_tool_upload(cls, resp, uuid):
     except ValidationError as validation_error:
         raise ParseError(str(validation_error))
 
-    # Kick off middleware tasks
-    dryrun = request.args.get('dryrun', False)
-    if not dryrun:
-        try:
-            downstream_modules = SampleConductor.downstream_modules(cls)
-            SampleConductor(safe_uuid, downstream_modules).shake_that_baton()
-        except Exception:  # pylint: disable=broad-except
-            current_app.logger.exception('Exception while coordinating display modules.')
-
     # Return payload here to avoid per-class JSON serialization
     return payload, 201
 
@@ -85,16 +74,6 @@ def receive_group_tool_upload(cls, resp, uuid):
     except ValidationError as validation_error:
         raise ParseError(str(validation_error))
 
-    # Kick off middleware tasks
-    dryrun = request.args.get('dryrun', False)
-    if not dryrun:
-        try:
-            downstream_modules = GroupConductor.downstream_modules(cls)
-            GroupConductor(safe_uuid, downstream_modules).shake_that_baton()
-        except Exception as exc:  # pylint: disable=broad-except
-            current_app.logger.exception('Exception while coordinating display modules.')
-            current_app.logger.exception(exc)
-
     # Return payload here to avoid per-class JSON serialization
     return payload, 201
 
@@ -109,7 +88,7 @@ def register_tool_result(cls, router):
         """Wrap receive_upload to provide class."""
         if issubclass(cls, SampleToolResultModule):
             return receive_sample_tool_upload(cls, resp, uuid)
-        elif issubclass(cls, GroupToolResultModule):
+        if issubclass(cls, GroupToolResultModule):
             return receive_group_tool_upload(cls, resp, uuid)
         raise ParseError('Tool Result of unrecognized type.')
 

@@ -1,0 +1,9 @@
+[run]
+branch = True
+omit =
+    tests/*
+    */test_*.py
+    */tests/*
+
+[html]
+directory = htmlcov

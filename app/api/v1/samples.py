@@ -9,10 +9,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
+from app.analysis_modules.utils import conduct_sample
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
-from app.display_modules import sample_display_modules
-from app.display_modules.conductor import SampleConductor
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
 from app.users.user_helpers import authenticate
@@ -27,7 +26,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
     """Add sample."""
     try:
         post_data = request.get_json()
-        sample_group_uuid = post_data['sample_group_uuid']
+        library_uuid = post_data['library_uuid']
         sample_name = post_data['name']
     except TypeError:
         raise ParseError('Missing Sample creation payload.')
@@ -35,7 +34,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
         raise ParseError('Invalid Sample creation payload.')
 
     try:
-        sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+        library = SampleGroup.query.filter_by(id=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Sample Group does not exist!')
 
@@ -45,12 +44,13 @@ def add_sample(resp):  # pylint: disable=unused-argument
 
     try:
         analysis_result = AnalysisResultMeta().save()
-        sample = Sample(name=sample_name,
+        sample = Sample(library_uuid=library_uuid,
+                        name=sample_name,
                         analysis_result=analysis_result,
                         metadata={'name': sample_name}).save()
-        sample_group.sample_ids.append(sample.uuid)
+        library.sample_ids.append(sample.uuid)
         db.session.commit()
-        result = sample_schema.dump(sample).data
+        result = sample_schema.dump(sample)
         return result, 201
     except ValidationError as validation_error:
         current_app.logger.exception('Sample could not be created.')
@@ -68,7 +68,22 @@ def get_single_sample(sample_uuid):
         uuid = UUID(sample_uuid)
         sample = Sample.objects.get(uuid=uuid)
         fields = ('uuid', 'name', 'analysis_result_uuid', 'created_at')
-        result = SampleSchema(only=fields).dump(sample).data
+        result = SampleSchema(only=fields).dump(sample)
+        return result, 200
+    except ValueError:
+        raise ParseError('Invalid UUID provided.')
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
+
+
+@samples_blueprint.route('/samples/<sample_uuid>/metadata', methods=['GET'])
+def get_single_sample_metadata(sample_uuid):
+    """Get single sample metadata."""
+    try:
+        uuid = UUID(sample_uuid)
+        sample = Sample.objects.get(uuid=uuid)
+        fields = ('uuid', 'name', 'metadata')
+        result = SampleSchema(only=fields).dump(sample)
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
@@ -97,7 +112,7 @@ def add_sample_metadata(resp):  # pylint: disable=unused-argument
     try:
         sample.metadata = metadata
         sample.save()
-        result = sample_schema.dump(sample).data
+        result = sample_schema.dump(sample)
         return result, 200
     except ValidationError as validation_error:
         current_app.logger.exception('Sample metadata could not be updated.')
@@ -131,14 +146,11 @@ def run_sample_display_modules(uuid):
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
 
-    for module in sample_display_modules:
-        try:
-            SampleConductor(safe_uuid,
-                            display_modules=[module],
-                            downstream_groups=False).shake_that_baton()
-        except Exception:  # pylint: disable=broad-except
-            current_app.logger.exception('Exception while coordinating display modules.')
+    analysis_names = request.args.getlist('analysis_names')
+    signatures = conduct_sample(uuid, analysis_names)
+    for signature in signatures:
+        signature.delay()
 
-    result = {'message': 'Started middleware'}
+    result = {'middleware': analysis_names}
 
     return result, 202

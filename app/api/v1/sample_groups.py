@@ -1,23 +1,24 @@
 """Sample Group API endpoint definitions."""
 
+from io import StringIO
 from uuid import UUID
+from csv import DictReader
 
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import ParseError, NotFound, PermissionDenied
+from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.analysis_modules.utils import conduct_sample_group
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
-from app.display_modules import all_display_modules
-from app.display_modules.conductor import SampleConductor
 from app.extensions import db
 from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
 from app.users.user_helpers import authenticate
-
-# from .utils import kick_off_middleware
+from app.utils import XLSDictReader
 
 
 sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disable=invalid-name
@@ -58,7 +59,7 @@ def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
         if organization:
             organization.sample_groups.append(sample_group)
         db.session.commit()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('Sample Group could not be created.')
@@ -72,7 +73,7 @@ def get_single_result(group_uuid):
     try:
         sample_group_id = UUID(group_uuid)
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 200
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
@@ -119,7 +120,7 @@ def get_samples_for_group(group_uuid):
         sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
         samples = sample_group.samples
         current_app.logger.info(f'Found {len(samples)} samples for group {group_uuid}')
-        result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True).data
+        result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True)
         return result, 200
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
@@ -146,7 +147,7 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
             sample = Sample.objects.get(uuid=sample_uuid)
             sample_group.sample_ids.append(sample.uuid)
         db.session.commit()
-        result = sample_group_schema.dump(sample_group).data
+        result = sample_group_schema.dump(sample_group)
         return result, 200
     except NoResultFound:
         db.session.rollback()
@@ -178,18 +179,90 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     """Run display modules for sample group."""
     try:
         safe_uuid = UUID(uuid)
-        group = SampleGroup.query.filter_by(id=safe_uuid).first()
+        _ = SampleGroup.query.filter_by(id=safe_uuid).first()
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except NoResultFound:
         raise NotFound('Sample Group does not exist.')
 
-    for module in all_display_modules:
-        try:
-            SampleConductor('', display_modules=[module]).direct_sample_group(group)
-        except Exception:  # pylint: disable=broad-except
-            current_app.logger.exception('Exception while coordinating display modules.')
+    analysis_names = request.args.getlist('analysis_names')
+    signatures = conduct_sample_group(uuid, analysis_names)
+    for signature in signatures:
+        signature.delay()
 
-    result = {'message': 'Started middleware'}
+    result = {'middleware': analysis_names}
 
     return result, 202
+
+
+@sample_groups_blueprint.route('/libraries/<library_uuid>/metadata', methods=['POST'])
+@authenticate()
+def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-many-branches,too-many-locals
+    """Upload metadata for a library."""
+    try:
+        library_id = UUID(library_uuid)
+        # Enforce is_library
+        _ = SampleGroup.query.filter_by(id=library_id).one()
+    except ValueError:
+        raise ParseError('Invalid Library UUID.')
+    except NoResultFound:
+        raise NotFound('Library does not exist')
+
+    try:
+        metadata_file = request.files['metadata']
+    except KeyError:
+        raise ParseError('Missing metadata file attachment.')
+
+    if metadata_file.filename == '':
+        raise ParseError('Missing metadata file attachment.')
+
+    try:
+        extension = metadata_file.filename.split('.')[1]
+    except KeyError:
+        raise ParseError('Metadata file missing extension.')
+
+    stream = StringIO(metadata_file.stream.read().decode('UTF8'), newline=None)
+    if extension == 'csv':
+        metadata = DictReader(stream)
+    elif 'xls' in extension:
+        metadata = XLSDictReader(stream)
+    else:
+        raise ParseError('Missing valid metadata file attachment.')
+
+    sample_name_col = metadata.fieldnames[0]
+    updates = {}
+
+    for row in metadata:
+        sample_name = row[sample_name_col]
+        new_metadata = {key: value for key, value in row.items()
+                        if key is not sample_name_col}
+        updates[sample_name] = new_metadata
+
+    # MongoDB has no transactions so we must do as much as we can upfront to
+    # avoid errors; ensure all samples at least exist
+    updates_by_uuid = []
+    missing_samples = []
+    for sample_name in updates:
+        try:
+            sample = Sample.objects.get(name=sample_name, library_uuid=library_id)
+            # Searching by UUID directly will be faster in the actual update phase
+            updates_by_uuid.append((sample.uuid, updates[sample_name]))
+        except DoesNotExist:
+            missing_samples.append(sample_name)
+    if missing_samples:
+        raise InvalidRequest((f'The following samples do not exist in Library '
+                              f'{library_id}: {missing_samples}'))
+
+    # Actually perform the updates
+    updated_uuids = []
+    for sample_uuid, new_metadata in updates_by_uuid:
+        try:
+            sample = Sample.objects.get(uuid=sample_uuid)
+            sample.metadata = new_metadata
+            sample.save()
+            updated_uuids.append(str(sample_uuid))
+        except ValidationError as validation_error:
+            current_app.logger.exception('Sample metadata could not be updated.')
+            raise ParseError(f'Metadata upload failed partway through: {str(validation_error)}')
+
+    return {'updated_uuids': updated_uuids}, 201

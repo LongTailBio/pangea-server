@@ -5,7 +5,18 @@
 import os
 
 
-class Config(object):
+BASE_CELERY = {
+    'broker_url': os.environ.get('CELERY_BROKER_URL'),
+    'result_backend': os.environ.get('CELERY_RESULT_BACKEND'),
+    'result_expires': 3600,     # Expire results after one hour
+    'result_cache_max': None,   # Do not limit cache
+    'task_always_eager': False,
+    'task_eager_propagates': False,
+    'task_serializer': 'json',
+}
+
+
+class Config():
     """Parent configuration class."""
 
     DEBUG = False
@@ -30,13 +41,7 @@ class Config(object):
     ]
 
     # Celery settings
-    broker_url = os.environ.get('CELERY_BROKER_URL')
-    result_backend = os.environ.get('CELERY_RESULT_BACKEND')
-    result_expires = 3600     # Expire results after one hour
-    result_cache_max = None   # Do not limit cache
-    task_always_eager = False
-    task_eager_propagates = False
-    task_serializer = 'json'
+    CELERY_CONFIG = BASE_CELERY
 
 
 class DevelopmentConfig(Config):
@@ -58,10 +63,12 @@ class TestingConfig(Config):
     TOKEN_EXPIRATION_SECONDS = 3
 
     # Celery settings
-    broker_url = os.environ.get('CELERY_BROKER_TEST_URL')
-    result_backend = os.environ.get('CELERY_RESULT_TEST_BACKEND')
-    task_always_eager = True
-    task_eager_propagates = True
+    CELERY_CONFIG = dict(list(BASE_CELERY.items()) + list({
+        'broker_url': os.environ.get('CELERY_BROKER_TEST_URL'),
+        'result_backend': os.environ.get('CELERY_RESULT_TEST_BACKEND'),
+        'task_always_eager': True,
+        'task_eager_propagates': True,
+    }.items()))
 
 
 class StagingConfig(Config):
@@ -80,8 +87,10 @@ class ProductionConfig(Config):
     MONGODB_HOST = os.environ.get('MONGODB_HOST')
 
     # Celery settings
-    broker_url = os.environ.get('CELERY_BROKER_URL')
-    result_backend = os.environ.get('CELERY_RESULT_BACKEND')
+    CELERY_CONFIG = dict(list(BASE_CELERY.items()) + list({
+        'broker_url': os.environ.get('CELERY_BROKER_URL'),
+        'result_backend': os.environ.get('CELERY_RESULT_BACKEND'),
+    }.items()))
 
 
 # pylint: disable=invalid-name

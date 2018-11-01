@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.11.0] - 2018-11-01
+### Added
+- Docker image tags for commits on develop and `major`, `major.minor`, and `major.minor.patch` semver tags.
+
+### Changed
+- Use PyTest for testing.
+- Moved analysis result and tool results to top level packages.
+- Use `library_uuid` in place of `sample_group_uuid` for Sample creation.
+
+### Fixed
+- Middleware endpoint timeout by moving all middleware heavy lifting into task body.
+- Fixed how Flask context is passed to Celery task bodies.
+- Handle empty abundance/prevalence values gracefully.
+
 ## [0.10.0] - 2018-10-06
 ### Added
 - Endpoint to delete sample groups.
@@ -34,6 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Basic Flask project structure.
 
-[Unreleased]: https://github.com/LongTailBio/metagenscope-server/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.0...develop
+[0.11.0]: https://github.com/LongTailBio/metagenscope-server/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/LongTailBio/metagenscope-server/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/LongTailBio/metagenscope-server/compare/v0.0.1...v0.9.0

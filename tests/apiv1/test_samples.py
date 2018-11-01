@@ -1,15 +1,19 @@
 """Test suite for Sample module."""
 
 import json
+from unittest import mock
 from uuid import UUID, uuid4
+
+from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
+from tool_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
 from app.samples.sample_models import Sample
-from app.display_modules.ancestry.constants import TOOL_MODULE_NAME
-from app.tool_results.ancestry.tests.factory import create_ancestry
 
 from tests.base import BaseTestCase
 from tests.utils import add_sample, add_sample_group, with_user
+
+from .utils import middleware_tester
 
 
 class TestSampleModule(BaseTestCase):
@@ -19,14 +23,14 @@ class TestSampleModule(BaseTestCase):
     def test_add_sample(self, auth_headers, *_):
         """Ensure a new sample can be added to the database."""
         sample_name = 'Exciting Research Starts Here'
-        sample_group = add_sample_group(name='A Great Name')
+        library = add_sample_group(name='A Great Name')
         with self.client:
             response = self.client.post(
                 f'/api/v1/samples',
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=sample_name,
-                    sample_group_uuid=str(sample_group.id),
+                    library_uuid=str(library.id),
                 )),
                 content_type='application/json',
             )
@@ -37,7 +41,7 @@ class TestSampleModule(BaseTestCase):
             self.assertEqual(sample_name, data['data']['sample']['name'])
 
         sample_uuid = UUID(data['data']['sample']['uuid'])
-        self.assertIn(sample_uuid, sample_group.sample_ids)
+        self.assertIn(sample_uuid, library.sample_ids)
 
     @with_user
     def test_add_sample_missing_group(self, auth_headers, *_):
@@ -48,8 +52,8 @@ class TestSampleModule(BaseTestCase):
                 f'/api/v1/samples',
                 headers=auth_headers,
                 data=json.dumps(dict(
+                    library_uuid=sample_group_uuid,
                     name='Exciting Research Starts Here',
-                    sample_group_uuid=sample_group_uuid,
                 )),
                 content_type='application/json',
             )
@@ -75,6 +79,24 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 
+    def test_get_single_sample_metadata(self):
+        """Ensure get metadata for a single sample behaves correctly."""
+        metadata = {'foo': 'bar'}
+        sample = add_sample(name='SMPL_01', metadata=metadata)
+        sample_uuid = str(sample.uuid)
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/samples/{sample_uuid}/metadata',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            sample = data['data']['sample']
+            self.assertIn('uuid', sample)
+            self.assertIn('name', sample)
+            self.assertEqual(sample['metadata'], metadata)
+
     def test_get_sample_uuid_from_name(self):
         """Ensure get sample uuid behaves correctly."""
         sample_name = 'SMPL_01'
@@ -96,6 +118,7 @@ class TestSampleModule(BaseTestCase):
         data = create_ancestry()
         args = {
             'name': 'AncestrySample',
+            'library_uuid': uuid4(),
             'metadata': {'foobar': 'baz'},
             TOOL_MODULE_NAME: data,
         }
@@ -109,31 +132,7 @@ class TestSampleModule(BaseTestCase):
         """Ensure all middleware can be kicked off for sample."""
         sample = self.prepare_middleware_test()
 
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/samples/{str(sample.uuid)}/middleware',
-                headers=auth_headers,
-                content_type='application/json',
-            )
-            self.assertEqual(response.status_code, 202)
-            data = json.loads(response.data.decode())
-            self.assertEqual(data['data']['message'], 'Started middleware')
-
-    @with_user
-    def test_kick_off_single_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure single middleware can be kicked off for sample."""
-        sample = self.prepare_middleware_test()
-
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/samples/{str(sample.uuid)}/middleware',
-                headers=auth_headers,
-                content_type='application/json',
-                data=json.dumps({
-                    'tools': ['ancestry_summary'],
-                }),
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 202)
-            self.assertIn('success', data['status'])
-            self.assertEqual(data['data']['message'], 'Started middleware')
+        patch_path = 'app.api.v1.samples.conduct_sample'
+        with mock.patch(patch_path) as conductor:
+            endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
+            middleware_tester(self, auth_headers, conductor, endpoint)
