@@ -181,6 +181,9 @@ workflows:
     jobs:
       - test_app:
           context: metagenscope-staging
+          filters:
+            tags:
+              only: /^v.*/
       - build_staging:
           context: metagenscope-staging
           filters:
