@@ -31,7 +31,7 @@ class BaseSample(Document):
             getattr(self, key)
         except AttributeError:
             try:
-                getattr(self.analysis_result, key)
+                getattr(self.analysis_result.fetch(), key)
             except AttributeError:
                 return False
         return True
@@ -41,7 +41,7 @@ class BaseSample(Document):
         try:
             return getattr(self, key)
         except AttributeError:
-            return getattr(self.analysis_result, key).fetch()
+            return getattr(self.analysis_result.fetch(), key).fetch()
 
 
 # Create actual Sample class based on modules present at runtime
