@@ -48,6 +48,8 @@ def numbered_sample(i=0, j=0):
     """Create numbered sample with metadata."""
     metadata = {'foobar': f'baz{j}'}
     sample = add_sample(f'Test Sample {i}', metadata=metadata)
+    print(sample)
+    assert sample.analysis_result is not None
     return sample
 
 
