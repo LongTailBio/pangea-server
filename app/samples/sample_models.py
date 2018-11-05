@@ -46,7 +46,7 @@ class BaseSample(Document):
             print(f'AR {derefed.__dict__}')
             ref = getattr(derefed, key)
             print(f'REF {ref}')
-            return ref.fetch()
+            return ref.fetch().data
 
 
 # Create actual Sample class based on modules present at runtime
