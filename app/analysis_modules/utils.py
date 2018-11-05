@@ -153,7 +153,7 @@ def task_body_sample_group(sample_group_uuid, module):
     samples = filter_samples(sample_group.samples, module)
     samples = [sample.fetch_safe() for sample in samples]
     data = module.samples_processor()(*samples)
-    analysis_result = sample_group.analysis_result.fetch()
+    analysis_result = sample_group.analysis_result
     persist_result_helper(analysis_result, module, data)
 
 
