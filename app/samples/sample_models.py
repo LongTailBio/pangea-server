@@ -26,6 +26,7 @@ class BaseSample(Document):
     meta = {'allow_inheritance': True}
 
     def __contains__(self, key):
+        """Return true if property is in the class without fetching."""
         try:
             getattr(self, key)
         except KeyError:
@@ -33,9 +34,10 @@ class BaseSample(Document):
                 getattr(self.analysis_result, key)
             except KeyError:
                 return False
-        return False
+        return True
 
     def __getitem__(self, key):
+        """Return property of sample or of analysis result."""
         try:
             return getattr(self, key)
         except KeyError:
