@@ -72,7 +72,7 @@ def collate_samples(tool_name, fields, samples):
     for sample in samples:
         sample_name = sample['name']
         sample_dict[sample_name] = {}
-        tool_result = sample.analysis_result.fetch()[tool_name]
+        tool_result = sample[tool_name]
         for field in fields:
             sample_dict[sample_name][field] = tool_result[field]
 
