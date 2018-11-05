@@ -40,7 +40,10 @@ def seed_sample(upstream, sample):
     """Create single sample."""
     factory = unpack_module(upstream)[2]
     analysis_result = sample.analysis_result
-    setattr(analysis_result, upstream.name(), factory.create_result())
+    result = factory.create_result()
+    print(result)
+    assert result is not None
+    setattr(analysis_result, upstream.name(), result)
     sample.save()
 
 
