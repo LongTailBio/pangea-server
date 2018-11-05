@@ -42,9 +42,9 @@ class BaseSample(Document):
             return getattr(self, key)
         except AttributeError:
             derefed = self.analysis_result.fetch()
-            print(derefed.__dict__)
+            print(f'AR {derefed.__dict__}')
             ref = getattr(derefed, key)
-            print(ref)
+            print(f'REF {ref}')
             return ref.fetch()
 
 
