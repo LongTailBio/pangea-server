@@ -4,6 +4,7 @@ import math
 
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
+from app.analysis_results.analysis_result_models import AnalysisResultWrapper
 from app.analysis_modules.wrangler import all_analysis_modules
 from app.analysis_modules.task_graph import TaskConductor
 from app.extensions import db
@@ -41,12 +42,9 @@ def seed_sample(upstream, sample):
     upstream_name, factory = unpack_module(upstream)[1:3]
     analysis_result = sample.analysis_result.fetch()
     result = factory.create_result()
-    print(f'UPSTREAM_NAME {upstream_name}')
-    print(f'AR_DICT {analysis_result.__dict__}')
-    result_wrapper = getattr(analysis_result, upstream_name).fetch()
-    result_wrapper.data = result
-    result_wrapper.status = 'S'
+    result_wrapper = AnalysisResultWrapper(staus='S', data=result)
     result_wrapper.save()
+    setattr(analysis_result, upstream_name, result_wrapper)
     analysis_result.save()
     sample.save()
 
