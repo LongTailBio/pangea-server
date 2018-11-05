@@ -30,10 +30,10 @@ class BaseSample(Document):
         """Return true if property is in the class without fetching."""
         try:
             getattr(self, key)
-        except KeyError:
+        except AttributeError:
             try:
                 getattr(self.analysis_result, key)
-            except KeyError:
+            except AttributeError:
                 return False
         return True
 
@@ -41,7 +41,7 @@ class BaseSample(Document):
         """Return property of sample or of analysis result."""
         try:
             return getattr(self, key)
-        except KeyError:
+        except AttributeError:
             return getattr(self.analysis_result, key).fetch()
 
 
