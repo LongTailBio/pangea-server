@@ -42,7 +42,7 @@ def seed_sample(upstream, sample):
     upstream_name, factory = unpack_module(upstream)[1:3]
     analysis_result = sample.analysis_result.fetch()
     result = factory.create_result()
-    result_wrapper = AnalysisResultWrapper(staus='S', data=result)
+    result_wrapper = AnalysisResultWrapper(status='S', data=result)
     result_wrapper.save()
     setattr(analysis_result, upstream_name, result_wrapper)
     analysis_result.save()
