@@ -38,10 +38,12 @@ def processes_single_samples(analysis_module):
 
 def seed_sample(upstream, sample):
     """Create single sample."""
-    analysis_module_name, factory = unpack_module(upstream)[1:3]
+    upstream_name, factory = unpack_module(upstream)[1:3]
     analysis_result = sample.analysis_result.fetch()
     result = factory.create_result()
-    result_wrapper = getattr(analysis_result, analysis_module_name).fetch()
+    print(f'UPSTREAM_NAME {upstream_name}')
+    print(f'AR_DICT {analysis_result.__dict__}')
+    result_wrapper = getattr(analysis_result, upstream_name).fetch()
     result_wrapper.data = result
     result_wrapper.status = 'S'
     result_wrapper.save()
