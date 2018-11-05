@@ -41,7 +41,7 @@ def seed_sample(upstream, sample):
     factory = unpack_module(upstream)[2]
     analysis_result = sample.analysis_result
     result = factory.create_result()
-    print(result)
+    print(result.__dict__)
     assert result is not None
     setattr(analysis_result, upstream.name(), result)
     sample.save()

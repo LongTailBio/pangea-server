@@ -41,7 +41,10 @@ class BaseSample(Document):
         try:
             return getattr(self, key)
         except AttributeError:
-            ref = getattr(self.analysis_result.fetch(), key)
+            derefed = self.analysis_result.fetch()
+            print(derefed.__dict__)
+            ref = getattr(derefed, key)
+            print(ref)
             return ref.fetch()
 
 
