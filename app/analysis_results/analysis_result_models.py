@@ -60,9 +60,14 @@ class AnalysisResultMetaBase(mongoDB.Document):
 
 
 # Create actual AnalysisResultMeta class based on modules present at runtime
-AnalysisResultMeta = type('AnalysisResultMeta', (AnalysisResultMetaBase,), {
-    module_name: LazyReferenceField(AnalysisResultWrapper)
-    for module_name in ALL_MODULE_NAMES})
+AnalysisResultMeta = type(
+    'AnalysisResultMeta',
+    (AnalysisResultMetaBase,),
+    {
+        module_name: LazyReferenceField(AnalysisResultWrapper)
+        for module_name in ALL_MODULE_NAMES
+    }
+)
 
 
 class AnalysisResultMetaSchema(BaseSchema):
