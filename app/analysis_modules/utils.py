@@ -105,6 +105,7 @@ def task_body_sample(sample_uuid, module):
     if block_if_analysis_result_exists(module, analysis_result):
         return
     analysis_result.set_module_status(module.name(), 'W')
+    assert module.name() in analysis_result
     data = module.single_sample_processor()(sample)
     print(module.name())
     persist_result_helper(analysis_result, module, data)
