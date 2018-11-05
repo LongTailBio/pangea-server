@@ -41,7 +41,10 @@ def seed_sample(upstream, sample):
     factory = unpack_module(upstream)[2]
     analysis_result = sample.analysis_result.fetch()
     result = factory.create_result()
-    setattr(analysis_result, upstream.name(), result)
+    result_wrapper = getattr(analysis_result, analysis_name).fetch()
+    result_wrapper.data = result
+    result_wrapper.status = 'S'
+    result_wrapper.save()
     analysis_result.save()
     sample.save()
 
