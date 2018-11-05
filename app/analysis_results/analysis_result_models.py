@@ -46,7 +46,6 @@ class AnalysisResultMetaBase(mongoDB.Document):
         return [field for field in all_fields
                 if getattr(self, field, None) is not None]
 
-
     def set_module_status(self, module_name, status):
         """Set the status for a sample group's display module."""
         try:
