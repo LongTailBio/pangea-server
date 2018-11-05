@@ -106,9 +106,8 @@ def task_body_sample(sample_uuid, module):
         return
     analysis_result.set_module_status(module.name(), 'W')
     data = module.single_sample_processor()(sample)
-    print(data)
+    print(module.name())
     persist_result_helper(analysis_result, module, data)
-    print(f'AR_DICT {analysis_result.__dict__}')
 
 
 @celery.task()
