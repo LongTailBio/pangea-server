@@ -4,7 +4,7 @@ import math
 
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
-from app.analysis_results.analysis_result_models import AnalysisResultWrapper
+from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.analysis_modules.wrangler import all_analysis_modules
 from app.analysis_modules.task_graph import TaskConductor
 from app.extensions import db
@@ -106,8 +106,10 @@ for module in all_analysis_modules:
             return
 
         task_signatures[0]()  # Modules are test one at a time so only one task present
-        analysis_result = sample.analysis_result.fetch()
+        analysis_result = AnalysisResultMeta.objects.get(uuid=sample.analysis_result.pk)
         self.assertIn(analysis_module.name(), analysis_result)
+        wrapper = getattr(analysis_result, analysis_module.name()).fetch()
+        self.assertEqual(wrapper.status, 'S')
 
     single_sample_test.__doc__ = f'Test {analysis_name} middleware for single Sample.'
     test_name = f'test_{analysis_name}_single_sample'
