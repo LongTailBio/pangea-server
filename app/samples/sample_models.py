@@ -26,15 +26,21 @@ class BaseSample(Document):
 
     meta = {'allow_inheritance': True}
 
-    def fetch_safe(self):
-        """Return the sample with all tool result documents fetched and jsonified."""
-        safe_sample = {}
-        safe_sample['name'] = self.name
-        safe_sample['metadata'] = self.metadata
-        safe_sample['theme'] = self.theme
-        if self.analysis_result:
-            safe_sample['analysis_result'] = str(self.analysis_result.pk)
-        return safe_sample
+    def __contains__(self, key):
+        try:
+            getattr(self, key)
+        except KeyError:
+            try:
+                getattr(self.analysis_result, key)
+            except KeyError:
+                return False
+        return False
+
+    def __getitem__(self, key):
+        try:
+            return getattr(self, key)
+        except KeyError:
+            return getattr(self.analysis_result, key).fetch()
 
 
 # Create actual Sample class based on modules present at runtime

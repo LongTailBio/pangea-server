@@ -24,7 +24,7 @@ BLOCK_TIME = 100
 def fetch_samples(sample_group_id):
     """Get all samples belonging to the specified Sample Group."""
     sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
-    samples = [sample.fetch_safe() for sample in sample_group.samples]
+    samples = sample_group.samples
     return samples
 
 
@@ -105,7 +105,6 @@ def task_body_sample(sample_uuid, module):
     if block_if_analysis_result_exists(module, analysis_result):
         return
     analysis_result.set_module_status(module.name(), 'W')
-    sample = sample.fetch_safe()
     data = module.single_sample_processor()(sample)
     persist_result_helper(analysis_result, module, data)
 
@@ -151,7 +150,6 @@ def task_body_sample_group(sample_group_uuid, module):
         return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     samples = filter_samples(sample_group.samples, module)
-    samples = [sample.fetch_safe() for sample in samples]
     data = module.samples_processor()(*samples)
     analysis_result = sample_group.analysis_result
     persist_result_helper(analysis_result, module, data)
