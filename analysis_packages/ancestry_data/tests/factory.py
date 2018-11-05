@@ -24,10 +24,10 @@ def create_values(dropout=0.25):
 def create_result(dropout=0.25, save=True):
     """Create ancestry result."""
     pops = create_values(dropout=dropout)
-    result = AncestryToolResult(populations=pops)
+    ancestry_result = AncestryToolResult(populations=pops)
     if save:
-        result.save()
-    return result
+        ancestry_result.save()
+    return ancestry_result
 
 
 class AncestryToolResultFactory(factory.mongoengine.MongoEngineFactory):
