@@ -6,8 +6,8 @@ from app.extensions import celery
 
 @celery.task(bind=True)
 def clean_error(self):
-    """
-    Handle expected error types cleanly.
+    """Handle expected error types cleanly.
+
     To be used like: module_task.s(sample_group_id).on_error(clean_error.s()).delay()
     """
     # Try to get analysis_result.id from parent tasks metadata
