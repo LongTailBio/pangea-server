@@ -6,7 +6,7 @@ from celery import group as task_group
 from app.analysis_modules import MODULES_BY_NAME
 
 from .tasks import clean_error
-from .utils import run_sample, run_sample_group
+from .utils import run_sample, run_sample_group, processes_single_samples, processes_sample_groups
 
 
 class TaskConductor:
