@@ -16,12 +16,12 @@ from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.utils import lock_function
 
+BLOCK_TIME = 100
+
 
 def apply_errback(signatures):
     """Add error callback to list of signatures."""
     return [sig for sig in signatures if sig is not None]
-
-BLOCK_TIME = 100
 
 
 def fetch_samples(sample_group_id):
