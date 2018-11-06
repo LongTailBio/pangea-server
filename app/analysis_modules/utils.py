@@ -16,7 +16,10 @@ from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 from app.utils import lock_function
 
-from .tasks import clean_error
+
+def apply_errback(signatures):
+    """Add error callback to list of signatures."""
+    return [sig for sig in signatures if sig is not None]
 
 BLOCK_TIME = 100
 
@@ -61,7 +64,7 @@ def sample_group_middleware(sample_group_id, *module_names):
         modules = [MODULES_BY_NAME[module_name] for module_name in module_names]
 
     task_signatures = [module.group_signature(sample_group_id) for module in modules]
-    task_signatures = [sig.on_error(clean_error.s()) for sig in task_signatures if sig is not None]
+    task_signatures = apply_errback(task_signatures)
     return task_signatures
 
 
