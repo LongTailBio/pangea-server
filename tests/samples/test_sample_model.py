@@ -3,7 +3,6 @@
 from uuid import uuid4
 
 from mongoengine.errors import NotUniqueError
-
 from app.samples.sample_models import Sample
 from tests.base import BaseTestCase
 
@@ -37,14 +36,3 @@ class TestSampleModel(BaseTestCase):
         duplicate = Sample(name='SMPL_01', library_uuid=uuid4()).save()
         self.assertEqual(original.name, duplicate.name)
         self.assertNotEqual(original.library_uuid, duplicate.library_uuid)
-
-    def test_tool_result_names(self):
-        """Ensure tool_result_names property works as expected."""
-        sample_data = {
-            'name': 'SMPL_01',
-            'library_uuid': uuid4(),
-            KRAKEN_NAME: create_kraken()
-        }
-        sample = Sample(**sample_data).save()
-        self.assertEqual(len(sample.tool_result_names), 1)
-        self.assertIn(KRAKEN_NAME, sample.tool_result_names)

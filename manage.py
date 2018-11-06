@@ -18,7 +18,7 @@ manager = Manager(app)  # pylint: disable=invalid-name
 manager.add_command('db', MigrateCommand)
 
 # These must be imported AFTER Mongo connection has been established during app creation
-from seed import abrf_analysis_result, uw_analysis_result, reads_classified
+from seed import abrf_analysis_result
 from seed.fuzz import generate_metadata, create_saved_group
 
 

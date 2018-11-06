@@ -48,9 +48,16 @@ def add_sample(name, library_uuid=None, analysis_result=None,
 
     for module_name, module_val in sample_kwargs.items():
         setattr(analysis_result, module_name, module_val)
+<<<<<<< HEAD
     return Sample(library_uuid=library_uuid, name=name, metadata=metadata,
                   analysis_result=analysis_result, created_at=created_at,
                   ).save()
+=======
+    return Sample(
+        name=name, metadata=metadata,
+        analysis_result=analysis_result, created_at=created_at,
+    ).save()
+>>>>>>> 4b9ccb24a4747437777f676e6073133cb8ac9aca
 
 
 def add_sample_group(name, analysis_result=None,

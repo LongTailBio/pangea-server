@@ -127,24 +127,6 @@ def run_sample(sample_uuid, module_name):
         pass
 
 
-def conduct_sample(sample_uuid, module_names):
-    """Orchestrate tasks to be run for a Sample middleware call."""
-
-    def build_sample_sig(sample_uuid, module_name):
-        """Return a signature for a sample task."""
-        return run_sample.s(sample_uuid, module_name).on_error(clean_error.s())
-
-    if not module_names:
-        module_names = list(MODULES_BY_NAME.keys())
-
-    task_signatures = build_module_digraph(
-        sample_uuid,
-        module_names,
-        build_sample_sig,
-    )
-    return task_signatures
-
-
 def task_body_sample_group(sample_group_uuid, module):
     """Wrap analysis work for SampleGroup."""
     sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
@@ -189,6 +171,7 @@ def run_sample_group(sample_group_uuid, module_name):
         task_body_sample_group(sample_group_uuid, module)
     except UnsupportedAnalysisMode:
         pass
+
 
 def processes_sample_groups(module_name):
     """Return true if a module processes SampleGroups."""
