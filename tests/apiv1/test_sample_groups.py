@@ -14,8 +14,8 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user, add_organization
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group, with_user, add_organization
 
 from .utils import middleware_tester
 

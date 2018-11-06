@@ -3,8 +3,8 @@
 from app.analysis_modules.utils import fetch_samples
 from app.extensions import db
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group
 
 
 class TestConductorTasks(BaseTestCase):

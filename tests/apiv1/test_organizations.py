@@ -9,8 +9,8 @@ from uuid import uuid4
 from app import db
 from app.organizations.organization_models import Organization
 
-from tests.base import BaseTestCase
-from tests.utils import add_user, add_organization, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import add_user, add_organization, add_sample_group, with_user
 
 
 class TestOrganizationModule(BaseTestCase):

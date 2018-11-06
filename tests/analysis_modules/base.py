@@ -8,8 +8,8 @@ from app.analysis_results.analysis_result_models import (
     AnalysisResultWrapper,
 )
 from app.samples.sample_models import Sample
-from tests.base import BaseTestCase
-from tests.utils import add_sample_group, add_sample
+from ..base import BaseTestCase
+from ..utils import add_sample_group, add_sample
 
 
 class BaseAnalysisModuleTest(BaseTestCase):

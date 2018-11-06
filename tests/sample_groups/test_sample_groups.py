@@ -8,8 +8,8 @@ from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
-from tests.base import BaseTestCase
-from tests.utils import add_sample_group
+from ..base import BaseTestCase
+from ..utils import add_sample_group
 
 
 class TestSampleGroupModel(BaseTestCase):
