@@ -8,7 +8,7 @@ from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
+from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 
 from ..base import BaseTestCase
