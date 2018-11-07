@@ -42,9 +42,9 @@ class BaseSample(Document):
         try:
             return getattr(self, key)
         except AttributeError:
-            derefed = self.analysis_result.fetch()
-            ref = getattr(derefed, key)
-            return ref.fetch().data
+            derefed_analysis_result = self.analysis_result.fetch()
+            wrapper_ref = getattr(derefed_analysis_result, key)
+            return wrapper_ref.fetch().data
 
 
 # Create actual Sample class based on modules present at runtime

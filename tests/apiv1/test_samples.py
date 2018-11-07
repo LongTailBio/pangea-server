@@ -117,7 +117,11 @@ class TestSampleModule(BaseTestCase):
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database forsample  middleware test."""
         analysis_result = AnalysisResultMeta().save()
-        setattr(analysis_result, TOOL_MODULE_NAME, create_ancestry())
+        setattr(
+            analysis_result,
+            TOOL_MODULE_NAME,
+            LazyReferenceField(AnalysisResultWrapper(status='S', data=create_ancestry()))
+        )
         args = {
             'name': 'AncestrySample',
             'library_uuid': uuid4(),

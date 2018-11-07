@@ -12,12 +12,12 @@ from .utils import run_sample, run_sample_group, processes_single_samples, proce
 class TaskConductor:
     """Build chains of tasks."""
 
-    def __init__(self, uuid, module_names=None, group=False):
+    def __init__(self, uuid, module_names=None, is_group=False):
         """Build a TaskConductor."""
         self.uuid = uuid
-        self.group = group
+        self.is_group = is_group
         self.filter_func = processes_single_samples
-        if self.group:
+        if self.is_group:
             self.filter_func = processes_sample_groups
         self.module_names = self._filter_module_names(module_names)
         self.signature_tbl = {}
@@ -33,7 +33,7 @@ class TaskConductor:
 
     def build_sig(self, module_name):
         """Build a signature for a single module."""
-        if self.group:
+        if self.is_group:
             return run_sample_group.si(self.uuid, module_name).on_error(clean_error.s())
         return run_sample.s(self.uuid, module_name).on_error(clean_error.s())
 
