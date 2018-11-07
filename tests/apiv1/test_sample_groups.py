@@ -247,11 +247,11 @@ class TestSampleGroupModule(BaseTestCase):
         def create_sample(i):
             """Create unique sample for index i."""
             analysis_result = AnalysisResultMeta().save()
-            setattr(
-                analysis_result,
-                TOOL_MODULE_NAME,
-                LazyReferenceField(AnalysisResultWrapper(status='S', data=create_ancestry()))
-            )
+            result_wrapper = getattr(analysis_result, TOOL_MODULE_NAME).fetch()
+            result_wrapper.data = create_ancestry()
+            result_wrapper.status = 'S'
+            result_wrapper.save()
+            analysis_result.save()
             args = {
                 'library_uuid': uuid4(),
                 'analysis_result': analysis_result,
