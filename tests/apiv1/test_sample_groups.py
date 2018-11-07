@@ -4,7 +4,6 @@ import json
 from unittest import mock
 from uuid import UUID, uuid4
 
-from mongoengine import LazyReferenceField
 from sqlalchemy.orm.exc import NoResultFound
 
 from analysis_packages.ancestry.constants import TOOL_MODULE_NAME

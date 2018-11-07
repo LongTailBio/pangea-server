@@ -3,7 +3,6 @@
 import json
 from unittest import mock
 from uuid import UUID, uuid4
-from mongoengine import LazyReferenceField
 
 from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
