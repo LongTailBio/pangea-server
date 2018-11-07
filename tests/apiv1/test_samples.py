@@ -3,12 +3,13 @@
 import json
 from unittest import mock
 from uuid import UUID, uuid4
+from mongoengine import LazyReferenceField
 
 from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.samples.sample_models import Sample
 
 from ..base import BaseTestCase
@@ -120,7 +121,9 @@ class TestSampleModule(BaseTestCase):
         setattr(
             analysis_result,
             TOOL_MODULE_NAME,
-            LazyReferenceField(AnalysisResultWrapper(status='S', data=create_ancestry()))
+            LazyReferenceField(
+                AnalysisResultWrapper(status='S', data=create_ancestry())
+            )
         )
         args = {
             'name': 'AncestrySample',

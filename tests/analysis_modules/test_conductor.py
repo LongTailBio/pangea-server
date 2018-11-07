@@ -23,7 +23,7 @@ class TestTaskConductor(BaseTestCase):
 
     def test_build_depend_digraph(self):
         """Ensure the dependency digraph is built correctly."""
-        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
+        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], is_group=True)
         depend_graph = task_conductor.build_depend_digraph()
         upstream_modules = nx.descendants(depend_graph, SAMPLE_SIMILARITY_NAME)
         self.assertIn(KRAKENHLL_NAME, upstream_modules)
@@ -37,6 +37,6 @@ class TestTaskConductor(BaseTestCase):
 
     def test_task_signatures_group(self):
         """Ensure task signatures are built correctly."""
-        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], group=True)
+        task_conductor = TaskConductor(str(uuid4()), [SAMPLE_SIMILARITY_NAME], is_group=True)
         task_sigs = task_conductor.build_task_signatures()
         self.assertTrue(len(task_sigs) == 1)
