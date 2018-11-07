@@ -2,7 +2,7 @@
 
 import json
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
+from analysis_packages.ancestry import AncestryAnalysisModule
 from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
@@ -25,9 +25,9 @@ def middleware_tester(test_case, auth_headers, mocked_conductor, endpoint):
 def get_analysis_result_with_data():
     """Return an analysis result with one anlysis module for groups or samples."""
     analysis_result = AnalysisResultMeta().save()
-    analysis_result.set_module_status(TOOL_MODULE_NAME, 'S')
-    result_wrapper = getattr(analysis_result, TOOL_MODULE_NAME).fetch()
-    result_wrapper.data = create_ancestry()
+    analysis_result.set_module_status(AncestryAnalysisModule.name(), 'S')
+    result_wrapper = getattr(analysis_result, AncestryAnalysisModule.name()).fetch()
+    result_wrapper.data = AncestryAnalysisModule.result_model(**create_ancestry())
     result_wrapper.save()
     analysis_result.save()
     return analysis_result
