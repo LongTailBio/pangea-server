@@ -6,18 +6,14 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
-
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
 from ..base import BaseTestCase
 from ..utils import add_sample, add_sample_group, with_user, add_organization
 
-from .utils import middleware_tester
+from .utils import middleware_tester, get_analysis_result_with_data
 
 
 class TestSampleGroupModule(BaseTestCase):
@@ -245,15 +241,9 @@ class TestSampleGroupModule(BaseTestCase):
         """Prepare database for middleware test."""
         def create_sample(i):
             """Create unique sample for index i."""
-            analysis_result = AnalysisResultMeta().save()
-            result_wrapper = getattr(analysis_result, TOOL_MODULE_NAME).fetch()
-            result_wrapper.data = create_ancestry()
-            result_wrapper.status = 'S'
-            result_wrapper.save()
-            analysis_result.save()
             args = {
                 'library_uuid': uuid4(),
-                'analysis_result': analysis_result,
+                'analysis_result': get_analysis_result_with_data(),
                 'name': f'AncestrySample{i}',
                 'metadata': {'foobar': f'baz{i}'},
             }

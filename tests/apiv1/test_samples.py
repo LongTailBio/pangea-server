@@ -4,17 +4,13 @@ import json
 from unittest import mock
 from uuid import UUID, uuid4
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from analysis_packages.ancestry.tests.factory import create_result as create_ancestry
-
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.samples.sample_models import Sample
 
 from ..base import BaseTestCase
 from ..utils import add_sample, add_sample_group, with_user
 
-from .utils import middleware_tester
+from .utils import middleware_tester, get_analysis_result_with_data
 
 
 class TestSampleModule(BaseTestCase):
@@ -116,17 +112,11 @@ class TestSampleModule(BaseTestCase):
 
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database forsample  middleware test."""
-        analysis_result = AnalysisResultMeta().save()
-        result_wrapper = getattr(analysis_result, TOOL_MODULE_NAME).fetch()
-        result_wrapper.status = 'S'
-        result_wrapper.data = create_ancestry()
-        result_wrapper.save()
-        analysis_result.save()
         args = {
             'name': 'AncestrySample',
             'library_uuid': uuid4(),
             'metadata': {'foobar': 'baz'},
-            'analysis_result': analysis_result,
+            'analysis_result': get_analysis_result_with_data(),
         }
         sample = Sample(**args).save()
         db.session.commit()
