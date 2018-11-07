@@ -4,11 +4,11 @@ import math
 
 from analysis_packages.base.exceptions import UnsupportedAnalysisMode
 
+from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 from app.analysis_modules.wrangler import all_analysis_modules
-from app.analysis_modules.utils import conduct_sample, conduct_sample_group
+from app.analysis_modules.task_graph import TaskConductor
 from app.extensions import db
 
-from ..tool_results.utils import unpack_module as unpack_tool
 from ..utils import add_sample_group, add_sample
 from .base import BaseAnalysisModuleTest
 from .utils import unpack_module
@@ -17,23 +17,36 @@ from .utils import unpack_module
 SAMPLE_TEST_COUNT = 40
 
 
-def processes_samples(analysis_module):
-    """Return true if a module processes SampleToolResults."""
+def processes_sample_groups(analysis_module):
+    """Return true if a module processes SampleGroups"""
     try:
         # pylint: disable=assignment-from-no-return
-        _ = analysis_module.group_tool_processor()
-        return False
-    except UnsupportedAnalysisMode:
+        _ = analysis_module.samples_processor()
         return True
+    except UnsupportedAnalysisMode:
+        return False
 
 
-def seed_samples(tool, samples):
+def processes_single_samples(analysis_module):
+    """Return true if a module processes single Samples"""
+    try:
+        # pylint: disable=assignment-from-no-return
+        _ = analysis_module.single_sample_processor()
+        return True
+    except UnsupportedAnalysisMode:
+        return False
+
+
+def seed_sample(upstream, sample):
     """Create single sample."""
-    name = tool.name()
-    factory = unpack_tool(tool)[2]
-    for sample in samples:
-        setattr(sample, name, factory.create_result())
-        sample.save()
+    upstream_name, factory = unpack_module(upstream)[1:3]
+    analysis_result = sample.analysis_result.fetch()
+    result = factory.create_result()
+    result_wrapper = AnalysisResultWrapper(status='S', data=result)
+    result_wrapper.save()
+    setattr(analysis_result, upstream_name, result_wrapper)
+    analysis_result.save()
+    sample.save()
 
 
 def numbered_sample(i=0, j=0):
@@ -43,19 +56,33 @@ def numbered_sample(i=0, j=0):
     return sample
 
 
-def seed_module(analysis_module, sample_group, samples):
+def seed_module(analysis_module, sample_group):
     """Seed testing values for moduke."""
-    tool_modules = analysis_module.required_tool_results()
-    for tool in tool_modules:
-        if processes_samples(analysis_module):
-            # Prepate Samples with ToolResults, if applicable
-            seed_samples(tool, samples)
-        else:
-            # Prepare GroupToolResult(s), if applicable
-            factory = unpack_tool(tool)[2]
-            tool_result = factory.create_result(save=False)
-            tool_result.sample_group_uuid = sample_group.id
-            tool_result.save()
+    upstream_modules = analysis_module.required_modules()
+    for upstream in upstream_modules:
+        for sample in sample_group.samples:
+            seed_sample(upstream, sample)
+
+
+def build_seeded_sample(analysis_module):
+    """Return a sample with the given module's prereqs."""
+    sample = numbered_sample()
+    if processes_single_samples(analysis_module):
+        for tool in analysis_module.required_modules():
+            seed_sample(tool, sample)
+    return sample
+
+
+def build_seeded_sample_group(analysis_module):
+    """Return a group with samples with the given modules prereqs."""
+    sample_group = add_sample_group('Test Group')
+    meta_choices = [0, 1, 2]
+    meta_choices = meta_choices * math.ceil(SAMPLE_TEST_COUNT / len(meta_choices))
+    samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
+    sample_group.samples = samples
+    db.session.commit()
+    seed_module(analysis_module, sample_group)
+    return sample_group
 
 
 class TestAnalysisModuleMiddleware(BaseAnalysisModuleTest):
@@ -70,21 +97,19 @@ for module in all_analysis_modules:
 
     def single_sample_test(self, analysis_module=module):
         """Test middleware for single Sample analyses."""
-        sample = numbered_sample()
-        if processes_samples(analysis_module):
-            for tool in analysis_module.required_tool_results():
-                seed_samples(tool, [sample])
-        module_name = analysis_module.name()
-        task_signatures = conduct_sample(str(sample.uuid), [module_name])
-        analysis_task = task_signatures[0]
-        analysis_task()
+        sample = build_seeded_sample(analysis_module)
+        task_signatures = TaskConductor(
+            str(sample.uuid), module_names=[analysis_module.name()]
+        ).build_task_signatures()
+        if not processes_single_samples(analysis_module):
+            self.assertEqual(len(task_signatures), 0)
+            return
 
-        analysis_result = sample.analysis_result.fetch()
-        try:
-            _ = analysis_module.single_sample_processor()
-            self.assertIn(module_name, analysis_result)
-        except UnsupportedAnalysisMode:
-            self.assertNotIn(module_name, analysis_result)
+        task_signatures[0]()  # Modules are test one at a time so only one task present
+        analysis_result = AnalysisResultMeta.objects.get(uuid=sample.analysis_result.pk)
+        self.assertIn(analysis_module.name(), analysis_result)
+        wrapper = getattr(analysis_result, analysis_module.name()).fetch()
+        self.assertEqual(wrapper.status, 'S')
 
     single_sample_test.__doc__ = f'Test {analysis_name} middleware for single Sample.'
     test_name = f'test_{analysis_name}_single_sample'
@@ -92,28 +117,19 @@ for module in all_analysis_modules:
 
     def sample_group_test(self, analysis_module=module):
         """Test middleware for SampleGroup analyses."""
-        # Seed test values
-        sample_group = add_sample_group('Test Group')
-        meta_choices = [0, 1, 2]
-        meta_choices = meta_choices * math.ceil(SAMPLE_TEST_COUNT / len(meta_choices))
-        samples = [numbered_sample(i, meta_choices[i]) for i in range(SAMPLE_TEST_COUNT)]
-        sample_group.samples = samples
-        db.session.commit()
-        seed_module(analysis_module, sample_group, samples)
+        sample_group = build_seeded_sample_group(analysis_module)
+        task_signatures = TaskConductor(
+            sample_group.id, module_names=[analysis_module.name()], is_group=True
+        ).build_task_signatures()
+        if not processes_sample_groups(analysis_module):
+            self.assertEqual(len(task_signatures), 0)
+            return
 
-        # Execute task
-        module_name = analysis_module.name()
-        task_signatures = conduct_sample_group(sample_group.id, [module_name])
-        analysis_task = task_signatures[0]
-        analysis_task()
-
-        try:
-            _ = analysis_module.single_sample_processor()
-        except UnsupportedAnalysisMode:
-            self.assertIn(module_name, sample_group.analysis_result)
-            result = getattr(sample_group.analysis_result, module_name).fetch()
-            self.assertEqual(result.status, 'S')
-            self.assertIn('data', result)
+        task_signatures[0]()  # Modules are test one at a time so only one task present
+        self.assertIn(analysis_module.name(), sample_group.analysis_result)
+        result = getattr(sample_group.analysis_result, analysis_module.name()).fetch()
+        self.assertEqual(result.status, 'S')
+        self.assertIn('data', result)
 
     sample_group_test.__doc__ = f'Test {analysis_name} middleware SampleGroup.'
     test_name = f'test_{analysis_name}_sample_group'

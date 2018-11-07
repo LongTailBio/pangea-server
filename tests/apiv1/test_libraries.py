@@ -5,8 +5,8 @@ from io import BytesIO
 
 from app.extensions import db
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group, with_user
 
 
 class TestLibraryModule(BaseTestCase):

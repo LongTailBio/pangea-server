@@ -4,9 +4,8 @@ import numpy as np
 from sklearn.manifold import TSNE
 
 from analysis_packages.base.utils import scrub_category_val, categories_from_metadata
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
 
 
 def get_clean_samples(sample_dict, no_zero_features=True, zero_threshold=0.00001):
@@ -50,6 +49,7 @@ def get_clean_samples(sample_dict, no_zero_features=True, zero_threshold=0.00001
                 feature_total_score[feature_id] += value
         # Assign passing grade
         features_passing = {feature_id: value > zero_threshold
+                            for features in samples.values()
                             for feature_id, value in features.items()}
 
         # Filter features failing to meet threshold from all samples
@@ -125,13 +125,12 @@ def taxa_tool_tsne(samples, tool_name):
 
 
 def update_data_records(samples, categories,
-                        kraken_labeled, krakenhll_labeled, metaphlan_labeled):
+                        krakenhll_labeled, metaphlan_labeled):
     """Update data records."""
     data_records = []
     for sample in samples:
         sample_id = sample['name']
         data_record = {'SampleID': sample_id}
-        data_record.update(kraken_labeled[sample_id])
         data_record.update(krakenhll_labeled[sample_id])
         data_record.update(metaphlan_labeled[sample_id])
         for category_name in categories.keys():
@@ -144,20 +143,17 @@ def update_data_records(samples, categories,
 
 def sample_similarity_reducer(categories, tools, samples):
     """Combine Sample Similarity components."""
-    kraken_tool, kraken_labeled = tools[0]
-    krakenhll_tool, krakenhll_labeled = tools[1]
-    metaphlan_tool, metaphlan_labeled = tools[2]
+    krakenhll_tool, krakenhll_labeled = tools[0]
+    metaphlan_tool, metaphlan_labeled = tools[1]
 
     data_records = update_data_records(
         samples,
         categories,
-        kraken_labeled,
         krakenhll_labeled,
-        metaphlan_labeled
+        metaphlan_labeled,
     )
 
     tools = {
-        KrakenResultModule.name(): kraken_tool,
         KrakenHLLResultModule.name(): krakenhll_tool,
         Metaphlan2ResultModule.name(): metaphlan_tool,
     }
@@ -173,8 +169,7 @@ def sample_similarity_reducer(categories, tools, samples):
 def processor(*samples):
     """Handle Sample Similarity component calculations."""
     categories = categories_from_metadata(samples)
-    kraken = taxa_tool_tsne(samples, KrakenResultModule.name())
     krakenhll = taxa_tool_tsne(samples, KrakenHLLResultModule.name())
     metaphlan2 = taxa_tool_tsne(samples, Metaphlan2ResultModule.name())
-    tools = [kraken, krakenhll, metaphlan2]
+    tools = [krakenhll, metaphlan2]
     return sample_similarity_reducer(categories, tools, samples)

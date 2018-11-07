@@ -5,15 +5,11 @@ import datetime
 from uuid import uuid4
 
 from marshmallow import fields
-from mongoengine import Document, LazyReferenceField
-from analysis_packages.base.utils import jsonify
+from mongoengine import Document
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
 from app.extensions import mongoDB
-from app.tool_results import all_tool_results
-
-from tool_packages.base import SampleToolResultModule
 
 
 class BaseSample(Document):
@@ -30,31 +26,29 @@ class BaseSample(Document):
 
     meta = {'allow_inheritance': True}
 
-    @property
-    def tool_result_names(self):
-        """Return a list of all tool results present for this Sample."""
-        all_fields = [mod.name() for mod in all_tool_results]
-        return [field for field in all_fields
-                if getattr(self, field, None) is not None]
+    def __contains__(self, key):
+        """Return true if property is in the class without fetching."""
+        try:
+            getattr(self, key)
+        except AttributeError:
+            try:
+                getattr(self.analysis_result.fetch(), key)
+            except AttributeError:
+                return False
+        return True
 
-    def fetch_safe(self, tools=None):
-        """Return the sample with all tool result documents fetched and jsonified."""
-        if not tools:
-            tools = self.tool_result_names
-        safe_sample = {tool: jsonify(getattr(self, tool).fetch()) for tool in tools}
-        safe_sample['name'] = self.name
-        safe_sample['metadata'] = self.metadata
-        safe_sample['theme'] = self.theme
-        if self.analysis_result:
-            safe_sample['analysis_result'] = str(self.analysis_result.pk)
-        return safe_sample
+    def __getitem__(self, key):
+        """Return property of sample or of analysis result."""
+        try:
+            return getattr(self, key)
+        except AttributeError:
+            derefed_analysis_result = self.analysis_result.fetch()
+            wrapper_ref = getattr(derefed_analysis_result, key)
+            return wrapper_ref.fetch().data
 
 
 # Create actual Sample class based on modules present at runtime
-Sample = type('Sample', (BaseSample,), {
-    module.name(): LazyReferenceField(module.result_model())
-    for module in all_tool_results
-    if issubclass(module, SampleToolResultModule)})
+Sample = type('Sample', (BaseSample,), {})
 
 
 class SampleSchema(BaseSchema):

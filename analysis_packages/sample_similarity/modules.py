@@ -1,9 +1,8 @@
 """Sample Similarity module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.kraken import KrakenResultModule
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
 
 from .analysis import processor
 from .constants import MODULE_NAME
@@ -24,9 +23,9 @@ class SampleSimilarityAnalysisModule(AnalysisModule):
         return SampleSimilarityResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """Enumerate which ToolResult modules a sample must have."""
-        return [KrakenResultModule, KrakenHLLResultModule, Metaphlan2ResultModule]
+        return [KrakenHLLResultModule, Metaphlan2ResultModule]
 
     @staticmethod
     def samples_processor():

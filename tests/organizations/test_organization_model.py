@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.organizations.organization_models import Organization
-from tests.base import BaseTestCase
-from tests.utils import add_organization
+from ..base import BaseTestCase
+from ..utils import add_organization
 
 
 class TestOrganizationModel(BaseTestCase):

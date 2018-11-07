@@ -1,5 +1,7 @@
 """AnalysisModule classes."""
 
+import pandas as pd
+
 from .exceptions import UnsupportedAnalysisMode
 
 
@@ -21,15 +23,9 @@ class AnalysisModule:
         raise NotImplementedError()
 
     @staticmethod
-    def required_tool_results():
-        """Enumerate which ToolResult modules a sample must have for this task to run."""
-        raise NotImplementedError()
-
-    @classmethod
-    def is_dependent_on_tool(cls, tool_result_cls):
-        """Return True if this AnalysisModule is dependent on a given Tool Result type."""
-        required_tools = cls.required_tool_results()
-        return tool_result_cls in required_tools
+    def required_modules():
+        """List which analysis modules must be complete for this module to run."""
+        return []
 
     @staticmethod
     def transmission_hooks():
@@ -71,3 +67,31 @@ class AnalysisModule:
         Ex. Ancestry, Beta Diversity
         """
         raise UnsupportedAnalysisMode
+
+    @classmethod
+    def promote_scalars(cls, samples):
+        """Return the promoted form of all scalars as a pandas series."""
+        return {
+            scalar_var: pd.Series({
+                sample['name']: sample[cls.name()][scalar_var]
+                for sample in samples
+            })
+            for scalar_var in cls.result_model().scalar_variables()
+        }
+
+    @classmethod
+    def promote_vectors(cls, samples, normalize_rows=False, extractor=lambda x: x):
+        """Return the promoted form of all vectors as a pandas dataframe."""
+        all_vars = {}
+        for vector_var in cls.result_model().vector_variables():
+            data_tbl = pd.DataFrame.from_dict({
+                sample['name']: {
+                    feature: extractor(val)
+                    for feature, val in sample[cls.name()][vector_var].items()
+                }
+                for sample in samples
+            }, orient='index')
+            if normalize_rows:
+                data_tbl = data_tbl.div(data_tbl.sum(axis=1), axis=0)
+            all_vars[vector_var] = data_tbl
+        return all_vars

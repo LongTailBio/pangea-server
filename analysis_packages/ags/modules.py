@@ -1,7 +1,7 @@
 """Average Genome Size Module."""
 
 from analysis_packages.base import AnalysisModule
-from tool_packages.microbe_census import MicrobeCensusResultModule
+from analysis_packages.microbe_census_data import MicrobeCensusResultModule
 
 # Re-export modules
 from .analysis import processor
@@ -23,7 +23,7 @@ class AGSAnalysisModule(AnalysisModule):
         return AGSResult
 
     @staticmethod
-    def required_tool_results():
+    def required_modules():
         """List requires ToolResult modules."""
         return [MicrobeCensusResultModule]
 

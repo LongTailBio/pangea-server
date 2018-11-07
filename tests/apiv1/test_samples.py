@@ -4,16 +4,13 @@ import json
 from unittest import mock
 from uuid import UUID, uuid4
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from tool_packages.ancestry.tests.factory import create_result as create_ancestry
-
 from app import db
 from app.samples.sample_models import Sample
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group, with_user
 
-from .utils import middleware_tester
+from .utils import middleware_tester, get_analysis_result_with_data
 
 
 class TestSampleModule(BaseTestCase):
@@ -115,12 +112,11 @@ class TestSampleModule(BaseTestCase):
 
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database forsample  middleware test."""
-        data = create_ancestry()
         args = {
             'name': 'AncestrySample',
             'library_uuid': uuid4(),
             'metadata': {'foobar': 'baz'},
-            TOOL_MODULE_NAME: data,
+            'analysis_result': get_analysis_result_with_data(),
         }
         sample = Sample(**args).save()
         db.session.commit()
@@ -132,7 +128,7 @@ class TestSampleModule(BaseTestCase):
         """Ensure all middleware can be kicked off for sample."""
         sample = self.prepare_middleware_test()
 
-        patch_path = 'app.api.v1.samples.conduct_sample'
+        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
         with mock.patch(patch_path) as conductor:
             endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
             middleware_tester(self, auth_headers, conductor, endpoint)

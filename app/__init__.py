@@ -21,8 +21,6 @@ from app.api.v1.sample_groups import sample_groups_blueprint
 from app.api.v1.users import users_blueprint
 from app.config import app_config
 from app.extensions import mongoDB, db, migrate, bcrypt, celery
-from app.tool_results import all_tool_results
-from app.tool_results.register import register_tool_result
 
 
 def create_app(environment=None):
@@ -47,20 +45,11 @@ def create_app(environment=None):
     celery.init_app(app)
 
     # Register application components
-    register_tool_result_modules(app)
     register_display_modules(app)
     register_blueprints(app)
     register_error_handlers(app)
 
     return app
-
-
-def register_tool_result_modules(app):
-    """Register each Tool Result module."""
-    tool_result_modules_blueprint = Blueprint('tool_result_modules', __name__)
-    for tool_result in all_tool_results:
-        register_tool_result(tool_result, tool_result_modules_blueprint)
-    app.register_blueprint(tool_result_modules_blueprint, url_prefix=URL_PREFIX)
 
 
 def register_display_modules(app):

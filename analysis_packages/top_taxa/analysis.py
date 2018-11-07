@@ -2,8 +2,8 @@
 
 from pandas import DataFrame
 
-from tool_packages.krakenhll import KrakenHLLResultModule
-from tool_packages.metaphlan2 import Metaphlan2ResultModule
+from analysis_packages.krakenhll_data import KrakenHLLResultModule
+from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
 
 
 KRAKENHLL = KrakenHLLResultModule.name()

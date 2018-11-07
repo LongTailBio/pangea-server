@@ -6,17 +6,14 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from tool_packages.ancestry.tests.factory import create_result as create_ancestry
-
 from app import db
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user, add_organization
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group, with_user, add_organization
 
-from .utils import middleware_tester
+from .utils import middleware_tester, get_analysis_result_with_data
 
 
 class TestSampleGroupModule(BaseTestCase):
@@ -244,12 +241,11 @@ class TestSampleGroupModule(BaseTestCase):
         """Prepare database for middleware test."""
         def create_sample(i):
             """Create unique sample for index i."""
-            data = create_ancestry()
             args = {
                 'library_uuid': uuid4(),
+                'analysis_result': get_analysis_result_with_data(),
                 'name': f'AncestrySample{i}',
                 'metadata': {'foobar': f'baz{i}'},
-                TOOL_MODULE_NAME: data,
             }
             return Sample(**args).save()
 
@@ -264,7 +260,7 @@ class TestSampleGroupModule(BaseTestCase):
         """Ensure all middleware can be kicked off for group."""
         sample_group = self.prepare_middleware_test()
 
-        patch_path = 'app.api.v1.sample_groups.conduct_sample_group'
+        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
         with mock.patch(patch_path) as conductor:
             endpoint = f'/api/v1/sample_groups/{str(sample_group.id)}/middleware'
             middleware_tester(self, auth_headers, conductor, endpoint)
