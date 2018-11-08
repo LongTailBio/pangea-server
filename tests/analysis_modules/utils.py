@@ -25,8 +25,8 @@ def unpack_module(analysis_module):
     module_name = analysis_module.name()
     # Pass dummy value to fromlist in order to import all module members
     try:
-        factory_module = __import__(f'{base_name}.tests.factory', fromlist='dummy')
+        factory_module = __import__(f'{base_name}.factory', fromlist='dummy')
     except ImportError:
         root_name = '.'.join(base_name.split('.')[:-1])
-        factory_module = __import__(f'{root_name}.tests.factory', fromlist='dummy')
+        factory_module = __import__(f'{root_name}.factory', fromlist='dummy')
     return (base_name, module_name, factory_module)
