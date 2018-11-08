@@ -31,7 +31,7 @@ PANGEA_PACKAGES = {
 MODULES_BY_NAME = {
     module.name(): module
     for module in [get_primary_module(package)
-                   for _, package in PANGEA_PACKAGES.items()]
+                   for package in PANGEA_PACKAGES.values()]
 }
 
 
