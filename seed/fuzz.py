@@ -3,8 +3,8 @@
 from random import choice
 from uuid import uuid4
 
-from analysis_packages.ags.tests.factory import AGSFactory
-from analysis_packages.sample_similarity.tests.factory import SampleSimilarityFactory
+from pangea_modules.ags.factory import AGSFactory
+from pangea_modules.sample_similarity.factory import SampleSimilarityFactory
 
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper

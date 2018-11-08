@@ -1,8 +1,9 @@
 """Test suite for AnalysisResultMeta model."""
 
+from pangea_modules.ags.constants import MODULE_NAME
+from pangea_modules.ags.factory import AGSFactory
+
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
-from analysis_packages.ags.constants import MODULE_NAME
-from analysis_packages.ags.tests.factory import AGSFactory
 
 from tests.base import BaseTestCase
 

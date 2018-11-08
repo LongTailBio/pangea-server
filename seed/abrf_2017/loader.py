@@ -3,8 +3,8 @@
 import json
 import os
 
-from analysis_packages.sample_similarity.models import SampleSimilarityResult
-from analysis_packages.ags.models import AGSResult
+from pangea_modules.sample_similarity.models import SampleSimilarityResult
+from pangea_modules.ags.models import AGSResult
 
 
 LOCATION = os.path.realpath(os.path.join(os.getcwd(),

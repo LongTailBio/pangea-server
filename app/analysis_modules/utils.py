@@ -7,7 +7,7 @@ from time import sleep
 from flask import current_app
 from mongoengine.errors import ValidationError
 
-from analysis_packages.base.exceptions import UnsupportedAnalysisMode
+from pangea_modules.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules import all_analysis_modules, MODULES_BY_NAME
 from app.analysis_results.analysis_result_models import AnalysisResultMeta

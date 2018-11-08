@@ -3,10 +3,10 @@
 from uuid import uuid4
 import networkx as nx
 
-from analysis_packages.krakenhll_data import KrakenHLLResultModule
-from analysis_packages.metaphlan2_data import Metaphlan2ResultModule
-from analysis_packages.sample_similarity import SampleSimilarityAnalysisModule
-from analysis_packages.ancestry import AncestryAnalysisModule
+from pangea_modules.krakenhll_data import KrakenHLLResultModule
+from pangea_modules.metaphlan2_data import Metaphlan2ResultModule
+from pangea_modules.sample_similarity import SampleSimilarityAnalysisModule
+from pangea_modules.ancestry import AncestryAnalysisModule
 
 from app.analysis_modules.task_graph import TaskConductor
 from tests.base import BaseTestCase

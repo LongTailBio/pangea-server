@@ -2,8 +2,8 @@
 
 import json
 
-from analysis_packages.ancestry_data.constants import MODULE_NAME
-from analysis_packages.ancestry_data.tests.factory import create_result as create_ancestry
+from pangea_modules.ancestry_data.constants import MODULE_NAME
+from pangea_modules.ancestry_data.factory import create_result as create_ancestry
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 
