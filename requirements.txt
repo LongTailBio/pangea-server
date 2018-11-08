@@ -17,15 +17,15 @@ gunicorn==19.9.0
 pyjwt==1.6.4
 gevent==1.3.6
 
-pangea-modules.base==0.1.0
-pangea-modules.ags==0.1.0
-pangea-modules.ancestry==0.1.0
-pangea-modules.ancestry-data==0.1.0
-pangea-modules.krakenhll-data==0.1.0
-pangea-modules.metaphlan2-data==0.1.0
-pangea-modules.microbe-census-data==0.1.0
-pangea-modules.sample-similarity==0.1.0
-pangea-modules.top-taxa==0.1.0
+pangea-modules.base==0.1.2
+pangea-modules.ags==0.1.2
+pangea-modules.ancestry==0.1.2
+pangea-modules.ancestry-data==0.1.2
+pangea-modules.krakenhll-data==0.1.2
+pangea-modules.metaphlan2-data==0.1.2
+pangea-modules.microbe-census-data==0.1.2
+pangea-modules.sample-similarity==0.1.2
+pangea-modules.top-taxa==0.1.2
 
 Flask-Testing==0.7.1
 factory-boy==2.11.1
