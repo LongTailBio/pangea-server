@@ -20,11 +20,6 @@ BLACKLIST = [
 ]
 
 
-def remove_prefix(text, prefix):
-    """Remove prefix from string."""
-    return text[text.startswith(prefix) and len(prefix):]
-
-
 PANGEA_PACKAGES = {
     name: importlib.import_module(name)
     for finder, name, ispkg
