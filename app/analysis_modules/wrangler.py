@@ -1,36 +1,41 @@
 """Gather all installed AnalysisModule packages."""
 
+import importlib
 import pkgutil
 
-import analysis_packages
-from analysis_packages.base.utils import get_primary_module
+import pangea_modules
+from pangea_modules.base.utils import get_primary_module
 
 
-def discover_local_packages():
-    """Construct list of local AnalysisModule packages."""
-    package = analysis_packages
-    path = package.__path__
-    prefix = f'{package.__name__}.'
+def iter_namespace(ns_pkg):
+    """Return iterator of packages within a namespace.
 
-    results = []
-    for _, modname, _ in pkgutil.iter_modules(path, prefix):
-        blacklist = [
-            'analysis_packages', 'analysis_packages.base', 'analysis_packages.generic_gene_set'
-        ]
-        if modname not in blacklist:
-            # Pass dummy value to fromlist in order to import all module members
-            module = __import__(modname, fromlist='dummy')
-            results.append(module)
+    From: https://packaging.python.org/guides/creating-and-discovering-plugins/#using-namespace-packages
+    """
 
-    return results
+    return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
+
+
+BLACKLIST = [
+    'pangea_modules',
+    'pangea_modules.base',
+    'pangea_modules.generic_gene_set',
+]
+
+
+PANGEA_PACKAGES = {
+    name: importlib.import_module(name)
+    for finder, name, ispkg
+    in iter_namespace(pangea_modules)
+    if name not in BLACKLIST
+}
+
+
+MODULES_BY_NAME = {
+    name: get_primary_module(package)
+    for name, package in PANGEA_PACKAGES.items()
+}
 
 
 # pylint:disable=invalid-name
-
-all_analysis_packages = discover_local_packages()
-
-
-all_analysis_modules = [get_primary_module(package) for package in all_analysis_packages]
-
-
-MODULES_BY_NAME = {module.name(): module for module in all_analysis_modules}
+all_analysis_modules = list(MODULES_BY_NAME.values())

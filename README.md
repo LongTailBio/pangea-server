@@ -96,24 +96,18 @@ $ make cov
 
 MetaGenScope uses the GitFlow branching strategy along with Pull Requests for code reviews. Check out [this post](https://devblog.dwarvesf.com/post/git-best-practices/) by the Dwarves Foundation for more information.
 
-### Tool Result Modules
-
-`ToolResult` modules define database storage and API upload for outputs.
-
-To add a new `ToolResult` module write your new module `tool_packages/my_new_tool` following existing conventions. Make sure the main module class inherits from `tool_packages.base.SampleToolResultModule` or `tool_packages.base.GroupToolResultModule`.
-
 ### Analysis Modules
 
-`AnalysisModule`s provide the backing data for each front-end visualization type. They are in charge of:
+`AnalysisModule`s are the core of MetaGenScope extensibility. They are in charge of:
 
 - Providing the data model for the visualization backing data
-- Enumerating the `ToolResult` types that are valid data sources (_WIP_)
+- Enumerating other `AnalysisModule` types that are valid data sources (_WIP_)
 - The Middleware task that transforms a set of `Sample`s into the module's data model (_WIP_)
 
-These modules live in `analysis_packages/` and are self-contained: all models, processing tasks, and tests live within each module.
+The modules live in the `pangea_modules` namespace and are self-contained: all models, processing tasks, and tests live within each module. The core set is defined in [`LongtailBio/pangea_modules`](https://github.com/LongTailBio/pangea-modules).
 
 To add a new `AnalysisModule` module:
-Write your new module `analysis_packages/my_new_module` following existing conventions. Make sure the main module class inherits from `analysis_packages.base.AnalysisModule`.
+Write your new namespace package `pangea_modules.my_new_module` following existing conventions. Make sure the main module class inherits from `pangea_modules.base.AnalysisModule`.
 
 ## Continuous Integration
 
