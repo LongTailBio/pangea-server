@@ -7,13 +7,10 @@ import pangea_modules
 from pangea_modules.base.utils import get_primary_module
 
 
+# From: https://packaging.python.org/guides/creating-and-discovering-plugins/
 def iter_namespace(ns_pkg):
-    """Return iterator of packages within a namespace.
-
-    From: https://packaging.python.org/guides/creating-and-discovering-plugins/#using-namespace-packages
-    """
-
-    return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
+    """Return iterator of packages within a namespace."""
+    return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + '.')
 
 
 BLACKLIST = [
