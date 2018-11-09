@@ -12,7 +12,7 @@ class TestConductorTasks(BaseTestCase):
 
     def test_fetch_samples(self):
         """Ensure fetch_samples tasks works as expected."""
-        group = add_sample_group('Sample Group One', access_scheme='public')
+        group = add_sample_group('Sample Group One')
         group.samples = [add_sample(f'Sample {i}') for i in range(5)]
         db.session.commit()
 

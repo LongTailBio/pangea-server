@@ -3,7 +3,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.users.user_models import User
+from app.authentication.models import User
 from ..base import BaseTestCase
 from ..utils import add_user
 
@@ -28,7 +28,7 @@ class TestUserModel(BaseTestCase):
         duplicate_user = User(
             username='justatest',
             email='test@test2.com',
-            password='password',
+            user_type='user',
         )
         db.session.add(duplicate_user)
         self.assertRaises(IntegrityError, db.session.commit)
@@ -39,7 +39,7 @@ class TestUserModel(BaseTestCase):
         duplicate_user = User(
             username='justanothertest',
             email='test@test.com',
-            password='password',
+            user_type='user',
         )
         db.session.add(duplicate_user)
         self.assertRaises(IntegrityError, db.session.commit)

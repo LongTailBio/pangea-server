@@ -7,7 +7,7 @@ import time
 from uuid import uuid4
 
 from app import db
-from app.organizations.organization_models import Organization
+from app.authentication.models import User, OrganizationMembership
 
 from ..base import BaseTestCase
 from ..utils import add_user, add_organization, add_sample_group, with_user
@@ -25,7 +25,7 @@ class TestOrganizationModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name='MetaGenScope',
-                    admin_email='admin@metagenscope.com'
+                    email='admin@metagenscope.com',
                 )),
                 content_type='application/json',
             )
@@ -35,31 +35,11 @@ class TestOrganizationModule(BaseTestCase):
             self.assertIn('organization', data['data'])
 
             organization_uuid = data['data']['organization']['uuid']
-            organization = Organization.query.filter_by(id=organization_uuid).first()
-            self.assertIn(login_user, organization.admin_users)
-
-    @with_user
-    def test_add_private_organization(self, auth_headers, *_):
-        """Ensure a new organization can be added to the database."""
-        organization_name = 'MetaGenScope'
-        with self.client:
-            response = self.client.post(
-                '/api/v1/organizations',
-                headers=auth_headers,
-                data=json.dumps(dict(
-                    name=organization_name,
-                    admin_email='admin@metagenscope.com',
-                    access_scheme='private',
-                )),
-                content_type='application/json',
+            admin_users = User.query.filter(
+                User.uuid == organization_uuid,
+                User.user_memberships.any(role='admin'),
             )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 201)
-            self.assertIn('success', data['status'])
-            self.assertIn('organization', data['data'])
-
-        organization = Organization.query.filter_by(name=organization_name).one()
-        self.assertEqual(organization.access_scheme, 'private')
+            self.assertIn(login_user, admin_users)
 
     # pylint: disable=invalid-name
     @with_user
@@ -85,7 +65,7 @@ class TestOrganizationModule(BaseTestCase):
             response = self.client.post(
                 '/api/v1/organizations',
                 headers=auth_headers,
-                data=json.dumps(dict(admin_email='admin@metagenscope.com')),
+                data=json.dumps(dict(email='admin@metagenscope.com')),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -117,10 +97,8 @@ class TestOrganizationModule(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('Test Organization', data['data']['organization']['name'])
-            self.assertIn('admin@test.org', data['data']['organization']['admin_email'])
+            self.assertIn('admin@test.org', data['data']['organization']['email'])
             self.assertTrue('created_at' in data['data']['organization'])
-            self.assertTrue('users' in data['data']['organization'])
-            self.assertTrue('sample_groups' in data['data']['organization'])
             self.assertIn('success', data['status'])
 
     def test_single_organization_no_id(self):
@@ -138,12 +116,12 @@ class TestOrganizationModule(BaseTestCase):
     def test_get_uuid_from_name(self):
         """Ensure get organization UUID behaves correctly."""
         organization_name = 'Sample Group One'
-        organization = add_organization(name=organization_name, admin_email='admin@test.org')
+        organization = add_organization(name=organization_name, email='admin@test.org')
         organization_uuid = str(organization.id)
 
         with self.client:
             response = self.client.get(
-                f'/api/v1/organizations/getid/{organization_name}',
+                f'/api/v1/organizations?name={organization_name}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -218,10 +196,10 @@ class TestOrganizationModule(BaseTestCase):
             self.assertEqual(len(data['data']['organizations']), 2)
             self.assertIn('Test Organization', data['data']['organizations'][0]['name'])
             self.assertIn(
-                'admin@test.org', data['data']['organizations'][0]['admin_email'])
+                'admin@test.org', data['data']['organizations'][0]['email'])
             self.assertIn('Test Organization Two', data['data']['organizations'][1]['name'])
             self.assertIn(
-                'admin@test.org', data['data']['organizations'][1]['admin_email'])
+                'admin@test.org', data['data']['organizations'][1]['email'])
             self.assertTrue('created_at' in data['data']['organizations'][0])
             self.assertTrue('created_at' in data['data']['organizations'][1])
             self.assertIn('success', data['status'])
@@ -229,7 +207,7 @@ class TestOrganizationModule(BaseTestCase):
     def test_private_organization(self):
         """Ensure private organizatons do not show up in public list."""
         add_organization('Public Organization', 'admin@public.org')
-        add_organization('Private Organization', 'admin@private.org', access_scheme='private')
+        add_organization('Private Organization', 'admin@private.org')
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations',
@@ -248,9 +226,10 @@ class TestOrganizationModule(BaseTestCase):
                          created_at=datetime.datetime.utcnow())
         time.sleep(0.3)
         private_org = add_organization('Private Organization', 'admin@private.org',
-                                       access_scheme='private',
                                        created_at=datetime.datetime.utcnow())
-        private_org.users.append(login_user)
+        membership = OrganizationMembership(role='admin')  # pylint: disable=no-value-for-parameter
+        membership.user = login_user
+        private_org.user_memberships.append(membership)
         db.session.commit()
         with self.client:
             response = self.client.get(
