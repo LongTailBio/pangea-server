@@ -20,7 +20,11 @@ from app.authentication.models import (
     PasswordAuthentication,
     user_schema,
 )
-from app.authentication.helpers import encode_auth_token, authenticate
+from app.authentication.helpers import (
+    encode_auth_token,
+    authenticate,
+    fetch_organization,
+)
 
 
 auth_blueprint = Blueprint('auth', __name__)  # pylint: disable=invalid-name
@@ -92,16 +96,16 @@ def login_user():
 
 @auth_blueprint.route('/auth/logout', methods=['GET'])
 @authenticate()
-def logout_user(authn_uuid):  # pylint: disable=unused-argument
+def logout_user(_):
     """Log user out."""
     return {}, 200
 
 
 @auth_blueprint.route('/auth/status', methods=['GET'])
 @authenticate()
-def get_user_status(authn_uuid):
+def get_user_status(authn):
     """Get user status."""
-    user = User.query.filter_by(uuid=authn_uuid).first()
+    user = User.query.filter_by(uuid=authn.sub).first()
     result = {
         'id': str(user.id),
         'username': user.username,
@@ -114,7 +118,7 @@ def get_user_status(authn_uuid):
 
 @auth_blueprint.route('/organizations', methods=['POST'])
 @authenticate()
-def add_organization(authn_uuid):
+def add_organization(authn):
     """Add organization."""
     try:
         post_data = request.get_json()
@@ -133,7 +137,7 @@ def add_organization(authn_uuid):
     if organization is not None:
         raise InvalidRequest('That email is in use.')
 
-    authn_user = User.query.filter_by(uuid=authn_uuid).one()
+    authn_user = User.query.filter_by(uuid=authn.sub).one()
     try:
         membership = OrganizationMembership(role='admin')
         membership.user = authn_user
@@ -178,23 +182,14 @@ def get_organizations():
 @auth_blueprint.route('/organizations/<organization_uuid>', methods=['GET'])
 def get_single_organization(organization_uuid):
     """Get single organization details."""
-    try:
-        organization_uuid = UUID(organization_uuid)
-    except ValueError:
-        raise ParseError('Invalid organization UUID.')
-
-    try:
-        organization = User.query.filter_by(uuid=organization_uuid).one()
-    except NoResultFound:
-        raise NotFound('Organization does not exist')
-
+    organization = fetch_organization(organization_uuid)
     result = user_schema.dump(organization)
     return result, 200
 
 
 @auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['POST'])
 @authenticate()
-def add_organization_user(authn_uuid, organization_uuid):     # pylint: disable=too-many-return-statements
+def add_organization_user(authn, organization_uuid):     # pylint: disable=too-many-return-statements
     """Add user to organization."""
     try:
         post_data = request.get_json()
@@ -212,7 +207,7 @@ def add_organization_user(authn_uuid, organization_uuid):     # pylint: disable=
     except NoResultFound:
         raise NotFound('Organization does not exist')
 
-    authn_user = User.query.filter_by(uuid=authn_uuid).one()
+    authn_user = User.query.filter_by(uuid=authn.sub).one()
     try:
         _ = OrganizationMembership.query.filter_by(
             organization_uuid=organization.uuid,
@@ -253,19 +248,11 @@ def add_organization_user(authn_uuid, organization_uuid):     # pylint: disable=
 
 @auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['GET'])
 @authenticate(required=False)
-def get_organization_users(authn_uuid, organization_uuid):
+def get_organization_users(authn, organization_uuid):
     """Get single organization's users."""
-    try:
-        organization_uuid = UUID(organization_uuid)
-    except ValueError:
-        raise ParseError('Invalid organization UUID.')
+    organization = fetch_organization(organization_uuid)
 
-    try:
-        organization = User.query.filter_by(uuid=organization_uuid).one()
-    except NoResultFound:
-        raise NotFound('Organization does not exist')
-
-    authn_user = User.query.filter_by(uuid=authn_uuid).one() if authn_uuid else None
+    authn_user = User.query.filter_by(uuid=authn.sub).one() if authn else None
     if authn_user in organization.users:
         result = user_schema.dump(organization.users, many=True)
         return result, 200

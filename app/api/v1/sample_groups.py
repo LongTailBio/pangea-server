@@ -19,7 +19,7 @@ from app.extensions import db
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
 from app.authentication.models import User, OrganizationMembership
-from app.authentication.helpers import authenticate
+from app.authentication.helpers import authenticate, fetch_organization
 from app.utils import XLSDictReader
 
 
@@ -28,7 +28,7 @@ sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disabl
 
 @sample_groups_blueprint.route('/sample_groups', methods=['POST'])
 @authenticate()
-def add_sample_group(authn_uuid):
+def add_sample_group(authn):
     """Add sample group."""
     # Validate input
     try:
@@ -43,7 +43,7 @@ def add_sample_group(authn_uuid):
         raise ParseError('Invalid Sample Group creation payload.')
 
     # Assume Sample Group is self-owned
-    authn_user = User.query.filter_by(uuid=authn_uuid).one()
+    authn_user = User.query.filter_by(uuid=authn.sub).one()
     owner_name = authn_user.username
     owner_uuid = authn_user.uuid
 
@@ -150,7 +150,7 @@ def get_single_sample_group(group_uuid):
 
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>', methods=['DELETE'])
 @authenticate()
-def delete_single_result(authn_uuid, group_uuid):
+def delete_single_result(authn, group_uuid):
     """Delete single sample group model."""
     try:
         sample_group_id = UUID(group_uuid)
@@ -162,7 +162,7 @@ def delete_single_result(authn_uuid, group_uuid):
 
     organization = User.query.filter_by(uuid=sample_group.owner_uuid).one()
     user_uuids = [user.uuid for user in organization.users]
-    if authn_uuid not in user_uuids:
+    if authn.sub not in user_uuids:
         raise PermissionDenied('You do not have permission to delete that sample group.')
 
     try:
@@ -195,7 +195,7 @@ def get_samples_for_group(group_uuid):
 
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>/samples', methods=['POST'])
 @authenticate()
-def add_samples_to_group(authn_uuid, group_uuid):  # pylint: disable=unused-argument
+def add_samples_to_group(_, group_uuid):
     """Add samples to a sample group."""
     try:
         post_data = request.get_json()
@@ -244,7 +244,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
 
 @sample_groups_blueprint.route('/libraries/<library_uuid>/metadata', methods=['POST'])
 @authenticate()
-def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-many-branches,too-many-locals
+def upload_metadata(_, library_uuid):  # pylint: disable=too-many-branches,too-many-locals
     """Upload metadata for a library."""
     try:
         library_id = UUID(library_uuid)
@@ -318,19 +318,13 @@ def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-
 @sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
                                methods=['POST'])
 @authenticate()
-def add_organization_sample_group(authn_uuid, organization_uuid):
+def add_organization_sample_group(authn, organization_uuid):
     """Add sample group to organization."""
     # Validate organization
-    try:
-        organization_uuid = UUID(organization_uuid)
-        organization = User.query.filter_by(uuid=organization_uuid).one()
-    except ValueError:
-        raise ParseError('Invalid organization UUID.')
-    except NoResultFound:
-        raise NotFound('Organization does not exist')
+    organization = fetch_organization(organization_uuid)
 
     try:
-        authn_user = User.query.filter_by(uuid=authn_uuid).one()
+        authn_user = User.query.filter_by(uuid=authn.sub).one()
         _ = OrganizationMembership.query.filter(and_(
             OrganizationMembership.organization_uuid == organization.uuid,
             OrganizationMembership.user_uuid == authn_user.uuid,
@@ -357,7 +351,6 @@ def add_organization_sample_group(authn_uuid, organization_uuid):
         raise ParseError('Invalid sample group UUID.')
     except NoResultFound:
         raise NotFound('Sample Group does not exist')
-
 
     old_owner = sample_group.owner_uuid
     if not old_owner.uuid == authn_user.uuid:
@@ -390,15 +383,7 @@ def add_organization_sample_group(authn_uuid, organization_uuid):
                                methods=['GET'])
 def get_organization_sample_groups(organization_uuid, page=1):
     """Get single organization's sample groups."""
-    try:
-        organization_uuid = UUID(organization_uuid)
-    except ValueError:
-        raise ParseError('Invalid organization UUID.')
-
-    try:
-        organization = User.query.filter_by(uuid=organization_uuid).one()
-    except NoResultFound:
-        raise NotFound('Organization does not exist')
+    organization = fetch_organization(organization_uuid)
 
     sample_groups = organization.sample_groups.paginate(page, PAGE_SIZE, False).items
     result = sample_group_schema.dump(sample_groups, many=True)

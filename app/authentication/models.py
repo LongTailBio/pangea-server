@@ -35,6 +35,7 @@ class OrganizationMembership(db.Model):
     def __init__(
             self, organization_uuid, user_uuid, role,
             is_public=True, created_at=datetime.datetime.utcnow()):
+        """Initialize organization membership model."""
         self.organization_uuid = organization_uuid
         self.user_uuid = user_uuid
         self.role = role
@@ -86,7 +87,7 @@ class User(db.Model):
             self, username, email, user_type,
             is_deleted=False, is_fake=False,
             created_at=datetime.datetime.utcnow()):
-        """Initialize MetaGenScope User model."""
+        """Initialize Pangea User model."""
         self.username = username
         self.email = email
         self.user_type = user_type

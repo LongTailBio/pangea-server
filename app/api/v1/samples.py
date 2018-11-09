@@ -22,7 +22,7 @@ samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-
 
 @samples_blueprint.route('/samples', methods=['POST'])
 @authenticate()
-def add_sample(resp):  # pylint: disable=unused-argument
+def add_sample(_):
     """Add sample."""
     try:
         post_data = request.get_json()
@@ -93,7 +93,7 @@ def get_single_sample_metadata(sample_uuid):
 
 @samples_blueprint.route('/samples/metadata', methods=['POST'])
 @authenticate()
-def add_sample_metadata(resp):  # pylint: disable=unused-argument
+def add_sample_metadata(_):
     """Update metadata for sample."""
     try:
         post_data = request.get_json()
