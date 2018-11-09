@@ -27,7 +27,7 @@ class TestSampleModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=sample_name,
-                    library_uuid=str(library.id),
+                    library_uuid=str(library.uuid),
                 )),
                 content_type='application/json',
             )

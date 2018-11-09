@@ -1,7 +1,5 @@
 """Command line tools for Flask server app."""
 
-# pylint: disable=no-value-for-parameter
-
 from os import environ
 from uuid import UUID
 

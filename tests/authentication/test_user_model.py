@@ -14,7 +14,7 @@ class TestUserModel(BaseTestCase):
     def test_add_user(self):
         """Ensure user model is created correctly."""
         user = add_user('justatest', 'test@test.com', 'test')
-        self.assertTrue(user.id)
+        self.assertTrue(user.uuid)
         self.assertEqual(user.username, 'justatest')
         self.assertEqual(user.email, 'test@test.com')
         self.assertTrue(user.password)
@@ -53,7 +53,7 @@ class TestUserModel(BaseTestCase):
     def test_encode_auth_token(self):
         """Ensure auth token is encoded correctly."""
         user = add_user('justatest', 'test@test.com', 'test')
-        auth_token = user.encode_auth_token(user.id)
+        auth_token = user.encode_auth_token(user.uuid)
         self.assertTrue(isinstance(auth_token, bytes))
 
     def test_decode_auth_token(self):
@@ -61,4 +61,4 @@ class TestUserModel(BaseTestCase):
         user = add_user('justatest', 'test@test.com', 'test')
         auth_token = user.encode_auth_token(user.id)
         self.assertTrue(isinstance(auth_token, bytes))
-        self.assertTrue(User.decode_auth_token(auth_token), user.id)
+        self.assertTrue(User.decode_auth_token(auth_token), user.uuid)

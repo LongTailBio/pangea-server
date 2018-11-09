@@ -88,7 +88,7 @@ class TestOrganizationModule(BaseTestCase):
     def test_single_organization(self):
         """Ensure get single organization behaves correctly."""
         organization = add_organization('Test Organization', 'admin@test.org')
-        uuid = str(organization.id)
+        uuid = str(organization.uuid)
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations/{uuid}',
@@ -117,7 +117,7 @@ class TestOrganizationModule(BaseTestCase):
         """Ensure get organization UUID behaves correctly."""
         organization_name = 'Sample Group One'
         organization = add_organization(name=organization_name, email='admin@test.org')
-        organization_uuid = str(organization.id)
+        organization_uuid = str(organization.uuid)
 
         with self.client:
             response = self.client.get(
@@ -137,7 +137,7 @@ class TestOrganizationModule(BaseTestCase):
         organization.users = [user]
         db.session.commit()
 
-        uuid = str(organization.id)
+        uuid = str(organization.uuid)
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations/{uuid}/users',
@@ -157,7 +157,7 @@ class TestOrganizationModule(BaseTestCase):
         organization.sample_groups = [sample_group]
         db.session.commit()
 
-        uuid = str(organization.id)
+        uuid = str(organization.uuid)
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations/{uuid}/sample_groups',
@@ -227,7 +227,7 @@ class TestOrganizationModule(BaseTestCase):
         time.sleep(0.3)
         private_org = add_organization('Private Organization', 'admin@private.org',
                                        created_at=datetime.datetime.utcnow())
-        membership = OrganizationMembership(role='admin')  # pylint: disable=no-value-for-parameter
+        membership = OrganizationMembership(role='admin')
         membership.user = login_user
         private_org.user_memberships.append(membership)
         db.session.commit()
@@ -252,12 +252,12 @@ class TestOrganizationModule(BaseTestCase):
         db.session.commit()
         user = add_user('new_user', 'new_user@test.com', 'somepassword')
         with self.client:
-            org_uuid = str(organization.id)
+            org_uuid = str(organization.uuid)
             response = self.client.post(
                 f'/api/v1/organizations/{org_uuid}/users',
                 headers=auth_headers,
                 data=json.dumps(dict(
-                    user_id=str(user.id),
+                    user_id=str(user.uuid),
                 )),
                 content_type='application/json',
             )
@@ -271,7 +271,7 @@ class TestOrganizationModule(BaseTestCase):
         organization = add_organization('Test Organization', 'admin@test.org')
         user_uuid = str(uuid4())
         with self.client:
-            org_uuid = str(organization.id)
+            org_uuid = str(organization.uuid)
             response = self.client.post(
                 f'/api/v1/organizations/{org_uuid}/users',
                 data=json.dumps(dict(
@@ -290,7 +290,7 @@ class TestOrganizationModule(BaseTestCase):
         organization = add_organization('Test Organization', 'admin@test.org')
         user_uuid = str(uuid4())
         with self.client:
-            org_uuid = str(organization.id)
+            org_uuid = str(organization.uuid)
             response = self.client.post(
                 f'/api/v1/organizations/{org_uuid}/users',
                 headers=auth_headers,
@@ -327,8 +327,8 @@ class TestOrganizationModule(BaseTestCase):
         db.session.commit()
 
         response = self.add_group_to_organization(auth_headers,
-                                                  sample_group.id,
-                                                  organization.id)
+                                                  sample_group.uuid,
+                                                  organization.uuid)
 
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
@@ -342,8 +342,8 @@ class TestOrganizationModule(BaseTestCase):
         organization = add_organization('Test Organization', 'admin@test.org')
 
         response = self.add_group_to_organization(auth_headers,
-                                                  sample_group.id,
-                                                  organization.id)
+                                                  sample_group.uuid,
+                                                  organization.uuid)
 
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 403)

@@ -21,7 +21,6 @@ def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
         user_type='user',
         created_at=created_at,
     )
-    # pylint: disable=no-value-for-parameter
     user.password_authentication = PasswordAuthentication(password=password)
     db.session.add(user)
     db.session.commit()

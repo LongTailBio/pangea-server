@@ -1,8 +1,5 @@
 """Authentication API endpoint definitions."""
 
-# Required model arguments are set via relationships
-# pylint: disable=no-value-for-parameter
-
 from uuid import UUID
 
 from flask import Blueprint, current_app, request
@@ -107,10 +104,10 @@ def get_user_status(authn):
     """Get user status."""
     user = User.query.filter_by(uuid=authn.sub).first()
     result = {
-        'id': str(user.id),
+        'uuid': str(user.uuid),
         'username': user.username,
         'email': user.email,
-        'active': user.active,
+        'is_deleted': user.is_deleted,
         'created_at': user.created_at
     }
     return result, 200

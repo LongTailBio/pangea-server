@@ -33,11 +33,13 @@ class OrganizationMembership(db.Model):
     )
 
     def __init__(
-            self, organization_uuid, user_uuid, role,
+            self, role, organization_uuid=None, user_uuid=None,
             is_public=True, created_at=datetime.datetime.utcnow()):
         """Initialize organization membership model."""
-        self.organization_uuid = organization_uuid
-        self.user_uuid = user_uuid
+        if organization_uuid:
+            self.organization_uuid = organization_uuid
+        if user_uuid:
+            self.user_uuid = user_uuid
         self.role = role
         self.is_public = is_public
         self.created_at = created_at
@@ -113,10 +115,11 @@ class PasswordAuthentication(db.Model):
     user = db.relationship('User', backref=db.backref('password_authentication', uselist=False))
 
     def __init__(
-            self, user_uuid, password,
+            self, password, user_uuid=None,
             created_at=datetime.datetime.utcnow()):
         """Initialize MetaGenScope User model."""
-        self.user_uuid = user_uuid
+        if user_uuid:
+            self.user_uuid = user_uuid
         self.password = bcrypt.generate_password_hash(
             password, current_app.config.get('BCRYPT_LOG_ROUNDS')
         ).decode()

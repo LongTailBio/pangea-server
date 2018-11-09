@@ -16,8 +16,8 @@ class TestLibraryModule(BaseTestCase):
     def test_upload_metadata(self, auth_headers, *_):
         """Ensure metadata spreadsheet may be uploaded for a library."""
         library = add_sample_group(name='Library00')
-        sample00 = add_sample(name='sample_00', library_uuid=library.id)
-        sample01 = add_sample(name='sample_01', library_uuid=library.id)
+        sample00 = add_sample(name='sample_00', library_uuid=library.uuid)
+        sample01 = add_sample(name='sample_01', library_uuid=library.uuid)
         library.samples = [sample00, sample01]
         db.session.commit()
 
@@ -25,7 +25,7 @@ class TestLibraryModule(BaseTestCase):
                     b'sample_00,morning,turnstile\n'
                     b'sample_01,evening,bench')
         data = dict(metadata=(BytesIO(metadata), 'metadata.csv'))
-        endpoint = f'/api/v1/libraries/{library.id}/metadata'
+        endpoint = f'/api/v1/libraries/{library.uuid}/metadata'
         with self.client:
             response = self.client.post(endpoint,
                                         headers=auth_headers,

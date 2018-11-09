@@ -63,14 +63,14 @@ class TestSampleGroupModule(BaseTestCase):
         organization = add_organization('Organization', 'admin@organization.org')
         organization.users.append(login_user)
         db.session.commit()
-        response = self.create_group_for_organization(auth_headers, organization.id)
+        response = self.create_group_for_organization(auth_headers, organization.uuid)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 201)
-        sample_group_id = UUID(data['data']['sample_group']['uuid'])
+        sample_group_uuid = UUID(data['data']['sample_group']['uuid'])
 
         organization_groups = organization.sample_groups
-        sample_group_ids = [group.id for group in organization_groups]
-        self.assertIn(sample_group_id, sample_group_ids)
+        sample_group_uuids = [group.uuid for group in organization_groups]
+        self.assertIn(sample_group_uuid, sample_group_uuids)
 
     @with_user
     def test_unauthorized_add_group_with_organization(self, auth_headers, *_):  # pylint: disable=invalid-name
@@ -78,7 +78,7 @@ class TestSampleGroupModule(BaseTestCase):
         Ensure a new sample group cannot be added to an organization to the user is not part of.
         """
         organization = add_organization('Organization', 'admin@organization.org')
-        response = self.create_group_for_organization(auth_headers, organization.id)
+        response = self.create_group_for_organization(auth_headers, organization.uuid)
         self.assertEqual(response.status_code, 403)
 
     def delete_sample_group(self, auth_headers, sample_group_id):
@@ -98,13 +98,13 @@ class TestSampleGroupModule(BaseTestCase):
         sample = add_sample(name='SMPL_01')
         sample_group.samples = [sample]
         db.session.commit()
-        response = self.delete_sample_group(auth_headers, sample_group.id)
+        response = self.delete_sample_group(auth_headers, sample_group.uuid)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
         self.assertIn('success', data['status'])
 
         # Ensure Sample Group was removed
-        query = SampleGroup.query.filter_by(id=sample_group.id)
+        query = SampleGroup.query.filter_by(id=sample_group.uuid)
         self.assertRaises(NoResultFound, query.one)
 
     @with_user
@@ -115,13 +115,13 @@ class TestSampleGroupModule(BaseTestCase):
         sample_group = add_sample_group(name='Owned Sample Group')
         organization.sample_groups.append(sample_group)
         db.session.commit()
-        response = self.delete_sample_group(auth_headers, sample_group.id)
+        response = self.delete_sample_group(auth_headers, sample_group.uuid)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
         self.assertIn('success', data['status'])
 
         # Ensure Sample Group was removed
-        query = SampleGroup.query.filter_by(id=sample_group.id)
+        query = SampleGroup.query.filter_by(id=sample_group.uuid)
         self.assertRaises(NoResultFound, query.one)
 
     @with_user
@@ -131,13 +131,13 @@ class TestSampleGroupModule(BaseTestCase):
         sample_group = add_sample_group(name='Owned Sample Group')
         organization.sample_groups.append(sample_group)
         db.session.commit()
-        response = self.delete_sample_group(auth_headers, sample_group.id)
+        response = self.delete_sample_group(auth_headers, sample_group.uuid)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 403)
         self.assertIn('error', data['status'])
 
         # Ensure Sample Group still exists
-        group = SampleGroup.query.filter_by(id=sample_group.id).one()
+        group = SampleGroup.query.filter_by(id=sample_group.uuid).one()
         self.assertTrue(group)
 
     @with_user
@@ -145,7 +145,7 @@ class TestSampleGroupModule(BaseTestCase):
         """Ensure samples can be added to a sample group."""
         sample_group = add_sample_group(name='A Great Name')
         sample = add_sample(name='SMPL_01')
-        endpoint = f'/api/v1/sample_groups/{str(sample_group.id)}/samples'
+        endpoint = f'/api/v1/sample_groups/{str(sample_group.uuid)}/samples'
         with self.client:
             response = self.client.post(
                 endpoint,
@@ -182,7 +182,7 @@ class TestSampleGroupModule(BaseTestCase):
     def test_get_single_sample_groups(self):
         """Ensure get single group behaves correctly."""
         group = add_sample_group(name='Sample Group One')
-        group_uuid = str(group.id)
+        group_uuid = str(group.uuid)
         with self.client:
             response = self.client.get(
                 f'/api/v1/sample_groups/{group_uuid}',
@@ -205,7 +205,7 @@ class TestSampleGroupModule(BaseTestCase):
 
         with self.client:
             response = self.client.get(
-                f'/api/v1/sample_groups/{str(group.id)}/samples',
+                f'/api/v1/sample_groups/{str(group.uuid)}/samples',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -220,7 +220,7 @@ class TestSampleGroupModule(BaseTestCase):
         """Ensure get sample uuid behaves correctly."""
         sample_group_name = 'Sample Group One'
         group = add_sample_group(name=sample_group_name)
-        sample_group_uuid = str(group.id)
+        sample_group_uuid = str(group.uuid)
         sample00 = add_sample(name='SMPL_00')
         sample01 = add_sample(name='SMPL_01')
         group.samples = [sample00, sample01]
@@ -262,5 +262,5 @@ class TestSampleGroupModule(BaseTestCase):
 
         patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
         with mock.patch(patch_path) as conductor:
-            endpoint = f'/api/v1/sample_groups/{str(sample_group.id)}/middleware'
+            endpoint = f'/api/v1/sample_groups/{str(sample_group.uuid)}/middleware'
             middleware_tester(self, auth_headers, conductor, endpoint)

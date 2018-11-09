@@ -145,7 +145,7 @@ def task_body_group_tool_result(sample_group_uuid, module):
     sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     group_tool_cls = module.required_modules()[0].result_model()
-    group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.id)
+    group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.uuid)
     data = module.group_tool_processor()(group_tool)
     analysis_result_uuid = sample_group.analysis_result_uuid
     analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)

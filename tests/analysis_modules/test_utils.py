@@ -16,5 +16,5 @@ class TestConductorTasks(BaseTestCase):
         group.samples = [add_sample(f'Sample {i}') for i in range(5)]
         db.session.commit()
 
-        samples = fetch_samples(group.id)
+        samples = fetch_samples(group.uuid)
         self.assertEqual(len(samples), 5)
