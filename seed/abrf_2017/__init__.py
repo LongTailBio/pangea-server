@@ -9,9 +9,12 @@ from .loader import (
     load_ags,
 )
 
-
-sample_similarity = AnalysisResultWrapper(status='S', data=load_sample_similarity()).save()
-ags = AnalysisResultWrapper(status='S', data=load_ags()).save()
-
-abrf_analysis_result = AnalysisResultMeta(sample_similarity=sample_similarity,
-                                          average_genome_size=ags)
+def create_abrf_analysis_result(save=False):
+    """Generate ABRF analysis result."""
+    sample_similarity = AnalysisResultWrapper(status='S', data=load_sample_similarity()).save()
+    ags = AnalysisResultWrapper(status='S', data=load_ags()).save()
+    analysis_result = AnalysisResultMeta(sample_similarity=sample_similarity,
+                                         average_genome_size=ags)
+    if save:
+        analysis_result.save()
+    return analysis_result
