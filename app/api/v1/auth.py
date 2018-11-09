@@ -11,6 +11,7 @@ from sqlalchemy import or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db, bcrypt
 from app.authentication.models import (
@@ -20,9 +21,6 @@ from app.authentication.models import (
     user_schema,
 )
 from app.authentication.helpers import encode_auth_token, authenticate
-
-
-PAGE_SIZE = 20
 
 
 auth_blueprint = Blueprint('auth', __name__)  # pylint: disable=invalid-name
@@ -194,29 +192,6 @@ def get_single_organization(organization_uuid):
     return result, 200
 
 
-@auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['GET'])
-@authenticate(required=False)
-def get_organization_users(authn_uuid, organization_uuid):
-    """Get single organization's users."""
-    try:
-        organization_uuid = UUID(organization_uuid)
-    except ValueError:
-        raise ParseError('Invalid organization UUID.')
-
-    try:
-        organization = User.query.filter_by(uuid=organization_uuid).one()
-    except NoResultFound:
-        raise NotFound('Organization does not exist')
-
-    authn_user = User.query.filter_by(uuid=authn_uuid).one() if authn_uuid else None
-    if authn_user in organization.users:
-        result = user_schema.dump(organization.users, many=True)
-        return result, 200
-
-    users = organization.users.filter_by(is_public=True).all()
-    result = user_schema.dump(users, many=True)
-    return result, 200
-
 @auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['POST'])
 @authenticate()
 def add_organization_user(authn_uuid, organization_uuid):     # pylint: disable=too-many-return-statements
@@ -274,3 +249,27 @@ def add_organization_user(authn_uuid, organization_uuid):     # pylint: disable=
         current_app.logger.exception('IntegrityError encountered.')
         db.session.rollback()
         raise InternalError(str(integrity_error))
+
+
+@auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['GET'])
+@authenticate(required=False)
+def get_organization_users(authn_uuid, organization_uuid):
+    """Get single organization's users."""
+    try:
+        organization_uuid = UUID(organization_uuid)
+    except ValueError:
+        raise ParseError('Invalid organization UUID.')
+
+    try:
+        organization = User.query.filter_by(uuid=organization_uuid).one()
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
+
+    authn_user = User.query.filter_by(uuid=authn_uuid).one() if authn_uuid else None
+    if authn_user in organization.users:
+        result = user_schema.dump(organization.users, many=True)
+        return result, 200
+
+    users = organization.users.filter_by(is_public=True).all()
+    result = user_schema.dump(users, many=True)
+    return result, 200

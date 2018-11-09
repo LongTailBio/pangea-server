@@ -7,16 +7,18 @@ from csv import DictReader
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import ParseError, NotFound, PermissionDenied
 from mongoengine.errors import ValidationError, DoesNotExist
+from sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.analysis_modules.task_graph import TaskConductor
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db
-from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
+from app.authentication.models import User, OrganizationMembership
 from app.authentication.helpers import authenticate
 from app.utils import XLSDictReader
 
@@ -26,38 +28,60 @@ sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disabl
 
 @sample_groups_blueprint.route('/sample_groups', methods=['POST'])
 @authenticate()
-def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
+def add_sample_group(authn_uuid):
     """Add sample group."""
+    # Validate input
     try:
         post_data = request.get_json()
         name = post_data['name']
+        organization_name = post_data.get('organization_name', None)
+        is_library = post_data.get('is_library', False, type=bool)
+        is_public = post_data.get('is_public', True, type=bool)
     except TypeError:
         raise ParseError('Missing Sample Group creation payload.')
     except KeyError:
         raise ParseError('Invalid Sample Group creation payload.')
 
-    sample_group = SampleGroup.query.filter_by(name=name).first()
-    if sample_group is not None:
-        raise InvalidRequest('Sample Group with that name already exists.')
+    # Assume Sample Group is self-owned
+    authn_user = User.query.filter_by(uuid=authn_uuid).one()
+    owner_name = authn_user.username
+    owner_uuid = authn_user.uuid
 
-    organization = None
-    if 'organization_uuid' in post_data:
-        organization_uuid = post_data['organization_uuid']
+    # Validate organization permissions if organization-owned
+    if organization_name:
         try:
-            organization = Organization.query.filter_by(id=organization_uuid).one()
+            organization = User.query.filter(
+                func.lower(User.name) == func.lower(organization_name),
+            ).one()
         except NoResultFound:
-            raise NotFound('Sample Group does not exist')
+            raise NotFound('Organization does not exist')
 
-        user_ids = [user.id for user in organization.users]
-        if auth_user_uuid not in user_ids:
+        if authn_user not in organization.users:
             raise PermissionDenied('You do not have permission to that organization.')
 
+        owner_name = organization.username
+        owner_uuid = organization.uuid
+
+    # Check if owner/sample group already exists
+    sample_group = SampleGroup.query.filter(and_(
+        func.lower(SampleGroup.name) == func.lower(name),
+        SampleGroup.owner_uuid == owner_uuid,
+    )).first()
+    if sample_group:
+        raise InvalidRequest('Sample Group with that name already exists.')
+
+    # Create Sample Group
     try:
         analysis_result = AnalysisResultMeta().save()
-        sample_group = SampleGroup(name=name, analysis_result=analysis_result)
+        sample_group = SampleGroup(
+            name=name,
+            owner_name=owner_name,
+            owner_uuid=owner_uuid,
+            is_library=is_library,
+            is_public=is_public,
+            analysis_result=analysis_result,
+        )
         db.session.add(sample_group)
-        if organization:
-            organization.sample_groups.append(sample_group)
         db.session.commit()
         result = sample_group_schema.dump(sample_group)
         return result, 201
@@ -67,37 +91,79 @@ def add_sample_group(auth_user_uuid):  # pylint: disable=unused-argument
         raise InternalError(str(integrity_error))
 
 
-@sample_groups_blueprint.route('/sample_groups/<group_uuid>', methods=['GET'])
-def get_single_result(group_uuid):
-    """Get single sample group model."""
-    try:
-        sample_group_id = UUID(group_uuid)
-        sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+@sample_groups_blueprint.route('/sample_groups', methods=['GET'])
+def get_sample_groups():
+    """Return the UUID associated with a single sample."""
+    # Lookup specific Sample Group if queried
+    name_query = request.args.get('name', None)
+    owner_name_query = request.args.get('owner_name', None)
+    if name_query and owner_name_query:
+        # Get owner
+        try:
+            owner = User.query.filter(
+                func.lower(User.username) == func.lower(owner_name_query),
+            ).one()
+        except NoResultFound:
+            raise NotFound('User or organization with that name does not exist.')
+
+        # Get Sample Group
+        try:
+            sample_group = SampleGroup.query.filter(and_(
+                SampleGroup.owner_uuid == owner.uuid,
+                func.lower(SampleGroup.username) == func.lower(name_query),
+            )).one()
+        except NoResultFound:
+            raise NotFound('Sample Group does not exist.')
+
         result = sample_group_schema.dump(sample_group)
         return result, 200
+
+    # Return all sample groups
+    limit = request.args.get('limit', PAGE_SIZE)
+    offset = request.args.get('offset', 0)
+    sample_groups = SampleGroup.query \
+        .limit(limit) \
+        .offset(offset) \
+        .order_by(asc(SampleGroup.created_at)) \
+        .all()
+
+    result = sample_group_schema.dump(sample_groups, many=True)
+    return result, 200
+
+
+@sample_groups_blueprint.route('/sample_groups/<group_uuid>', methods=['GET'])
+def get_single_sample_group(group_uuid):
+    """Get single sample group model."""
+    # Valdiate input
+    try:
+        sample_group_uuid = UUID(group_uuid)
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
+
+    try:
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
+        result = sample_group_schema.dump(sample_group)
+        return result, 200
     except NoResultFound:
         raise NotFound('Sample Group does not exist')
 
 
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>', methods=['DELETE'])
 @authenticate()
-def delete_single_result(auth_user_uuid, group_uuid):
+def delete_single_result(authn_uuid, group_uuid):
     """Delete single sample group model."""
     try:
         sample_group_id = UUID(group_uuid)
-        sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
     except NoResultFound:
         raise NotFound('Sample Group does not exist')
 
-    if sample_group.organization_id:
-        organization = Organization.query.filter_by(id=sample_group.organization_id).one()
-        user_ids = [user.id for user in organization.users]
-        if auth_user_uuid not in user_ids:
-            raise PermissionDenied('You do not have permission to delete that sample group.')
+    organization = User.query.filter_by(uuid=sample_group.owner_uuid).one()
+    user_uuids = [user.uuid for user in organization.users]
+    if authn_uuid not in user_uuids:
+        raise PermissionDenied('You do not have permission to delete that sample group.')
 
     try:
         sample_group.analysis_result.delete()
@@ -117,9 +183,8 @@ def get_samples_for_group(group_uuid):
     """Get single sample group's list of samples."""
     try:
         sample_group_id = UUID(group_uuid)
-        sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
         samples = sample_group.samples
-        current_app.logger.info(f'Found {len(samples)} samples for group {group_uuid}')
         result = SampleSchema(only=('uuid', 'name')).dump(samples, many=True)
         return result, 200
     except ValueError:
@@ -130,12 +195,12 @@ def get_samples_for_group(group_uuid):
 
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>/samples', methods=['POST'])
 @authenticate()
-def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
+def add_samples_to_group(authn_uuid, group_uuid):  # pylint: disable=unused-argument
     """Add samples to a sample group."""
     try:
         post_data = request.get_json()
         sample_group_id = UUID(group_uuid)
-        sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
     except ValueError:
         raise ParseError('Invalid Sample Group UUID.')
     except NoResultFound:
@@ -145,7 +210,7 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
         sample_uuids = [UUID(uuid) for uuid in post_data.get('sample_uuids')]
         for sample_uuid in sample_uuids:
             sample = Sample.objects.get(uuid=sample_uuid)
-            sample_group.sample_ids.append(sample.uuid)
+            sample_group.sample_uuids.append(sample.uuid)
         db.session.commit()
         result = sample_group_schema.dump(sample_group)
         return result, 200
@@ -156,22 +221,6 @@ def add_samples_to_group(resp, group_uuid):  # pylint: disable=unused-argument
         current_app.logger.exception('Samples could not be added to Sample Group.')
         db.session.rollback()
         raise InternalError(str(integrity_error))
-
-
-@sample_groups_blueprint.route('/sample_groups/getid/<sample_group_name>', methods=['GET'])
-def get_sample_group_uuid(sample_group_name):
-    """Return the UUID associated with a single sample."""
-    try:
-        sample_group = SampleGroup.query.filter_by(name=sample_group_name).one()
-    except NoResultFound:
-        raise NotFound('Sample Group does not exist')
-
-    sample_group_uuid = sample_group.id
-    result = {
-        'sample_group_name': sample_group_name,  # recapitulate for convenience
-        'sample_group_uuid': sample_group_uuid,
-    }
-    return result, 200
 
 
 @sample_groups_blueprint.route('/sample_groups/<uuid>/middleware', methods=['POST'])
@@ -200,7 +249,7 @@ def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-
     try:
         library_id = UUID(library_uuid)
         # Enforce is_library
-        _ = SampleGroup.query.filter_by(id=library_id).one()
+        _ = SampleGroup.query.filter_by(uuid=library_id).one()
     except ValueError:
         raise ParseError('Invalid Library UUID.')
     except NoResultFound:
@@ -264,3 +313,93 @@ def upload_metadata(resp, library_uuid):  # pylint: disable=unused-argument,too-
             raise ParseError(f'Metadata upload failed partway through: {str(validation_error)}')
 
     return {'updated_uuids': updated_uuids}, 201
+
+
+@sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
+                               methods=['POST'])
+@authenticate()
+def add_organization_sample_group(authn_uuid, organization_uuid):
+    """Add sample group to organization."""
+    # Validate organization
+    try:
+        organization_uuid = UUID(organization_uuid)
+        organization = User.query.filter_by(uuid=organization_uuid).one()
+    except ValueError:
+        raise ParseError('Invalid organization UUID.')
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
+
+    try:
+        authn_user = User.query.filter_by(uuid=authn_uuid).one()
+        _ = OrganizationMembership.query.filter(and_(
+            OrganizationMembership.organization_uuid == organization.uuid,
+            OrganizationMembership.user_uuid == authn_user.uuid,
+            or_(
+                OrganizationMembership.role == 'admin',
+                OrganizationMembership.role == 'write',
+            ),
+        )).one()
+    except NoResultFound:
+        message = 'You do not have permission to add a sample group to that organization.'
+        raise PermissionDenied(message)
+
+    # Validate sample group
+    try:
+        post_data = request.get_json()
+        sample_group_uuid = post_data['sample_group_uuid']
+        sample_group_uuid = UUID(sample_group_uuid)
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
+    except TypeError:
+        raise ParseError('Missing sample group payload.')
+    except KeyError:
+        raise ParseError('Invalid sample group payload.')
+    except ValueError:
+        raise ParseError('Invalid sample group UUID.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+
+    old_owner = sample_group.owner_uuid
+    if not old_owner.uuid == authn_user.uuid:
+        try:
+            _ = OrganizationMembership.query.filter(and_(
+                OrganizationMembership.organization_uuid == old_owner.uuid,
+                OrganizationMembership.user_uuid == authn_user.uuid,
+                OrganizationMembership.role == 'admin',
+            )).one()
+        except NoResultFound:
+            message = 'You do not have permission edit that sample group.'
+            raise PermissionDenied(message)
+
+    # Change ownership
+    try:
+        sample_group.owner_name = organization.username
+        sample_group.owner_uuid = organization.uuid
+        db.session.commit()
+        result = {'message': f'${sample_group.name} added to ${organization.username}'}
+        return result, 200
+    except IntegrityError as integrity_error:
+        current_app.logger.exception('IntegrityError encountered while saving organization.')
+        db.session.rollback()
+        raise InternalError(str(integrity_error))
+
+
+@sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
+                               methods=['GET'])
+@sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups/<int:page>',
+                               methods=['GET'])
+def get_organization_sample_groups(organization_uuid, page=1):
+    """Get single organization's sample groups."""
+    try:
+        organization_uuid = UUID(organization_uuid)
+    except ValueError:
+        raise ParseError('Invalid organization UUID.')
+
+    try:
+        organization = User.query.filter_by(uuid=organization_uuid).one()
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
+
+    sample_groups = organization.sample_groups.paginate(page, PAGE_SIZE, False).items
+    result = sample_group_schema.dump(sample_groups, many=True)
+    return result, 200

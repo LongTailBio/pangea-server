@@ -5,6 +5,7 @@
 import datetime
 
 from flask import current_app
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 from sqlalchemy.ext.associationproxy import association_proxy
 from marshmallow import fields
@@ -53,13 +54,17 @@ class User(db.Model):
     uuid = db.Column(UUID(as_uuid=True),
                      primary_key=True,
                      server_default=db.text('uuid_generate_v4()'))
-    username = db.Column(db.String(128), unique=True, nullable=False)
+    username = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
     user_type = db.Column(ENUM('user', 'organization', name='user_type'),
                           nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     is_fake = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
+
+    __table_args__ = (
+        db.Index('_user_lower_username_idx', func.lower(username), unique=True),
+    )
 
     # Users that belong to this organization
     user_memberships = db.relationship(

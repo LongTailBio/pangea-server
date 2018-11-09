@@ -12,6 +12,7 @@ from flask_api.exceptions import NotAuthenticated, AuthenticationFailed
 from app.authentication.models import User
 
 
+# TODO: encode role for each group membership
 def encode_auth_token(user_uuid):
     """Generate the auth token."""
     try:
@@ -32,6 +33,7 @@ def encode_auth_token(user_uuid):
         return exc
 
 
+# Decode to "AuthManager" type allowing easier interogation of memberships
 def decode_auth_token(auth_token):
     """Decode the auth token - :param auth_token: - :return: UUID|string."""
     try:
@@ -44,6 +46,7 @@ def decode_auth_token(auth_token):
         raise AuthenticationFailed('Invalid token. Please log in again.')
 
 
+# TODO: Return AuthManager object rather than UUID
 def authenticate(required=True):
     """Decorate API route calls requiring authentication."""
     def wrapper(f):  # pylint: disable=invalid-name
