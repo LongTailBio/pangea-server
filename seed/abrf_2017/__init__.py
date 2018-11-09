@@ -1,6 +1,6 @@
-# pylint: disable=invalid-name
-
 """MetaGenScope seed data from ARBF 2017."""
+
+# pylint: disable=invalid-name
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 
@@ -8,6 +8,7 @@ from .loader import (
     load_sample_similarity,
     load_ags,
 )
+
 
 def create_abrf_analysis_result(save=False):
     """Generate ABRF analysis result."""
