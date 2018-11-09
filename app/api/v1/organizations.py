@@ -15,7 +15,7 @@ from app.organizations.organization_models import (
     Organization, OrganizationMembership, organization_schema
 )
 from app.users.user_models import User, user_schema
-from app.users.user_helpers import authenticate
+from app.authentication.helpers import authenticate
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 
 

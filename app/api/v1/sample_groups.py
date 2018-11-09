@@ -17,7 +17,7 @@ from app.extensions import db
 from app.organizations.organization_models import Organization
 from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
 from app.samples.sample_models import Sample, SampleSchema
-from app.users.user_helpers import authenticate
+from app.authentication.helpers import authenticate
 from app.utils import XLSDictReader
 
 

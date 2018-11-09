@@ -14,7 +14,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
-from app.users.user_helpers import authenticate
+from app.authentication.helpers import authenticate
 
 
 samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-name
