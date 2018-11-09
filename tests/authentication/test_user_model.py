@@ -3,6 +3,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from app import db
+from app.authentication.helpers import encode_auth_token, decode_auth_token
 from app.authentication.models import User
 from ..base import BaseTestCase
 from ..utils import add_user
@@ -17,7 +18,7 @@ class TestUserModel(BaseTestCase):
         self.assertTrue(user.uuid)
         self.assertEqual(user.username, 'justatest')
         self.assertEqual(user.email, 'test@test.com')
-        self.assertTrue(user.password)
+        self.assertTrue(user.password_authentication)
         self.assertTrue(user.active)
         self.assertTrue(user.created_at)
 
@@ -48,17 +49,19 @@ class TestUserModel(BaseTestCase):
         """Ensure passwords are random."""
         user_one = add_user('justatest', 'test@test.com', 'test')
         user_two = add_user('justatest2', 'test@test2.com', 'test')
-        self.assertNotEqual(user_one.password, user_two.password)
+        self.assertNotEqual(user_one.password_authentication.password,
+                            user_two.password_authentication.password)
 
     def test_encode_auth_token(self):
         """Ensure auth token is encoded correctly."""
         user = add_user('justatest', 'test@test.com', 'test')
-        auth_token = user.encode_auth_token(user.uuid)
+        auth_token = encode_auth_token(user)
         self.assertTrue(isinstance(auth_token, bytes))
 
     def test_decode_auth_token(self):
         """Ensure auth token is decoded correctly."""
         user = add_user('justatest', 'test@test.com', 'test')
-        auth_token = user.encode_auth_token(user.id)
+        auth_token = encode_auth_token(user)
         self.assertTrue(isinstance(auth_token, bytes))
-        self.assertTrue(User.decode_auth_token(auth_token), user.uuid)
+        authn = decode_auth_token(auth_token)
+        self.assertEqual(authn.sub, user.uuid)

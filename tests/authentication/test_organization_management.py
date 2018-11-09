@@ -3,6 +3,7 @@
 from sqlalchemy.orm.exc import FlushError
 
 from app import db
+from app.authentication.models import User, OrganizationMembership
 from ..base import BaseTestCase
 from ..utils import add_user, add_organization
 
@@ -32,6 +33,12 @@ class TestOrganizationManagement(BaseTestCase):
         """Ensure user can be added to organization."""
         organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        organization.add_admin(user)
+        admin_membership = OrganizationMembership('admin')
+        admin_membership.user = user
+        organization.users.append(admin_membership)
         db.session.commit()
-        self.assertIn(user, organization.admin_users)
+        admin_users = User.query.filter(
+            User.uuid == organization.uuid,
+            User.user_memberships.any(role='admin'),
+        )
+        self.assertIn(user, admin_users)

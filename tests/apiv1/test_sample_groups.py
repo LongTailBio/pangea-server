@@ -158,7 +158,7 @@ class TestSampleGroupModule(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data.decode())
             self.assertIn('success', data['status'])
-            self.assertIn(sample.uuid, sample_group.sample_ids)
+            self.assertIn(sample.uuid, sample_group.sample_uuids)
 
     @with_user
     def test_add_duplicate_sample_group(self, auth_headers, *_):

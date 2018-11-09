@@ -61,7 +61,7 @@ def upgrade():
     op.create_table('organization_memberships',
         sa.Column('organization_uuid', postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column('user_uuid', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('role', postgresql.ENUM('admin', 'writeread', name='organization_role'), nullable=False),
+        sa.Column('role', postgresql.ENUM('admin', 'write', 'read', name='organization_role'), nullable=False),
         sa.Column('is_public', sa.Boolean(), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(['organization_uuid'], ['users.uuid'], ),

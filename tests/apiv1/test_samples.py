@@ -38,7 +38,7 @@ class TestSampleModule(BaseTestCase):
             self.assertEqual(sample_name, data['data']['sample']['name'])
 
         sample_uuid = UUID(data['data']['sample']['uuid'])
-        self.assertIn(sample_uuid, library.sample_ids)
+        self.assertIn(sample_uuid, library.sample_uuids)
 
     @with_user
     def test_add_sample_missing_group(self, auth_headers, *_):

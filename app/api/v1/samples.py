@@ -48,7 +48,7 @@ def add_sample(_):
                         name=sample_name,
                         analysis_result=analysis_result,
                         metadata={'name': sample_name}).save()
-        library.sample_ids.append(sample.uuid)
+        library.sample_uuids.append(sample.uuid)
         db.session.commit()
         result = sample_schema.dump(sample)
         return result, 201

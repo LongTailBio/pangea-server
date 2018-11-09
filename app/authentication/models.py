@@ -23,7 +23,7 @@ class OrganizationMembership(db.Model):
                                   primary_key=True, nullable=False)
     user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'),
                           primary_key=True, nullable=False)
-    role = db.Column(ENUM('admin', 'write' 'read', name='organization_role'),
+    role = db.Column(ENUM('admin', 'write', 'read', name='organization_role'),
                      nullable=False)
     is_public = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
