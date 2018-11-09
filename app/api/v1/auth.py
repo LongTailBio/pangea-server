@@ -62,7 +62,7 @@ def register_user():
         raise InternalError(str(integrity_error))
 
     # Generate auth token
-    auth_token = encode_auth_token(new_user.uuid)
+    auth_token = encode_auth_token(new_user)
     result = {'auth_token': auth_token.decode()}
     return result, 201
 
@@ -84,7 +84,7 @@ def login_user():
     password_authentication = getattr(user, 'password_authentication', None)
     password_hash = getattr(password_authentication, 'password', None)
     if password_hash and bcrypt.check_password_hash(password_hash, password):
-        auth_token = encode_auth_token(user.uuid)
+        auth_token = encode_auth_token(user)
         if auth_token:
             result = {'auth_token': auth_token.decode()}
             return result, 200
