@@ -34,7 +34,7 @@ def add_sample(_):
         raise ParseError('Invalid Sample creation payload.')
 
     try:
-        library = SampleGroup.query.filter_by(id=library_uuid).one()
+        library = SampleGroup.query.filter_by(uuid=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Sample Group does not exist!')
 

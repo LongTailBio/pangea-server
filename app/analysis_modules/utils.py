@@ -26,7 +26,7 @@ def apply_errback(signatures):
 
 def fetch_samples(sample_group_id):
     """Get all samples belonging to the specified Sample Group."""
-    sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+    sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
     samples = sample_group.samples
     return samples
 
@@ -130,7 +130,7 @@ def run_sample(sample_uuid, module_name):
 
 def task_body_sample_group(sample_group_uuid, module):
     """Wrap analysis work for SampleGroup."""
-    sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
     if block_if_analysis_result_exists(module, sample_group.analysis_result):
         return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
@@ -142,7 +142,7 @@ def task_body_sample_group(sample_group_uuid, module):
 
 def task_body_group_tool_result(sample_group_uuid, module):
     """Wrap analysis work for a SampleGroup's GroupToolResult."""
-    sample_group = SampleGroup.query.filter_by(id=sample_group_uuid).one()
+    sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     group_tool_cls = module.required_modules()[0].result_model()
     group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.uuid)

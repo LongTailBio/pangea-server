@@ -39,7 +39,7 @@ class TestSampleGroupModule(BaseTestCase):
 
             # Ensure Analysis Result was created
             sample_group_id = data['data']['sample_group']['uuid']
-            sample_group = SampleGroup.query.filter_by(id=sample_group_id).one()
+            sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
             self.assertTrue(sample_group.analysis_result)
 
     def create_group_for_organization(self, auth_headers, organization_uuid):
@@ -104,7 +104,7 @@ class TestSampleGroupModule(BaseTestCase):
         self.assertIn('success', data['status'])
 
         # Ensure Sample Group was removed
-        query = SampleGroup.query.filter_by(id=sample_group.uuid)
+        query = SampleGroup.query.filter_by(uuid=sample_group.uuid)
         self.assertRaises(NoResultFound, query.one)
 
     @with_user
@@ -121,7 +121,7 @@ class TestSampleGroupModule(BaseTestCase):
         self.assertIn('success', data['status'])
 
         # Ensure Sample Group was removed
-        query = SampleGroup.query.filter_by(id=sample_group.uuid)
+        query = SampleGroup.query.filter_by(uuid=sample_group.uuid)
         self.assertRaises(NoResultFound, query.one)
 
     @with_user
@@ -137,7 +137,7 @@ class TestSampleGroupModule(BaseTestCase):
         self.assertIn('error', data['status'])
 
         # Ensure Sample Group still exists
-        group = SampleGroup.query.filter_by(id=sample_group.uuid).one()
+        group = SampleGroup.query.filter_by(uuid=sample_group.uuid).one()
         self.assertTrue(group)
 
     @with_user

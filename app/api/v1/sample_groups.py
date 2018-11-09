@@ -228,7 +228,7 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     """Run display modules for sample group."""
     try:
         safe_uuid = UUID(uuid)
-        _ = SampleGroup.query.filter_by(id=safe_uuid).first()
+        _ = SampleGroup.query.filter_by(uuid=safe_uuid).first()
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except NoResultFound:
