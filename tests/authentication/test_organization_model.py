@@ -15,7 +15,7 @@ class TestOrganizationModel(BaseTestCase):
         """Ensure organization model is created correctly."""
         organization = add_organization('Test Organization', 'admin@test.org')
         self.assertTrue(organization.uuid)
-        self.assertEqual(organization.name, 'Test Organization')
+        self.assertEqual(organization.username, 'Test Organization')
         self.assertEqual(organization.email, 'admin@test.org')
         self.assertTrue(organization.created_at)
 

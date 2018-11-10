@@ -8,7 +8,7 @@ from functools import wraps
 
 from app import db
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.authentication.models import User, PasswordAuthentication
+from app.authentication.models import User, PasswordAuthentication, OrganizationMembership
 from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
@@ -38,6 +38,16 @@ def add_organization(name, email, created_at=datetime.datetime.utcnow()):
     db.session.add(organization)
     db.session.commit()
     return organization
+
+
+def add_member(user, organization, role, commit=True):
+    """Add user to organization."""
+    membership = OrganizationMembership(role=role)
+    membership.user = user
+    membership.organization = organization
+    # db.session.add(membership)
+    if commit:
+        db.session.commit()
 
 
 # pylint: disable=too-many-arguments,dangerous-default-value

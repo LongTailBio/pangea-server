@@ -28,16 +28,18 @@ sample_groups_blueprint = Blueprint('sample_groups', __name__)  # pylint: disabl
 
 @sample_groups_blueprint.route('/sample_groups', methods=['POST'])
 @authenticate()
-def add_sample_group(authn):
+def add_sample_group(authn):  # pylint: disable=too-many-locals
     """Add sample group."""
     # Validate input
     try:
         post_data = request.get_json()
         name = post_data['name']
         organization_name = post_data.get('organization_name', None)
-        is_library = post_data.get('is_library', False, type=bool)
-        is_public = post_data.get('is_public', True, type=bool)
-    except TypeError:
+        is_library = post_data.get('is_library', False)
+        is_public = post_data.get('is_public', True)
+    except TypeError as exc:
+        print('Sample Group creation error:')
+        print(exc)
         raise ParseError('Missing Sample Group creation payload.')
     except KeyError:
         raise ParseError('Invalid Sample Group creation payload.')
@@ -51,12 +53,26 @@ def add_sample_group(authn):
     if organization_name:
         try:
             organization = User.query.filter(
-                func.lower(User.name) == func.lower(organization_name),
+                func.lower(User.username) == func.lower(organization_name),
             ).one()
         except NoResultFound:
             raise NotFound('Organization does not exist')
 
-        if authn_user not in organization.users:
+        try:
+            _ = User.query.filter(
+                User.uuid == authn_user.uuid,
+                or_(
+                    User.organization_memberships.any(
+                        organization_uuid=organization.uuid,
+                        role='admin',
+                    ),
+                    User.organization_memberships.any(
+                        organization_uuid=organization.uuid,
+                        role='write',
+                    ),
+                ),
+            ).one()
+        except NoResultFound:
             raise PermissionDenied('You do not have permission to that organization.')
 
         owner_name = organization.username
@@ -110,7 +126,7 @@ def get_sample_groups():
         try:
             sample_group = SampleGroup.query.filter(and_(
                 SampleGroup.owner_uuid == owner.uuid,
-                func.lower(SampleGroup.username) == func.lower(name_query),
+                func.lower(SampleGroup.name) == func.lower(name_query),
             )).one()
         except NoResultFound:
             raise NotFound('Sample Group does not exist.')
@@ -119,12 +135,12 @@ def get_sample_groups():
         return result, 200
 
     # Return all sample groups
-    limit = request.args.get('limit', PAGE_SIZE)
     offset = request.args.get('offset', 0)
+    limit = request.args.get('limit', PAGE_SIZE)
     sample_groups = SampleGroup.query \
-        .limit(limit) \
-        .offset(offset) \
         .order_by(asc(SampleGroup.created_at)) \
+        .offset(offset) \
+        .limit(limit) \
         .all()
 
     result = sample_group_schema.dump(sample_groups, many=True)
@@ -160,10 +176,16 @@ def delete_single_result(authn, group_uuid):
     except NoResultFound:
         raise NotFound('Sample Group does not exist')
 
-    organization = User.query.filter_by(uuid=sample_group.owner_uuid).one()
-    user_uuids = [user.uuid for user in organization.users]
-    if authn.sub not in user_uuids:
-        raise PermissionDenied('You do not have permission to delete that sample group.')
+    if authn.sub != sample_group.owner_uuid:
+        try:
+            _ = OrganizationMembership.query.filter_by(
+                organization_uuid=sample_group.owner_uuid,
+                user_uuid=authn.sub,
+                role='admin',
+            ).one()
+        except NoResultFound:
+            message = 'You do not have permission to delete that sample group.'
+            raise PermissionDenied(message)
 
     try:
         sample_group.analysis_result.delete()
@@ -353,10 +375,10 @@ def add_organization_sample_group(authn, organization_uuid):
         raise NotFound('Sample Group does not exist')
 
     old_owner = sample_group.owner_uuid
-    if not old_owner.uuid == authn_user.uuid:
+    if not old_owner == authn_user.uuid:
         try:
             _ = OrganizationMembership.query.filter(and_(
-                OrganizationMembership.organization_uuid == old_owner.uuid,
+                OrganizationMembership.organization_uuid == old_owner,
                 OrganizationMembership.user_uuid == authn_user.uuid,
                 OrganizationMembership.role == 'admin',
             )).one()
@@ -379,12 +401,16 @@ def add_organization_sample_group(authn, organization_uuid):
 
 @sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
                                methods=['GET'])
-@sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups/<int:page>',
-                               methods=['GET'])
-def get_organization_sample_groups(organization_uuid, page=1):
+def get_organization_sample_groups(organization_uuid):
     """Get single organization's sample groups."""
-    organization = fetch_organization(organization_uuid)
+    offset = request.args.get('offset', 0)
+    limit = request.args.get('limit', PAGE_SIZE)
+    sample_groups = SampleGroup.query \
+        .filter_by(owner_uuid=organization_uuid) \
+        .order_by(asc(SampleGroup.created_at)) \
+        .offset(offset) \
+        .limit(limit) \
+        .all()
 
-    sample_groups = organization.sample_groups.paginate(page, PAGE_SIZE, False).items
     result = sample_group_schema.dump(sample_groups, many=True)
     return result, 200

@@ -11,7 +11,7 @@ from app.samples.sample_models import Sample
 from app.sample_groups.sample_group_models import SampleGroup
 
 from ..base import BaseTestCase
-from ..utils import add_sample, add_sample_group, with_user, add_organization
+from ..utils import add_sample, add_sample_group, add_member, with_user, add_organization
 
 from .utils import middleware_tester, get_analysis_result_with_data
 
@@ -20,8 +20,10 @@ class TestSampleGroupModule(BaseTestCase):
     """Tests for the SampleGroup module."""
 
     @with_user
-    def test_add_sample_group(self, auth_headers, *_):
+    def test_add_sample_group(self, auth_headers, login_user):
         """Ensure a new sample group can be added to the database."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        add_member(login_user, organization, 'admin')
         group_name = 'The Most Sampled of Groups'
         with self.client:
             response = self.client.post(
@@ -29,6 +31,7 @@ class TestSampleGroupModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=group_name,
+                    organization_name=organization.username,
                 )),
                 content_type='application/json',
             )
@@ -42,7 +45,7 @@ class TestSampleGroupModule(BaseTestCase):
             sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
             self.assertTrue(sample_group.analysis_result)
 
-    def create_group_for_organization(self, auth_headers, organization_uuid):
+    def create_group_for_organization(self, auth_headers, organization_name):
         """Create sample group for organization."""
         group_name = 'The Most Sampled of Groups'
         with self.client:
@@ -51,7 +54,7 @@ class TestSampleGroupModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=group_name,
-                    organization_uuid=str(organization_uuid),
+                    organization_name=organization_name,
                 )),
                 content_type='application/json',
             )
@@ -61,16 +64,15 @@ class TestSampleGroupModule(BaseTestCase):
     def test_add_group_with_organization(self, auth_headers, login_user):  # pylint: disable=invalid-name
         """Ensure a new sample group can be added with an organization."""
         organization = add_organization('Organization', 'admin@organization.org')
-        organization.users.append(login_user)
-        db.session.commit()
-        response = self.create_group_for_organization(auth_headers, organization.uuid)
+        add_member(login_user, organization, 'admin')
+        response = self.create_group_for_organization(auth_headers, organization.username)
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 201)
         sample_group_uuid = UUID(data['data']['sample_group']['uuid'])
 
-        organization_groups = organization.sample_groups
-        sample_group_uuids = [group.uuid for group in organization_groups]
-        self.assertIn(sample_group_uuid, sample_group_uuids)
+        sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid,
+                                                   owner_uuid=organization.uuid).one()
+        self.assertTrue(sample_group)
 
     @with_user
     def test_unauthorized_add_group_with_organization(self, auth_headers, *_):  # pylint: disable=invalid-name
@@ -78,23 +80,26 @@ class TestSampleGroupModule(BaseTestCase):
         Ensure a new sample group cannot be added to an organization to the user is not part of.
         """
         organization = add_organization('Organization', 'admin@organization.org')
-        response = self.create_group_for_organization(auth_headers, organization.uuid)
+        response = self.create_group_for_organization(auth_headers, organization.username)
+        data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 403)
+        self.assertIn('error', data['status'])
+        self.assertEqual('You do not have permission to that organization.', data['message'])
 
     def delete_sample_group(self, auth_headers, sample_group_id):
         """Perform request to delete sample group."""
         with self.client:
             response = self.client.delete(
-                f'/api/v1/sample_groups/{sample_group_id}',
+                f'/api/v1/sample_groups/{str(sample_group_id)}',
                 headers=auth_headers,
                 content_type='application/json',
             )
             return response
 
     @with_user
-    def test_delete_sample_group(self, auth_headers, *_):
+    def test_delete_sample_group(self, auth_headers, login_user):
         """Ensure an unowned sample group can be removed from the database."""
-        sample_group = add_sample_group(name='The Least Sampled of Groups')
+        sample_group = add_sample_group(name='The Least Sampled of Groups', owner=login_user)
         sample = add_sample(name='SMPL_01')
         sample_group.samples = [sample]
         db.session.commit()
@@ -111,9 +116,8 @@ class TestSampleGroupModule(BaseTestCase):
     def test_delete_owned_sample_group(self, auth_headers, login_user):
         """Ensure an owned sample group can be removed from the database by an authorized user."""
         organization = add_organization('Organization', 'admin@organization.org')
-        organization.users.append(login_user)
-        sample_group = add_sample_group(name='Owned Sample Group')
-        organization.sample_groups.append(sample_group)
+        add_member(login_user, organization, 'admin', commit=False)
+        sample_group = add_sample_group(name='Owned Sample Group', owner=organization)
         db.session.commit()
         response = self.delete_sample_group(auth_headers, sample_group.uuid)
         data = json.loads(response.data.decode())
@@ -128,8 +132,7 @@ class TestSampleGroupModule(BaseTestCase):
     def test_unauthorized_delete_sample_group(self, auth_headers, *_):  # pylint: disable=invalid-name
         """Ensure an owned sample group cannot be removed by an unauthorized user."""
         organization = add_organization('Organization', 'admin@organization.org')
-        sample_group = add_sample_group(name='Owned Sample Group')
-        organization.sample_groups.append(sample_group)
+        sample_group = add_sample_group(name='Owned Sample Group', owner=organization)
         db.session.commit()
         response = self.delete_sample_group(auth_headers, sample_group.uuid)
         data = json.loads(response.data.decode())
@@ -161,16 +164,19 @@ class TestSampleGroupModule(BaseTestCase):
             self.assertIn(sample.uuid, sample_group.sample_uuids)
 
     @with_user
-    def test_add_duplicate_sample_group(self, auth_headers, *_):
+    def test_add_duplicate_sample_group(self, auth_headers, login_user):
         """Ensure failure for non-unique Sample Group name."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        add_member(login_user, organization, 'admin')
         group_name = 'The Most Sampled of Groups'
-        add_sample_group(name=group_name)
+        add_sample_group(name=group_name, owner=organization)
         with self.client:
             response = self.client.post(
                 '/api/v1/sample_groups',
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=group_name,
+                    organization_name=organization.username,
                 )),
                 content_type='application/json',
             )
@@ -191,7 +197,6 @@ class TestSampleGroupModule(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('Sample Group One', data['data']['sample_group']['name'])
-            self.assertIn('public', data['data']['sample_group']['access_scheme'])
             self.assertTrue('created_at' in data['data']['sample_group'])
             self.assertIn('success', data['status'])
 
@@ -218,8 +223,9 @@ class TestSampleGroupModule(BaseTestCase):
 
     def test_get_group_uuid_from_name(self):
         """Ensure get sample uuid behaves correctly."""
+        organization = add_organization('Test', 'test@test.org')
         sample_group_name = 'Sample Group One'
-        group = add_sample_group(name=sample_group_name)
+        group = add_sample_group(name=sample_group_name, owner=organization)
         sample_group_uuid = str(group.uuid)
         sample00 = add_sample(name='SMPL_00')
         sample01 = add_sample(name='SMPL_01')
@@ -228,14 +234,15 @@ class TestSampleGroupModule(BaseTestCase):
 
         with self.client:
             response = self.client.get(
-                f'/api/v1/sample_groups/getid/{sample_group_name}',
+                (f'/api/v1/sample_groups?name={sample_group_name}'
+                 f'&owner_name={organization.username}'),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertEqual(sample_group_uuid, data['data']['sample_group_uuid'])
-            self.assertEqual(sample_group_name, data['data']['sample_group_name'])
+            self.assertEqual(sample_group_uuid, data['data']['sample_group']['uuid'])
+            self.assertEqual(sample_group_name, data['data']['sample_group']['name'])
 
     def prepare_middleware_test(self):  # pylint: disable=no-self-use
         """Prepare database for middleware test."""

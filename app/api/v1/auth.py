@@ -16,6 +16,7 @@ from app.authentication.models import (
     OrganizationMembership,
     PasswordAuthentication,
     user_schema,
+    organization_schema,
 )
 from app.authentication.helpers import (
     encode_auth_token,
@@ -103,13 +104,7 @@ def logout_user(_):
 def get_user_status(authn):
     """Get user status."""
     user = User.query.filter_by(uuid=authn.sub).first()
-    result = {
-        'uuid': str(user.uuid),
-        'username': user.username,
-        'email': user.email,
-        'is_deleted': user.is_deleted,
-        'created_at': user.created_at
-    }
+    result = user_schema.dump(user)
     return result, 200
 
 
@@ -143,7 +138,7 @@ def add_organization(authn):
         db.session.add_all([organization, membership])
         db.session.commit()
 
-        result = user_schema.dump(organization)
+        result = organization_schema.dump(organization)
         return result, 201
     except IntegrityError as integrity_error:
         current_app.logger.exception('There was a problem adding an organization.')
@@ -161,18 +156,18 @@ def get_organizations():
                                                 username=name_query).one()
         except NoResultFound:
             raise NotFound('Organization does not exist')
-        result = user_schema.dump(organization)
+        result = organization_schema.dump(organization)
         return result, 200
 
     limit = request.args.get('limit', PAGE_SIZE)
     offset = request.args.get('offset', 0)
     organizations = User.query.filter_by(user_type='organization') \
+        .order_by(asc(User.created_at)) \
         .limit(limit) \
         .offset(offset) \
-        .order_by(asc(User.created_at)) \
         .all()
 
-    result = user_schema.dump(organizations, many=True)
+    result = organization_schema.dump(organizations, many=True)
     return result, 200
 
 
@@ -180,7 +175,7 @@ def get_organizations():
 def get_single_organization(organization_uuid):
     """Get single organization details."""
     organization = fetch_organization(organization_uuid)
-    result = user_schema.dump(organization)
+    result = organization_schema.dump(organization)
     return result, 200
 
 
@@ -234,7 +229,7 @@ def add_organization_user(authn, organization_uuid):     # pylint: disable=too-m
         membership.organization = organization
         db.session.add(membership)
         db.session.commit()
-        message = f'${user.username} added to ${organization.name}'
+        message = f'${user.username} added to ${organization.username}'
         result = {'message': message}
         return result, 200
     except IntegrityError as integrity_error:
@@ -254,6 +249,9 @@ def get_organization_users(authn, organization_uuid):
         result = user_schema.dump(organization.users, many=True)
         return result, 200
 
-    users = organization.users.filter_by(is_public=True).all()
+    users = User.query.filter(
+        User.user_memberships.any(organization_uuid=organization.uuid),
+        User.user_memberships.any(is_public=True),
+    ).all()
     result = user_schema.dump(users, many=True)
     return result, 200

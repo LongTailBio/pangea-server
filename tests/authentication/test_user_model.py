@@ -19,7 +19,7 @@ class TestUserModel(BaseTestCase):
         self.assertEqual(user.username, 'justatest')
         self.assertEqual(user.email, 'test@test.com')
         self.assertTrue(user.password_authentication)
-        self.assertTrue(user.active)
+        self.assertFalse(user.is_deleted)
         self.assertTrue(user.created_at)
 
     # pylint: disable=invalid-name

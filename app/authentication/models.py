@@ -138,6 +138,25 @@ class UserSchema(BaseSchema):
     uuid = fields.Str()
     username = fields.Str()
     email = fields.Str()
+    created_at = fields.Date()
 
 
 user_schema = UserSchema()      # pylint: disable=invalid-name
+
+
+class OrganizationSchema(BaseSchema):
+    """Serializer for Organization."""
+
+    __envelope__ = {
+        'single': 'organization',
+        'many': 'organizations',
+    }
+    __model__ = User
+
+    uuid = fields.Str()
+    username = fields.Str()
+    email = fields.Str()
+    created_at = fields.Date()
+
+
+organization_schema = OrganizationSchema()  # pylint: disable=invalid-name
