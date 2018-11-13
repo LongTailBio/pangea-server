@@ -109,6 +109,22 @@ The modules live in the `pangea_modules` namespace and are self-contained: all m
 To add a new `AnalysisModule` module:
 Write your new namespace package `pangea_modules.my_new_module` following existing conventions. Make sure the main module class inherits from `pangea_modules.base.AnalysisModule`.
 
+### API Documentation
+
+The API for `metagenscope-server` is documented in [`swagger.yml`](swagger.yml) in the OpenAPI v3.0 spec.
+
+**Viewing**
+
+Swagger UI can be used to view an API spec URL. You can use the [public demo](https://petstore.swagger.io), or run it locally:
+
+```sh
+docker run -p 80:8080 -e API_URL=https://raw.githubusercontent.com/longtailbio/metagenscope-server/master/swagger.yml swaggerapi/swagger-ui:v3.19.5
+```
+
+**Editing**
+
+Copying and pasting between your local editor and the [`Swagger Editor`](https://editor.swagger.io) seems to be the easiest way to edit.
+
 ## Continuous Integration
 
 The test suite is run automatically on CircleCI for each push to Github. You can skip this behavior for a commit by appending `[skip ci]` to the commit message.
