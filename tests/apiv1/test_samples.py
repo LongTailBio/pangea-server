@@ -27,7 +27,7 @@ class TestSampleModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=sample_name,
-                    library_uuid=str(library.id),
+                    library_uuid=str(library.uuid),
                 )),
                 content_type='application/json',
             )
@@ -38,7 +38,7 @@ class TestSampleModule(BaseTestCase):
             self.assertEqual(sample_name, data['data']['sample']['name'])
 
         sample_uuid = UUID(data['data']['sample']['uuid'])
-        self.assertIn(sample_uuid, library.sample_ids)
+        self.assertIn(sample_uuid, library.sample_uuids)
 
     @with_user
     def test_add_sample_missing_group(self, auth_headers, *_):

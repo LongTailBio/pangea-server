@@ -1,10 +1,11 @@
 """Test suite for Organization management."""
 
-from sqlalchemy.orm.exc import FlushError
+from sqlalchemy.exc import IntegrityError
 
 from app import db
+from app.authentication.models import User
 from ..base import BaseTestCase
-from ..utils import add_user, add_organization
+from ..utils import add_user, add_organization, add_member
 
 
 class TestOrganizationManagement(BaseTestCase):
@@ -14,7 +15,7 @@ class TestOrganizationManagement(BaseTestCase):
         """Ensure user can be added to organization."""
         organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        organization.users.append(user)
+        add_member(user, organization, 'read', commit=False)
         db.session.commit()
         self.assertIn(user, organization.users)
 
@@ -22,16 +23,19 @@ class TestOrganizationManagement(BaseTestCase):
         """Ensure user can only be added to organization once."""
         organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        with db.session.no_autoflush:
-            organization.users.append(user)
-            db.session.commit()
-            organization.users.append(user)
-            self.assertRaises(FlushError, db.session.commit)
+        add_member(user, organization, 'read', commit=False)
+        db.session.commit()
+        add_member(user, organization, 'read', commit=False)
+        self.assertRaises(IntegrityError, db.session.commit)
 
-    def test_set_admin_user_to_organization(self):      # pylint: disable=invalid-name
+    def test_add_admin_user_to_organization(self):      # pylint: disable=invalid-name
         """Ensure user can be added to organization."""
         organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        organization.add_admin(user)
+        add_member(user, organization, 'admin', commit=False)
         db.session.commit()
-        self.assertIn(user, organization.admin_users)
+        admin_users = User.query.filter(
+            User.organization_memberships.any(organization_uuid=organization.uuid,
+                                              role='admin'),
+        ).all()
+        self.assertIn(user, admin_users)

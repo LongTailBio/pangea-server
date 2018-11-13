@@ -119,7 +119,7 @@ for module in all_analysis_modules:
         """Test middleware for SampleGroup analyses."""
         sample_group = build_seeded_sample_group(analysis_module)
         task_signatures = TaskConductor(
-            sample_group.id, module_names=[analysis_module.name()], is_group=True
+            sample_group.uuid, module_names=[analysis_module.name()], is_group=True
         ).build_task_signatures()
         if not processes_sample_groups(analysis_module):
             self.assertEqual(len(task_signatures), 0)

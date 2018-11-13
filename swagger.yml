@@ -1,0 +1,270 @@
+openapi: 3.0.0
+
+info:
+  title: MetaGenScope Service
+  description: Swagger spec for documenting the MetaGenScope service
+  version: 0.12.0
+
+servers:
+  - url: https://www.metagenscope.com/api/v1
+    description: Production server
+  - url: https://staging.metagenscope.com/api/v1
+    description: Staging server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      summary: Creates a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          $ref: '#/components/responses/AuthenticationResponse'
+
+  /auth/login:
+    post:
+      summary: Logs a user in
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthenticationResponse'
+
+  /auth/status:
+    get:
+      summary: Returns the logged in user's status
+      responses:
+        '200':
+          description: The current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    get:
+      summary: Logs a user out
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /organizations:
+    get:
+      summary: Returns list of Organizations
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of Organizations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organizations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Organization'
+    post:
+      summary: Create an Organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: LongtailBio
+                email:
+                  type: string
+                  example: dev@longtailbio.com
+      responses:
+        '201':
+          description: Newly created Organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+
+  /organizations/{organization_uuid}:
+    get:
+      summary: Find Organization by UUID
+      parameters:
+        - $ref: '#/components/parameters/organizationUUID'
+      responses:
+        '200':
+          description: List of Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+
+  /organizations/{organization_uuid}/users:
+    get:
+      summary: Find Users for a specific Organization
+      parameters:
+        - $ref: '#/components/parameters/organizationUUID'
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of Organization's Users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+    post:
+      summary: Add User to an Organization
+      parameters:
+        - $ref: '#/components/parameters/organizationUUID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_uuid:
+                  type: string
+                  format: uuid
+                  example: '63d08ead-6f2e-4ff3-9145-ce7c0733479f'
+      responses:
+        '200':
+          description: Newly created Organization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'bchrobot added to LongtailBio'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      required:
+        - username
+        - email
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        user_type:
+          type: string
+          enum: [ "user", " organization" ]
+        is_deleted:
+          type: boolean
+        is_fake:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      example:
+        uuid: '63d08ead-6f2e-4ff3-9145-ce7c0733479f'
+        username: bchrobot
+        email: ben@longtailbio.com
+        user_type: user
+        is_deleted: false
+        is_fake: false
+        created_at: "2018-11-13T16:34:25.382Z"
+    Organization:
+      allOf:
+        - $ref: '#/components/schemas/User'
+      example:
+        uuid: '44edfe3f-6c0f-40f9-9fa6-6d3265bce43d'
+        username: ExampleOrganization
+        email: admin@organization.org
+        user_type: organization
+        is_deleted: false
+        is_fake: false
+        created_at: "2018-11-13T16:34:25.382Z"
+
+  parameters:
+    organizationUUID:
+      in: 'path'
+      name: organization_uuid
+      description: 'UUID of Organization that needs to be fetched'
+      required: true
+      schema:
+        type: string
+      example: '44edfe3f-6c0f-40f9-9fa6-6d3265bce43d'
+    offsetParam:
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+      description: The number of items to skip before starting to collect the result set.
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+      description: The numbers of items to return.
+
+  responses:
+    AuthenticationResponse:
+      description: JWT Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              auth_token:
+                type: string
+                format: JWT

@@ -208,12 +208,11 @@ class TestAuthBlueprint(BaseTestCase):
                 headers=auth_headers
             )
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'success')
+            self.assertEqual(data['status'], 'success')
             self.assertTrue(data['data'] is not None)
-            self.assertTrue(data['data']['username'] == 'test')
-            self.assertTrue(data['data']['email'] == 'test@test.com')
-            self.assertTrue(data['data']['active'] is True)
-            self.assertTrue(data['data']['created_at'])
+            self.assertEqual(data['data']['user']['username'], 'test')
+            self.assertEqual(data['data']['user']['email'], 'test@test.com')
+            self.assertTrue(data['data']['user']['created_at'])
             self.assertEqual(response.status_code, 200)
 
     def test_invalid_status(self):
@@ -229,10 +228,10 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertEqual(response.status_code, 401)
 
     @with_user
-    def test_invalid_logout_inactive(self, auth_headers, login_user):
+    def test_invalid_logout_deleted(self, auth_headers, login_user):
         """Ensure logout fails for inactive user."""
         # Update user
-        login_user.active = False
+        login_user.is_deleted = True
         db.session.commit()
         with self.client:
             response = self.client.get(
@@ -248,7 +247,7 @@ class TestAuthBlueprint(BaseTestCase):
     def test_invalid_status_inactive(self, auth_headers, login_user):
         """Ensure user session fails for inactive user."""
         # Update user
-        login_user.active = False
+        login_user.is_deleted = True
         db.session.commit()
         with self.client:
             response = self.client.get(

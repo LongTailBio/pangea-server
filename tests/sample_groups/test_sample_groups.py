@@ -17,19 +17,20 @@ class TestSampleGroupModel(BaseTestCase):
 
     def test_add_sample_group(self):
         """Ensure sample group model is created correctly."""
-        group = add_sample_group('Sample Group One', access_scheme='public')
-        self.assertTrue(group.id)
+        group = add_sample_group('Sample Group One')
+        self.assertTrue(group.uuid)
         self.assertEqual(group.name, 'Sample Group One')
-        self.assertEqual(group.access_scheme, 'public')
         self.assertTrue(group.created_at)
 
     def test_add_user_duplicate_name(self):
         """Ensure duplicate group names are not allowed."""
-        add_sample_group('Sample Group One', access_scheme='public')
+        add_sample_group('Sample Group One')
         duplicate_group = SampleGroup(
             name='Sample Group One',
+            owner_uuid=uuid4(),
+            owner_name='a_username',
+            is_library=False,
             analysis_result=AnalysisResultMeta().save(),
-            access_scheme='public',
         )
         db.session.add(duplicate_group)
         self.assertRaises(IntegrityError, db.session.commit)
@@ -42,7 +43,7 @@ class TestSampleGroupModel(BaseTestCase):
 
     def test_add_samples(self):
         """Ensure that samples can be added to SampleGroup."""
-        sample_group = add_sample_group('Sample Group One', access_scheme='public')
+        sample_group = add_sample_group('Sample Group One')
         sample_one = Sample(name='SMPL_01',
                             library_uuid=uuid4(),
                             metadata={'subject_group': 1}).save()
@@ -51,9 +52,9 @@ class TestSampleGroupModel(BaseTestCase):
                             metadata={'subject_group': 4}).save()
         sample_group.samples = [sample_one, sample_two]
         db.session.commit()
-        self.assertEqual(len(sample_group.sample_ids), 2)
-        self.assertIn(sample_one.uuid, sample_group.sample_ids)
-        self.assertIn(sample_two.uuid, sample_group.sample_ids)
+        self.assertEqual(len(sample_group.sample_uuids), 2)
+        self.assertIn(sample_one.uuid, sample_group.sample_uuids)
+        self.assertIn(sample_two.uuid, sample_group.sample_uuids)
         samples = sample_group.samples
         self.assertEqual(len(samples), 2)
         self.assertIn(sample_one, samples)

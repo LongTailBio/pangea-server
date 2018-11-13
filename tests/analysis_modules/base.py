@@ -79,7 +79,7 @@ class BaseAnalysisModuleTest(BaseTestCase):
             sample_group = add_sample_group(name='SampleGroup01')
             samples = [sample_builder(i) for i in range(nsamples)]
             sample_group.samples = samples
-        task_sig = module.group_signature(sample_group.id)
+        task_sig = module.group_signature(sample_group.uuid)
         task_sig()
 
         module_name = module.name()

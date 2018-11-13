@@ -14,7 +14,7 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
-from app.users.user_helpers import authenticate
+from app.authentication.helpers import authenticate
 
 
 samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-name
@@ -22,7 +22,7 @@ samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-
 
 @samples_blueprint.route('/samples', methods=['POST'])
 @authenticate()
-def add_sample(resp):  # pylint: disable=unused-argument
+def add_sample(_):
     """Add sample."""
     try:
         post_data = request.get_json()
@@ -34,7 +34,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
         raise ParseError('Invalid Sample creation payload.')
 
     try:
-        library = SampleGroup.query.filter_by(id=library_uuid).one()
+        library = SampleGroup.query.filter_by(uuid=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Sample Group does not exist!')
 
@@ -48,7 +48,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
                         name=sample_name,
                         analysis_result=analysis_result,
                         metadata={'name': sample_name}).save()
-        library.sample_ids.append(sample.uuid)
+        library.sample_uuids.append(sample.uuid)
         db.session.commit()
         result = sample_schema.dump(sample)
         return result, 201
@@ -93,7 +93,7 @@ def get_single_sample_metadata(sample_uuid):
 
 @samples_blueprint.route('/samples/metadata', methods=['POST'])
 @authenticate()
-def add_sample_metadata(resp):  # pylint: disable=unused-argument
+def add_sample_metadata(_):
     """Update metadata for sample."""
     try:
         post_data = request.get_json()
