@@ -82,8 +82,8 @@ class TestSampleModule(BaseTestCase):
         samples = [add_sample(sample_name) for sample_name in sample_names]
         with self.client:
             response = self.client.get(
-                headers=auth_headers,
                 '/api/v1/samples',
+                headers=auth_headers,
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
