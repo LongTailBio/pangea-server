@@ -76,13 +76,14 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 
-    def test_get_all_samples(self):
+    def test_get_all_samples(self, auth_headers, *_):
         """Test method for getting all available samples."""
         sample_names = [f'SMPL_0{i}' for i in range(10)]
         samples = [add_sample(sample_name) for sample_name in sample_names]
         with self.client:
             response = self.client.get(
-                f'/api/v1/samples',
+                headers=auth_headers,
+                '/api/v1/samples',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
