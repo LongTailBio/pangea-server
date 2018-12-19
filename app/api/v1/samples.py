@@ -61,6 +61,16 @@ def add_sample(_):
         raise InternalError(str(integrity_error))
 
 
+@samples_blueprint.route('/samples', methods=['GET'])
+@authenticate
+def get_all_samples(auth_user_id):
+    """Get all samples that the user is allowed to see."""
+    samples = Sample.query.all()
+    fields = ('uuid', 'name', 'created_at')
+    result = SampleSchema(only=fields).dump(samples, many=True)
+    return result, 200
+
+
 @samples_blueprint.route('/samples/<sample_uuid>', methods=['GET'])
 def get_single_sample(sample_uuid):
     """Get single sample details."""

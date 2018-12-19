@@ -76,6 +76,22 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('analysis_result_uuid', sample)
             self.assertIn('created_at', sample)
 
+    def test_get_all_samples(self):
+        sample_names = [f'SMPL_0{i}' for i in range(10)]
+        samples = [add_sample(sample_name) for sample_name in sample_names]
+        with self.client:
+            response = self.client.get(
+                f'/api/v1/samples',
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(len(data['data']), len(samples))
+            for sample in data['data']:
+                self.assertIn('analysis_result_uuid', sample)
+                self.assertIn('created_at', sample)
+
     def test_get_single_sample_metadata(self):
         """Ensure get metadata for a single sample behaves correctly."""
         metadata = {'foo': 'bar'}
