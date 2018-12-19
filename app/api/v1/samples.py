@@ -63,9 +63,9 @@ def add_sample(_):
 
 @samples_blueprint.route('/samples', methods=['GET'])
 @authenticate
-def get_all_samples(auth_user_id):
+def get_all_samples(auth_user_id):  # pylint: disable=unused-argument
     """Get all samples that the user is allowed to see."""
-    samples = Sample.query.all()
+    samples = Sample.objects.query.all()
     fields = ('uuid', 'name', 'created_at')
     result = SampleSchema(only=fields).dump(samples, many=True)
     return result, 200

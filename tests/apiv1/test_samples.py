@@ -77,6 +77,7 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('created_at', sample)
 
     def test_get_all_samples(self):
+        """Test method for getting all available samples."""
         sample_names = [f'SMPL_0{i}' for i in range(10)]
         samples = [add_sample(sample_name) for sample_name in sample_names]
         with self.client:
