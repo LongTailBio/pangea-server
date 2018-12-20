@@ -88,11 +88,10 @@ class TestSampleModule(BaseTestCase):
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
-            print(data)
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertEqual(len(data['data']), len(samples))
-            for sample in data['data']:
+            self.assertEqual(len(data['data']['samples']), len(samples))
+            for sample in data['data']['samples']:
                 self.assertIn('analysis_result_uuid', sample)
                 self.assertIn('created_at', sample)
 
