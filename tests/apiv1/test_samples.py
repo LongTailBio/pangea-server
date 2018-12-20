@@ -8,7 +8,13 @@ from app import db
 from app.samples.sample_models import Sample
 
 from ..base import BaseTestCase
-from ..utils import add_sample, add_sample_group, with_user
+from ..utils import (
+    add_sample,
+    add_sample_group,
+    with_user,
+    add_organization,
+    add_member,
+)
 
 from .utils import middleware_tester, get_analysis_result_with_data
 
