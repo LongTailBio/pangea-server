@@ -49,6 +49,7 @@ class Authn:  # pylint: disable=too-few-public-methods
         secret = current_app.config.get('SECRET_KEY')
         self.payload = jwt.decode(auth_token, secret, algorithms=['HS512'])
         self.sub = uuid.UUID(self.payload['sub'])
+        self.memberships = self.payload['membership']
 
 
 # Decode to "AuthManager" type allowing easier interogation of memberships

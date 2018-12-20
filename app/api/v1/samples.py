@@ -67,7 +67,7 @@ def add_sample(_):
 def get_all_samples(authn):  # pylint: disable=unused-argument
     """Get all samples that the user is allowed to see."""
     try:
-        org_uuids = [membership.uuid for membership in authn.membership]
+        org_uuids = [membership.uuid for membership in authn.memberships]
         sample_groups = SampleGroup.query.filter(and_(
             SampleGroup.is_library,
             or_(
