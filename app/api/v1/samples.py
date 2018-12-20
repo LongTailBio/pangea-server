@@ -5,16 +5,17 @@ from uuid import UUID
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine.errors import ValidationError, DoesNotExist
+rom sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
-from app.analysis_modules.utils import conduct_sample
+from app.analysis_modules.task_graph import TaskConductor
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
 from app.samples.sample_models import Sample, SampleSchema, sample_schema
 from app.sample_groups.sample_group_models import SampleGroup
-from app.users.user_helpers import authenticate
+from app.authentication.helpers import authenticate
 
 
 samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-name
@@ -22,7 +23,7 @@ samples_blueprint = Blueprint('samples', __name__)    # pylint: disable=invalid-
 
 @samples_blueprint.route('/samples', methods=['POST'])
 @authenticate()
-def add_sample(resp):  # pylint: disable=unused-argument
+def add_sample(_):
     """Add sample."""
     try:
         post_data = request.get_json()
@@ -34,7 +35,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
         raise ParseError('Invalid Sample creation payload.')
 
     try:
-        library = SampleGroup.query.filter_by(id=library_uuid).one()
+        library = SampleGroup.query.filter_by(uuid=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Sample Group does not exist!')
 
@@ -48,7 +49,7 @@ def add_sample(resp):  # pylint: disable=unused-argument
                         name=sample_name,
                         analysis_result=analysis_result,
                         metadata={'name': sample_name}).save()
-        library.sample_ids.append(sample.uuid)
+        library.sample_uuids.append(sample.uuid)
         db.session.commit()
         result = sample_schema.dump(sample)
         return result, 201
@@ -115,7 +116,7 @@ def get_single_sample_metadata(sample_uuid):
 
 @samples_blueprint.route('/samples/metadata', methods=['POST'])
 @authenticate()
-def add_sample_metadata(resp):  # pylint: disable=unused-argument
+def add_sample_metadata(_):
     """Update metadata for sample."""
     try:
         post_data = request.get_json()
@@ -169,9 +170,7 @@ def run_sample_display_modules(uuid):
         raise NotFound('Sample does not exist.')
 
     analysis_names = request.args.getlist('analysis_names')
-    signatures = conduct_sample(uuid, analysis_names)
-    for signature in signatures:
-        signature.delay()
+    TaskConductor(uuid, analysis_names).shake_that_baton()
 
     result = {'middleware': analysis_names}
 
