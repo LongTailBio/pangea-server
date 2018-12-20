@@ -93,6 +93,8 @@ class TestSampleModule(BaseTestCase):
             add_sample(sample_name, library_uuid=library.uuid)
             for sample_name in sample_names
         ]
+        library.samples = samples
+        db.session.commit()
         with self.client:
             response = self.client.get(
                 '/api/v1/samples',
