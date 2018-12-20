@@ -5,7 +5,7 @@ from uuid import UUID
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine.errors import ValidationError, DoesNotExist
-rom sqlalchemy import func, and_, or_, asc
+from sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
