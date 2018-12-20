@@ -80,6 +80,7 @@ def get_all_samples(authn):  # pylint: disable=unused-argument
         samples = []
         for sample_group in sample_groups:
             samples += sample_group.samples()
+            print(samples)
         result = SampleSchema(only=('uuid', 'name', 'created_at')).dump(samples, many=True)
         return result, 200
     except NoResultFound:
