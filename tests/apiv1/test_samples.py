@@ -88,6 +88,7 @@ class TestSampleModule(BaseTestCase):
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
+            print(data)
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
             self.assertEqual(len(data['data']), len(samples))
