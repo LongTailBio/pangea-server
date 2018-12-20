@@ -92,7 +92,7 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('success', data['status'])
             self.assertEqual(len(data['data']['samples']), len(samples))
             for sample in data['data']['samples']:
-                self.assertIn('analysis_result_uuid', sample)
+                self.assertIn('uuid', sample)
                 self.assertIn('created_at', sample)
 
     def test_get_single_sample_metadata(self):
