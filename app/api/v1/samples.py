@@ -65,7 +65,7 @@ def add_sample(_):
 @authenticate()
 def get_all_samples(auth_user_id):  # pylint: disable=unused-argument
     """Get all samples that the user is allowed to see."""
-    samples = Sample.objects.query.all()
+    samples = Sample.objects.all()
     fields = ('uuid', 'name', 'created_at')
     result = SampleSchema(only=fields).dump(samples, many=True)
     return result, 200
