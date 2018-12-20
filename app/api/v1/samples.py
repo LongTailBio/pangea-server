@@ -62,7 +62,7 @@ def add_sample(_):
 
 
 @samples_blueprint.route('/samples', methods=['GET'])
-@authenticate
+@authenticate()
 def get_all_samples(auth_user_id):  # pylint: disable=unused-argument
     """Get all samples that the user is allowed to see."""
     samples = Sample.objects.query.all()
