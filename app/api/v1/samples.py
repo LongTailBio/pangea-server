@@ -75,7 +75,7 @@ def get_all_samples(authn):  # pylint: disable=unused-argument
                 SampleGroup.is_public,
                 SampleGroup.owner_uuid in org_uuids
             )
-        ))
+        )).all()
         print(sample_groups)
         samples = []
         for sample_group in sample_groups:
