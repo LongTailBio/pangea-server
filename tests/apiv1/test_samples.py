@@ -77,10 +77,16 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('created_at', sample)
 
     @with_user
-    def test_get_all_samples(self, auth_headers, *_):
+    def test_get_all_samples(self, auth_headers, login_user):
         """Test method for getting all available samples."""
+        organization = add_organization('Organization', 'admin@organization.org')
+        add_member(login_user, organization, 'admin')
+        library = add_sample_group('my_library', owner=organization, is_library=True)
         sample_names = [f'SMPL_0{i}' for i in range(10)]
-        samples = [add_sample(sample_name) for sample_name in sample_names]
+        samples = [
+            add_sample(sample_name, library_uuid=library.uuid)
+            for sample_name in sample_names
+        ]
         with self.client:
             response = self.client.get(
                 '/api/v1/samples',
