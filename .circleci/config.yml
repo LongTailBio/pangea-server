@@ -2,7 +2,8 @@ version: 2
 
 docker_build: &docker_build
   command: |
-    docker build $DOCKERFILE_PATH --file $DOCKERFILE_NAME --tag $SERVICE_NAME:$COMMIT
+    cd $DOCKERFILE_PATH
+    docker build . --file $DOCKERFILE_NAME --tag $SERVICE_NAME:$COMMIT
     docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$DOCKER_TAG
     if [ "$PUSH_GIT_COMMIT" = true ] ; then \
       docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$COMMIT; \
