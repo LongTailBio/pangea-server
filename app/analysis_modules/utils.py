@@ -93,9 +93,15 @@ def task_body_sample(sample_uuid, module):
     """Wrap analysis work with status update operations."""
     uuid = UUID(sample_uuid)
     sample = Sample.objects.get(uuid=uuid)
-    analysis_result = sample.analysis_result.fetch()
-    analysis_result.set_module_status(module.name(), 'W')
+    sample_fields = set(sample.to_mongo().to_dict().keys())
     tool_names = [tool.name() for tool in module.required_tool_results()]
+    analysis_result = sample.analysis_result.fetch()
+
+    # Return if the sample does not have the required fields
+    if not set(tool_names) < sample_fields:
+        return
+
+    analysis_result.set_module_status(module.name(), 'W')
     sample = sample.fetch_safe(tool_names)
     data = module.single_sample_processor()(sample)
     persist_result_helper(analysis_result, module, data)

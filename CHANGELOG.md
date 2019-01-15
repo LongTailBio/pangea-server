@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.11.6] - 2019-01-15
+### Fixed
+- Fix HMP single-sample processor.
+- Return from sample task body if sample is missing dependencies.
+- Strip private analysis result fields correctly.
+
 ## [0.11.5] - 2019-01-15
 ### Changed
 - Print more complete information for erros in `Sample.fetch_safe()` method.
@@ -56,7 +62,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Basic Flask project structure.
 
-[Unreleased]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.5...develop
+[Unreleased]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.6...develop
+[0.11.6]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.5...v0.11.6
 [0.11.5]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.1...v0.11.5
 [0.11.1]: https://github.com/LongTailBio/metagenscope-server/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/LongTailBio/metagenscope-server/compare/v0.10.0...v0.11.0
