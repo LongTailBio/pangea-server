@@ -8,6 +8,7 @@ from marshmallow import fields
 from mongoengine import Document, LazyReferenceField
 from analysis_packages.base.utils import jsonify
 
+from app.extensions import celery_logger
 from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.base import BaseSchema
 from app.extensions import mongoDB
@@ -41,7 +42,16 @@ class BaseSample(Document):
         """Return the sample with all tool result documents fetched and jsonified."""
         if not tools:
             tools = self.tool_result_names
-        safe_sample = {tool: jsonify(getattr(self, tool).fetch()) for tool in tools}
+
+        safe_sample = {}
+        for tool in tools:
+            try:
+                safe_sample[tool] = jsonify(getattr(self, tool).fetch())
+            except AttributeError:
+                message = f'Could not fetch {tool}.'
+                message += f'\n    Tools present: {tools}'
+                celery_logger.exception(message)
+
         safe_sample['name'] = self.name
         safe_sample['metadata'] = self.metadata
         safe_sample['theme'] = self.theme
