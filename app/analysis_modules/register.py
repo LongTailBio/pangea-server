@@ -10,6 +10,12 @@ from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest
 
 
+def strip_private(data):
+    """Strip private fields from dict."""
+    return {key: value for key, value in data.items()
+            if not key.startswith('_')}
+
+
 def get_result(display_module, result_uuid):
     """Define handler for API requests that defers to display module type."""
     try:
@@ -25,8 +31,14 @@ def get_result(display_module, result_uuid):
 
     module_results = getattr(analysis_result, display_module.name()).fetch()
     result = json.loads(module_results.to_json())
-    # Strip private fields
-    result = {key: value for key, value in result.items() if not key[0:1] == '_'}
+
+    # Strip top-level private fields
+    result = strip_private(result)
+    # Strip analysis module private fields
+    data = result.get('data', None)
+    if data:
+        result['data'] = strip_private(data)
+
     for transmission_hook in display_module.transmission_hooks():
         result = transmission_hook(result)
 
