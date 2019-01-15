@@ -3,7 +3,7 @@
 from analysis_packages.base import AnalysisModule
 from tool_packages.hmp_sites import HmpSitesResultModule
 
-from .analysis import processor
+from .analysis import processor, single_processor
 from .constants import MODULE_NAME
 from .models import HMPResult
 
@@ -29,7 +29,7 @@ class HMPAnalysisModule(AnalysisModule):
     @staticmethod
     def single_sample_processor():
         """Return function(sample_data) for proccessing HMP sample data."""
-        return processor
+        return single_processor
 
     @staticmethod
     def samples_processor():
