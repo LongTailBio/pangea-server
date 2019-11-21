@@ -1,87 +1,92 @@
 """Analysis Results model definitions."""
 
 import datetime
-from uuid import uuid4
+import json
 
-from marshmallow import fields
-from mongoengine import LazyReferenceField
+from sqlalchemy.dialects.postgresql import UUID
 
-from app.base import BaseSchema
-from app.extensions import mongoDB
+from app.extensions import db
 
-from .constants import ALL_MODULE_NAMES
+from .constants import MAX_DATA_FIELD_LENGTH
 
 
-ANALYSIS_RESULT_STATUS = (('E', 'ERROR'),
-                          ('P', 'PENDING'),
-                          ('W', 'WORKING'),
-                          ('S', 'SUCCESS'))
+class AnalysisResultField(db.Model):
+    """Represent a single field of a single result in the database."""
+
+    __tablename__ = 'analysis_result_fields'
+
+    uuid = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=db.text('uuid_generate_v4()')
+    )
+    created_at = db.Column(db.DateTime, nullable=False)
+    analysis_result_uuid = db.Column(
+        db.Integer,
+        db.ForeignKey('analysis_results.uuid'),
+        nullable=False
+    )
+    field_name = db.Column(db.String(256), index=True, nullable=False)
+    data = db.Column(db.String(MAX_DATA_FIELD_LENGTH), index=True, nullable=False)
+
+    def __init__(  # pylint: disable=too-many-arguments
+            self, analysis_result_uuid, field_name,
+            data=[],
+            owned_by_group=False,
+            created_at=datetime.datetime.utcnow()):
+        """Initialize Analysis Result model."""
+        self.analysis_result_uuid = analysis_result_uuid
+        self.field_name = field_name
+        self.data = json.dumps(data)
+        self.created_at = created_at
 
 
-class AnalysisResultWrapper(mongoDB.Document):   # pylint: disable=too-few-public-methods
-    """Base mongo result class."""
+class AnalysisResult(db.Model):
+    """Represent a single field of a single result in the database.
 
-    status = mongoDB.StringField(required=True,
-                                 max_length=1,
-                                 choices=ANALYSIS_RESULT_STATUS,
-                                 default='P')
-    data = mongoDB.GenericEmbeddedDocumentField()
+    Example:
+        KrakenUniq produces a table of read-classifications and a report.
+        These are stored separately as two separate AnalysisResults.
+        Both ARs have the same `module_name` (e.g. KrakenUniq)
+        Both ARs have the same owner (e.g. sample-123)
+        Both ARs have different a `field_name` (e.g. report or read_class).
 
+    `owner_uuid` should reference a group or sample. Whether it is a group
+    or sample is determined by `owned_by_group`. This is only enforced in
+    code. The reverse (sample->AR or group->AR) is enforced in SQL.
 
-class AnalysisResultMetaBase(mongoDB.Document):
-    """Base mongo result class."""
+    AR Fields carry a status marker. In principle all fields of an ARs always
+    have the same status.
+    """
 
-    uuid = mongoDB.UUIDField(required=True, primary_key=True, binary=False, default=uuid4)
-    created_at = mongoDB.DateTimeField(default=datetime.datetime.utcnow)
+    __tablename__ = 'analysis_results'
 
-    meta = {'allow_inheritance': True}
+    uuid = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=db.text('uuid_generate_v4()')
+    )
+    created_at = db.Column(db.DateTime, nullable=False)
 
-    @property
-    def result_types(self):
-        """Return a list of all analysis result types available for this record."""
-        meta_fields = ['uuid', 'created_at', 'meta']
-        all_fields = [field for field in self._fields.keys()  # pylint:disable=no-member
-                      if field not in meta_fields
-                      and not field.startswith('_')]
-        return [field for field in all_fields
-                if getattr(self, field, None) is not None]
+    module_name = db.Column(db.String(256), index=True, nullable=False)
+    module_fields = db.relationship(
+        'AnalysisResultField', backref='analysis_result', lazy=True
+    )
 
-    def set_module_status(self, module_name, status):
-        """Set the status for a sample group's display module."""
-        try:
-            wrapper = getattr(self, module_name).fetch()
-            wrapper.status = status
-            wrapper.save()
-        except AttributeError:
-            wrapper = AnalysisResultWrapper(status=status).save()
-            setattr(self, module_name, wrapper)
-        finally:
-            self.save()
+    status = db.Column(db.String(16), index=True, nullable=False)
+    owned_by_group = db.Column(db.Boolean, default=False, nullable=False)
+    owner_uuid = db.Column(UUID(as_uuid=True), nullable=False)
 
-
-# Create actual AnalysisResultMeta class based on modules present at runtime
-AnalysisResultMeta = type(
-    'AnalysisResultMeta',
-    (AnalysisResultMetaBase,),
-    {
-        module_name: LazyReferenceField(AnalysisResultWrapper)
-        for module_name in ALL_MODULE_NAMES
-    }
-)
-
-
-class AnalysisResultMetaSchema(BaseSchema):
-    """Serializer for AnalysisResultMeta model."""
-
-    __envelope__ = {
-        'single': 'analysis_result',
-        'many': 'analysis_results',
-    }
-    __model__ = AnalysisResultMeta
-
-    uuid = fields.Str()
-    result_types = fields.Function(lambda obj: obj.result_types)
-    created_at = fields.Date()
-
-
-analysis_result_schema = AnalysisResultMetaSchema()   # pylint: disable=invalid-name
+    def __init__(  # pylint: disable=too-many-arguments
+            self, module_name, field_name, status, owner_uuid,
+            data=[],
+            owned_by_group=False,
+            created_at=datetime.datetime.utcnow()):
+        """Initialize Analysis Result model."""
+        self.module_name = module_name
+        self.field_name = field_name
+        self.data = json.dumps(data)
+        self.status = status
+        self.owner_uuid = owner_uuid
+        self.owned_by_group = owned_by_group
+        self.created_at = created_at
