@@ -10,7 +10,7 @@ from mongoengine.errors import ValidationError
 from pangea_modules.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules import all_analysis_modules, MODULES_BY_NAME
-from app.db_models import AnalysisResult, SampleGroup, Sample
+from app.db_models import SampleAnalysisResult, SampleGroup, Sample
 from app.extensions import celery, celery_logger, persist_result_lock
 from app.utils import lock_function
 

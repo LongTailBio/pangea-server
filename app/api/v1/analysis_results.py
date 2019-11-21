@@ -6,7 +6,7 @@ from flask import Blueprint
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine import DoesNotExist
 
-from app.db_models import AnalysisResult
+from app.db_models import SampleAnalysisResult
 
 
 analysis_results_blueprint = Blueprint('analysis_results', __name__)  # pylint: disable=invalid-name
