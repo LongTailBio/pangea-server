@@ -1,8 +1,7 @@
 """Test suite for Sample model."""
 
-from uuid import uuid4
+from sqlalchemy.exc import IntegrityError
 
-from mongoengine.errors import NotUniqueError
 from app.db_models import Sample
 from tests.base import BaseTestCase
 
@@ -15,29 +14,30 @@ class TestSampleModel(BaseTestCase):
     def test_add_sample(self):
         """Ensure sample model is created correctly."""
         library = add_sample_group('LBRY_01', is_library=True)
-        library.save()
-        sample = Sample.create_and_save(
+        sample = Sample(
             'SMPL_01',
-            library,
+            library.uuid,
             metadata={'subject_group': 1}
-        )
-        # Check for runtime ID alias
-        self.assertTrue(sample.id)  # pylint: disable=no-member
+        ).save()
+
         self.assertTrue(sample.uuid)
         self.assertEqual(sample.name, 'SMPL_01')
-        self.assertEqual(sample.metadata, {'subject_group': 1})
+        self.assertEqual(sample.sample_metadata['subject_group'], 1)
+        self.assertEqual(sample.sample_metadata['name'], 'SMPL_01')
         self.assertTrue(sample.created_at)
 
-    def _test_add_duplicate_name(self):
+    def test_add_duplicate_name(self):
         """Ensure duplicate sample names are not allowed."""
-        library_uuid = uuid4()
-        Sample(name='SMPL_01', library_uuid=library_uuid).save()
-        duplicate = Sample(name='SMPL_01', library_uuid=library_uuid)
-        self.assertRaises(NotUniqueError, duplicate.save)
+        library = add_sample_group('LBRY_01', is_library=True)
+        Sample(name='SMPL_01', library_uuid=library.uuid).save()
+        duplicate = Sample(name='SMPL_01', library_uuid=library.uuid)
+        self.assertRaises(IntegrityError, duplicate.save)
 
-    def _test_different_libraries(self):
+    def test_different_libraries(self):
         """Ensure duplicate sample names in different libraries are allowed."""
-        original = Sample(name='SMPL_01', library_uuid=uuid4()).save()
-        duplicate = Sample(name='SMPL_01', library_uuid=uuid4()).save()
+        library1 = add_sample_group('LBRY_01', is_library=True)
+        library2 = add_sample_group('LBRY_02', is_library=True)
+        original = Sample(name='SMPL_01', library_uuid=library1.uuid).save()
+        duplicate = Sample(name='SMPL_01', library_uuid=library2.uuid).save()
         self.assertEqual(original.name, duplicate.name)
         self.assertNotEqual(original.library_uuid, duplicate.library_uuid)

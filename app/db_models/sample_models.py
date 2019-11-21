@@ -2,6 +2,7 @@
 
 import json
 from datetime import datetime
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.extensions import db
@@ -11,6 +12,9 @@ class Sample(db.Model):
     """Represent a sample in the database."""
 
     __tablename__ = 'samples'
+    __table_args__ = (
+        UniqueConstraint("library_uuid", "name"),
+    )
 
     uuid = db.Column(
         UUID(as_uuid=True),
@@ -24,27 +28,30 @@ class Sample(db.Model):
         nullable=False
     )
     name = db.Column(db.String(256), index=True, nullable=False)
-    sample_metadata = db.Column(db.String(10 * 1000), nullable=True)
+    _sample_metadata = db.Column(db.String(10 * 1000), nullable=True)
     # analysis_results = db.relationship(
     #     'AnalysisResult', backref='sample', lazy=True
     # )
     theme = db.Column(db.String(256), default='')
 
     def __init__(  # pylint: disable=too-many-arguments
-            self, library_uuid, name,
+            self, name, library_uuid,
             metadata={},
             created_at=datetime.utcnow()):
         self.library_uuid = library_uuid
         self.name = name
-        self.sample_metadata = json.dumps(metadata)
+        metadata['name'] = name
+        self._sample_metadata = json.dumps(metadata)
         self.created_at = created_at
 
     def serialize(self):
         pass
 
-    @classmethod
-    def create_and_save(cls, name, library, metadata={}, created_at=datetime.utcnow()):
-        metadata['name'] = name
-        sample = cls(library.uuid, name, metadata=metadata, created_at=created_at)
-        sample.save()
-        return sample
+    @property
+    def sample_metadata(self):
+        return json.loads(self._sample_metadata)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
