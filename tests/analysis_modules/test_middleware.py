@@ -4,7 +4,7 @@ import math
 
 from pangea_modules.base.exceptions import UnsupportedAnalysisMode
 
-from app.db_models import AnalysisResult
+from app.db_models import SampleAnalysisResult
 from app.analysis_modules.wrangler import all_analysis_modules
 from app.analysis_modules.task_graph import TaskConductor
 from app.extensions import db

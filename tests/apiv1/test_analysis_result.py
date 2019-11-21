@@ -2,7 +2,7 @@
 
 import json
 
-from app.db_models import AnalysisResult
+from app.db_models import SampleAnalysisResult
 from tests.base import BaseTestCase
 
 

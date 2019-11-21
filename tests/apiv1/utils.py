@@ -5,7 +5,7 @@ import json
 from pangea_modules.ancestry_data.constants import MODULE_NAME
 from pangea_modules.ancestry_data.factory import create_result as create_ancestry
 
-from app.db_models import AnalysisResult
+from app.db_models import SampleAnalysisResult
 
 
 def middleware_tester(test_case, auth_headers, mocked_conductor, endpoint):

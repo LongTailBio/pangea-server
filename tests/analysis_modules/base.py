@@ -3,7 +3,7 @@
 import json
 
 from app import db
-from app.db_models import AnalysisResult, Sample
+from app.db_models import SampleAnalysisResult, Sample
 
 from ..base import BaseTestCase
 from ..utils import add_sample_group, add_sample
