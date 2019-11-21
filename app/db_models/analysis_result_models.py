@@ -75,6 +75,16 @@ class SampleGroupAnalysisResultField(AnalysisResultField):
         nullable=False
     )
 
+    @property
+    def parent_uuid(self):
+        """Return the uuid of the parent sample."""
+        return self.sample_group_analysis_result_uuid
+
+    @parent_uuid.setter
+    def parent_uuid(self, value):
+        """Set the value of parent uuid."""
+        self.sample_group_analysis_result_uuid = value
+
 
 class AnalysisResult(db.Model):
     """Represent a single field of a single result in the database.
@@ -167,3 +177,13 @@ class SampleGroupAnalysisResult(AnalysisResult):
     module_fields = db.relationship(
         'SampleGroupAnalysisResultField', backref='analysis_result', lazy=True
     )
+
+    @property
+    def parent_uuid(self):
+        """Return the uuid of the parent sample."""
+        return self.sample_group_uuid
+
+    @parent_uuid.setter
+    def parent_uuid(self, value):
+        """Set the value of parent uuid."""
+        self.sample_group_uuid = value
