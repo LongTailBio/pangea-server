@@ -91,7 +91,7 @@ paths:
     get:
       summary: Get all samples in a specified group
     post:
-      summary: Add sampels to a specified group
+      summary: Add samples to a specified group
   /sample_groups/{group_uuid}/middleware:
     post:
       summary: Run requested middleware/analysis modules for the specified group
@@ -107,7 +107,7 @@ paths:
   # samples.py
   /samples:
     post:
-      summary: Add a sample to a library
+      summary: Create a sample and add it to a library
     get:
       summary: Get all samples the current user is allowed to see
   /samples/{sample_uuid}:
@@ -116,9 +116,8 @@ paths:
   /samples/{sample_uuid}/metadata:
     get:
       summary: Get metadata for a specified sample
-  /samples/metadata:
     post:
-      summary: Upload metadata for specified samples
+      summary: Upload metadata for specified sample
   /samples/getid/{sample_name}:
     get:
       summary: Get the uuid for a specific sample name

@@ -35,16 +35,15 @@ def add_sample_group(authn):  # pylint: disable=too-many-locals
         name = post_data['name']
         organization_name = post_data.get('organization_name', None)
         is_library = post_data.get('is_library', False)
-        is_public = post_data.get('is_public', True)
+        is_public = post_data.get('is_public', False)
     except TypeError as exc:
-        print('Sample Group creation error:')
-        print(exc)
+        current_app.logger.exception(f'Sample Group creation error:\n{exc}')
         raise ParseError('Missing Sample Group creation payload.')
     except KeyError:
         raise ParseError('Invalid Sample Group creation payload.')
 
     # Assume Sample Group is self-owned
-    authn_user = User.query.filter_by(uuid=authn.sub).one()
+    authn_user = User.filter_by(uuid=authn.sub).one()
     owner_name = authn_user.username
     owner_uuid = authn_user.uuid
 

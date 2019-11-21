@@ -22,7 +22,6 @@ class AnalysisResultField(db.Model):
     )
     created_at = db.Column(db.DateTime, nullable=False)
     analysis_result_uuid = db.Column(
-        db.Integer,
         db.ForeignKey('analysis_results.uuid'),
         nullable=False
     )

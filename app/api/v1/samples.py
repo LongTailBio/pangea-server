@@ -35,28 +35,20 @@ def add_sample(_):
     try:
         library = SampleGroup.query.filter_by(uuid=library_uuid).one()
     except NoResultFound:
-        raise InvalidRequest('Sample Group does not exist!')
+        raise InvalidRequest('Library does not exist!')
 
-    sample = Sample.objects(name=sample_name).first()
+    sample = Sample.filter_by(library_uuid=library.uuid, name=sample_name).first()
     if sample is not None:
-        raise InvalidRequest('A Sample with that name already exists.')
+        raise InvalidRequest('A Sample with that name already exists in the library.')
 
     try:
-        analysis_result = AnalysisResultMeta().save()
-        sample = Sample(library_uuid=library_uuid,
-                        name=sample_name,
-                        analysis_result=analysis_result,
-                        metadata={'name': sample_name}).save()
-        library.sample_uuids.append(sample.uuid)
-        db.session.commit()
-        result = sample_schema.dump(sample)
-        return result, 201
+        sample = Sample.create_and_save(sample_name, library)
+        return sample.serialize(), 201
     except ValidationError as validation_error:
         current_app.logger.exception('Sample could not be created.')
         raise InternalError(str(validation_error))
     except IntegrityError as integrity_error:
         current_app.logger.exception('Sample could not be added to Sample Group.')
-        db.session.rollback()
         raise InternalError(str(integrity_error))
 
 
@@ -88,9 +80,7 @@ def get_single_sample(sample_uuid):
     try:
         uuid = UUID(sample_uuid)
         sample = Sample.objects.get(uuid=uuid)
-        fields = ('uuid', 'name', 'analysis_result_uuid', 'created_at')
-        result = SampleSchema(only=fields).dump(sample)
-        return result, 200
+        return sample.serialize(), 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
@@ -111,11 +101,10 @@ def get_single_sample_metadata(sample_uuid):
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
 
-
-@samples_blueprint.route('/samples/metadata', methods=['POST'])
-@authenticate()
-def add_sample_metadata(_):
-    """Update metadata for sample."""
+@samples_blueprint.route('/samples/<sample_uuid>/metadata', methods=['POST'])
+def post_single_sample_metadata(sample_uuid):
+    """Upload metadata for a single sample."""
+    assert False
     try:
         post_data = request.get_json()
         sample_name = post_data['sample_name']
@@ -138,7 +127,6 @@ def add_sample_metadata(_):
     except ValidationError as validation_error:
         current_app.logger.exception('Sample metadata could not be updated.')
         raise ParseError(f'Invalid Sample metadata payload: {str(validation_error)}')
-
 
 @samples_blueprint.route('/samples/getid/<sample_name>', methods=['GET'])
 def get_sample_uuid(sample_name):

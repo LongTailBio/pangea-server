@@ -1,8 +1,7 @@
 """Sample model definitions."""
 
-import datetime
 import json
-
+from datetime import datetime
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.extensions import db
@@ -21,7 +20,6 @@ class Sample(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
 
     library_uuid = db.Column(
-        db.Integer,
         db.ForeignKey('sample_groups.uuid'),
         nullable=False
     )
@@ -35,7 +33,7 @@ class Sample(db.Model):
     def __init__(  # pylint: disable=too-many-arguments
             self, library_uuid, name,
             metadata={},
-            created_at=datetime.datetime.utcnow()):
+            created_at=datetime.utcnow()):
         self.library_uuid = library_uuid
         self.name = name
         self.sample_metadata = json.dumps(metadata)
@@ -43,3 +41,10 @@ class Sample(db.Model):
 
     def serialize(self):
         pass
+
+    @classmethod
+    def create_and_save(cls, name, library, metadata={}, created_at=datetime.utcnow()):
+        metadata['name'] = name
+        sample = cls(library.uuid, name, metadata=metadata, created_at=created_at)
+        sample.save()
+        return sample

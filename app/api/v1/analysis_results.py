@@ -30,7 +30,7 @@ def get_single_result(result_uuid):
 def get_all_analysis_results():
     """Get all analysis result models."""
     try:
-        analysis_results = AnalysisResultMeta.all()
+        analysis_results = AnalysisResult.all()
         result = [ar.serialize() for ar in analysis_results]
         return result, 200
     except ValueError:
