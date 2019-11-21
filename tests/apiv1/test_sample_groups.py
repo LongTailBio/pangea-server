@@ -7,8 +7,7 @@ from uuid import UUID, uuid4
 from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import Sample, SampleGroup
 
 from ..base import BaseTestCase
 from ..utils import add_sample, add_sample_group, add_member, with_user, add_organization

@@ -12,12 +12,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.analysis_modules.task_graph import TaskConductor
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.db_models import SampleGroup
+
 from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db
-from app.sample_groups.sample_group_models import SampleGroup, sample_group_schema
-from app.samples.sample_models import Sample, SampleSchema
 from app.authentication.models import User, OrganizationMembership
 from app.authentication.helpers import authenticate, fetch_organization
 from app.utils import XLSDictReader
@@ -88,14 +87,12 @@ def add_sample_group(authn):  # pylint: disable=too-many-locals
 
     # Create Sample Group
     try:
-        analysis_result = AnalysisResultMeta().save()
         sample_group = SampleGroup(
             name=name,
             owner_name=owner_name,
             owner_uuid=owner_uuid,
             is_library=is_library,
             is_public=is_public,
-            analysis_result=analysis_result,
         )
         db.session.add(sample_group)
         db.session.commit()

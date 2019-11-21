@@ -3,7 +3,7 @@
 from uuid import uuid4
 
 from mongoengine.errors import NotUniqueError
-from app.samples.sample_models import Sample
+from app.db_models import Sample
 from tests.base import BaseTestCase
 
 

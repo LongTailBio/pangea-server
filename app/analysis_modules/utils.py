@@ -10,10 +10,8 @@ from mongoengine.errors import ValidationError
 from pangea_modules.base.exceptions import UnsupportedAnalysisMode
 
 from app.analysis_modules import all_analysis_modules, MODULES_BY_NAME
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.db_models import AnalysisResult, SampleGroup, Sample
 from app.extensions import celery, celery_logger, persist_result_lock
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
 from app.utils import lock_function
 
 BLOCK_TIME = 100  # measured in seconds
@@ -26,7 +24,7 @@ def apply_errback(signatures):
 
 def fetch_samples(sample_group_id):
     """Get all samples belonging to the specified Sample Group."""
-    sample_group = SampleGroup.query.filter_by(uuid=sample_group_id).one()
+    sample_group = SampleGroup.filter_by(uuid=sample_group_id).one()
     samples = sample_group.samples
     return samples
 
@@ -130,7 +128,7 @@ def run_sample(sample_uuid, module_name):
 
 def task_body_sample_group(sample_group_uuid, module):
     """Wrap analysis work for SampleGroup."""
-    sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
+    sample_group = SampleGroup.filter_by(uuid=sample_group_uuid).one()
     if block_if_analysis_result_exists(module, sample_group.analysis_result):
         return
     sample_group.analysis_result.set_module_status(module.name(), 'W')
@@ -142,13 +140,13 @@ def task_body_sample_group(sample_group_uuid, module):
 
 def task_body_group_tool_result(sample_group_uuid, module):
     """Wrap analysis work for a SampleGroup's GroupToolResult."""
-    sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
+    sample_group = SampleGroup.filter_by(uuid=sample_group_uuid).one()
     sample_group.analysis_result.set_module_status(module.name(), 'W')
     group_tool_cls = module.required_modules()[0].result_model()
     group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.uuid)
     data = module.group_tool_processor()(group_tool)
     analysis_result_uuid = sample_group.analysis_result_uuid
-    analysis_result = AnalysisResultMeta.objects.get(uuid=analysis_result_uuid)
+    analysis_result = AnalysisResult.get(uuid=analysis_result_uuid)
     persist_result_helper(analysis_result, module, data)
 
 

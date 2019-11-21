@@ -11,10 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
 from app.analysis_modules.task_graph import TaskConductor
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest, InternalError
-from app.samples.sample_models import Sample, SampleSchema, sample_schema
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import Sample, SampleGroup
 from app.authentication.helpers import authenticate
 
 

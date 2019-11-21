@@ -6,7 +6,7 @@ from flask import Blueprint
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine import DoesNotExist
 
-from app.analysis_results.analysis_result_models import AnalysisResultMeta, analysis_result_schema
+from app.db_models import AnalysisResult
 
 
 analysis_results_blueprint = Blueprint('analysis_results', __name__)  # pylint: disable=invalid-name
@@ -17,8 +17,8 @@ def get_single_result(result_uuid):
     """Get single analysis result."""
     try:
         uuid = UUID(result_uuid)
-        analysis_result = AnalysisResultMeta.objects.get(uuid=uuid)
-        result = analysis_result_schema.dump(analysis_result)
+        analysis_result = AnalysisResult.get(uuid)
+        result = analysis_result.serialize()
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
@@ -30,8 +30,8 @@ def get_single_result(result_uuid):
 def get_all_analysis_results():
     """Get all analysis result models."""
     try:
-        analysis_results = AnalysisResultMeta.objects.all()
-        result = analysis_result_schema.dump(analysis_results, many=True)
+        analysis_results = AnalysisResultMeta.all()
+        result = [ar.serialize() for ar in analysis_results]
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')

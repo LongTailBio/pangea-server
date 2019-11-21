@@ -3,7 +3,7 @@
 from pangea_modules.ags.constants import MODULE_NAME
 from pangea_modules.ags.factory import AGSFactory
 
-from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
+from app.db_models import AnalysisResult
 
 from tests.base import BaseTestCase
 

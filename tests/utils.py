@@ -7,10 +7,8 @@ from uuid import uuid4
 from functools import wraps
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.authentication.models import User, PasswordAuthentication, OrganizationMembership
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import Sample, SampleGroup
 
 
 def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
@@ -51,34 +49,28 @@ def add_member(user, organization, role, commit=True):
 
 
 # pylint: disable=too-many-arguments,dangerous-default-value
-def add_sample(name, library_uuid=None, analysis_result=None,
+def add_sample(name, library_uuid=None,
                metadata={}, created_at=datetime.datetime.utcnow(),
                sample_kwargs={}):
     """Wrap functionality for adding sample."""
     if not library_uuid:
         library_uuid = uuid4()
-    if not analysis_result:
-        analysis_result = AnalysisResultMeta().save()
-
-    for module_name, module_val in sample_kwargs.items():
-        setattr(analysis_result, module_name, module_val)
 
     return Sample(library_uuid=library_uuid, name=name, metadata=metadata,
-                  analysis_result=analysis_result, created_at=created_at,
+                  created_at=created_at,
                   ).save()
 
 
-def add_sample_group(name, owner=None, analysis_result=None, is_library=False,
+def add_sample_group(name, owner=None, is_library=False,
                      created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding sample group."""
-    if not analysis_result:
-        analysis_result = AnalysisResultMeta().save()
-    group = SampleGroup(name=name,
-                        owner_uuid=owner.uuid if owner else uuid4(),
-                        owner_name=owner.username if owner else 'ausername',
-                        is_library=is_library,
-                        analysis_result=analysis_result,
-                        created_at=created_at)
+    group = SampleGroup(
+        name=name,
+        owner_uuid=owner.uuid if owner else uuid4(),
+        owner_name=owner.username if owner else 'ausername',
+        is_library=is_library,
+        created_at=created_at
+    )
     db.session.add(group)
     db.session.commit()
     return group

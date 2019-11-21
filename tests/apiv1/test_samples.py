@@ -5,7 +5,7 @@ from unittest import mock
 from uuid import UUID, uuid4
 
 from app import db
-from app.samples.sample_models import Sample
+from app.db_models import Sample
 
 from ..base import BaseTestCase
 from ..utils import (

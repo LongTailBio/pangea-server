@@ -2,7 +2,7 @@
 
 import json
 
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
+from app.db_models import AnalysisResult
 from tests.base import BaseTestCase
 
 
@@ -11,7 +11,7 @@ class TestAnalysisResultModule(BaseTestCase):
 
     def test_get_single_result(self):
         """Ensure get single analysis result behaves correctly."""
-        analysis_result = AnalysisResultMeta().save()
+        analysis_result = AnalysisResult().save()
         with self.client:
             response = self.client.get(
                 f'/api/v1/analysis_results/{str(analysis_result.uuid)}',

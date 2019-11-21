@@ -5,9 +5,8 @@ from uuid import uuid4
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import Sample, SampleGroup
+
 from ..base import BaseTestCase
 from ..utils import add_sample_group
 
@@ -30,16 +29,9 @@ class TestSampleGroupModel(BaseTestCase):
             owner_uuid=uuid4(),
             owner_name='a_username',
             is_library=False,
-            analysis_result=AnalysisResultMeta().save(),
         )
         db.session.add(duplicate_group)
         self.assertRaises(IntegrityError, db.session.commit)
-
-    def test_sample_group_analysis_result(self):  # pylint: disable=invalid-name
-        """Ensure sample group's analysis result can be accessed."""
-        analysis_result = AnalysisResultMeta().save()
-        sample_group = add_sample_group('Sample Group One', analysis_result=analysis_result)
-        self.assertEqual(sample_group.analysis_result, analysis_result)
 
     def test_add_samples(self):
         """Ensure that samples can be added to SampleGroup."""

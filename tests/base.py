@@ -6,7 +6,6 @@ from flask_testing import TestCase
 
 from app import create_app, db, celery
 from app.config import app_config
-from app.mongo import drop_mongo_collections
 
 
 app = create_app()
@@ -35,9 +34,6 @@ class BaseTestCase(TestCase):
         # Postgres
         db.session.remove()
         db.drop_all()
-
-        # Mongo
-        drop_mongo_collections()
 
         # Enable logging
         logging.disable(logging.NOTSET)

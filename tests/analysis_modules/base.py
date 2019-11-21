@@ -3,11 +3,8 @@
 import json
 
 from app import db
-from app.analysis_results.analysis_result_models import (
-    AnalysisResultMeta,
-    AnalysisResultWrapper,
-)
-from app.samples.sample_models import Sample
+from app.db_models import AnalysisResult, Sample
+
 from ..base import BaseTestCase
 from ..utils import add_sample_group, add_sample
 

@@ -6,7 +6,6 @@ import json
 from flask_api.exceptions import NotFound, ParseError
 from mongoengine.errors import DoesNotExist
 
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.api.exceptions import InvalidRequest
 
 
@@ -14,7 +13,7 @@ def get_result(display_module, result_uuid):
     """Define handler for API requests that defers to display module type."""
     try:
         uuid = UUID(result_uuid)
-        analysis_result = AnalysisResultMeta.objects.get(uuid=uuid)
+        analysis_result = None # AnalysisResultMeta.objects.get(uuid=uuid)
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:

@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from app import db
 from app.authentication.models import User
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import SampleGroup
 
 from ..base import BaseTestCase
 from ..utils import add_user, add_organization, add_member, add_sample_group, with_user
@@ -317,7 +317,7 @@ class TestOrganizationModule(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('success', data['status'])
         # Refresh DB model
-        sample_group = SampleGroup.query.filter_by(uuid=sample_group.uuid).one()
+        sample_group = SampleGroup.filter_by(uuid=sample_group.uuid).one()
         self.assertEqual(sample_group.owner_name, organization.username)
         self.assertEqual(sample_group.owner_uuid, organization.uuid)
 

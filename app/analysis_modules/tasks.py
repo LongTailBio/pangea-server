@@ -1,6 +1,6 @@
 """Tasks for the Conductor module."""
 
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
+# from app.analysis_results.analysis_result_models import AnalysisResultMeta
 from app.extensions import celery
 
 
