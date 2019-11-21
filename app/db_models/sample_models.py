@@ -25,9 +25,9 @@ class Sample(db.Model):
     )
     name = db.Column(db.String(256), index=True, nullable=False)
     sample_metadata = db.Column(db.String(10 * 1000), nullable=True)
-    analysis_results = db.relationship(
-        'AnalysisResult', backref='sample', lazy=True
-    )
+    # analysis_results = db.relationship(
+    #     'AnalysisResult', backref='sample', lazy=True
+    # )
     theme = db.Column(db.String(256), default='')
 
     def __init__(  # pylint: disable=too-many-arguments

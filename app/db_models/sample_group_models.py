@@ -23,10 +23,9 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
     description = db.Column(db.String(300), nullable=False, default='')
     is_library = db.Column(db.Boolean, default=False, nullable=False)
     is_public = db.Column(db.Boolean, default=True, nullable=False)
-    analysis_result_uuid = db.Column(UUID(as_uuid=True), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     samples = db.relationship('Sample', lazy=True)
-    analysis_results = db.relationship('AnalysisResult', lazy=True)
+    # analysis_results = db.relationship('AnalysisResult', lazy=True)
 
     # Duplicate owner properties/indices because we don't know how we will be looking it up
     __table_args__ = (
@@ -51,25 +50,21 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         self.is_public = is_public
         self.created_at = created_at
 
-    @property
-    def samples(self):
-        """
-        Get SampleGroup's associated Samples.
+    # @property
+    # def samples(self):
+    #     """Get SampleGroup's associated Samples.
+    #     """
+    #     return Sample.quer(uuid__in=self.sample_uuids)
 
-        This will hit Mongo every time it is called! Responsibility for caching
-        the result lies on the calling method.
-        """
-        return Sample.objects(uuid__in=self.sample_uuids)
+    # @samples.setter
+    # def samples(self, value):
+    #     """Set SampleGroup's samples."""
+    #     self.sample_uuids = [sample.uuid for sample in value]
 
-    @samples.setter
-    def samples(self, value):
-        """Set SampleGroup's samples."""
-        self.sample_uuids = [sample.uuid for sample in value]
-
-    @samples.deleter
-    def samples(self):
-        """Remove SampleGroup's samples."""
-        self.sample_uuids = []
+    # @samples.deleter
+    # def samples(self):
+    #     """Remove SampleGroup's samples."""
+    #     self.sample_uuids = []
 
     @property
     def tools_present(self):
