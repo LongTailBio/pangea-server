@@ -14,8 +14,7 @@ from .constants import MAX_DATA_FIELD_LENGTH, ANALYSIS_RESULT_STATUSES
 class AnalysisResultField(db.Model):
     """Represent a single field of a single result in the database."""
     __abstract__ = True
-
-    # __tablename__ = 'virtual_analysis_result_fields'
+    kind = 'virtual'
 
     uuid = db.Column(
         UUID(as_uuid=True),
@@ -45,8 +44,19 @@ class AnalysisResultField(db.Model):
         self.stored_data = json.dumps(data)
         return self.save()
 
+    def serializable(self):
+        return {
+            'analysis_result_field': {
+                'uuid': self.uuid,
+                'parent_uuid': self.uuid,
+                'field_name': self.field_name,
+                'created_at': self.created_at,
+            },
+            'data': self.data,
+        }
+
     def serialize(self):
-        return self.stored_data
+        return json.dumps(self.serializable())
 
     def save(self):
         db.session.add(self)
@@ -57,6 +67,7 @@ class AnalysisResultField(db.Model):
 class SampleAnalysisResultField(AnalysisResultField):
 
     __tablename__ = 'sample_analysis_result_fields'
+    kind = 'sample'
 
     sample_analysis_result_uuid = db.Column(
         db.ForeignKey('sample_analysis_results.uuid'),
@@ -77,6 +88,7 @@ class SampleAnalysisResultField(AnalysisResultField):
 class SampleGroupAnalysisResultField(AnalysisResultField):
 
     __tablename__ = 'sample_group_analysis_result_fields'
+    kind = 'sample_group'
 
     sample_group_analysis_result_uuid = db.Column(
         db.ForeignKey('sample_group_analysis_results.uuid'),
@@ -112,7 +124,7 @@ class AnalysisResult(db.Model):
     have the same status.
     """
     __abstract__ = True
-    # __tablename__ = 'virtual_analysis_results'
+    kind = 'virtual'
 
     uuid = db.Column(
         UUID(as_uuid=True),
@@ -150,11 +162,27 @@ class AnalysisResult(db.Model):
         self.status = status
         return self.save()
 
-    def serialize(self):
-        out = {}
+    def serializable(self):
+        out = {
+            'analysis_result': {
+                'uuid': self.uuid,
+                'parent_uuid': self.uuid,
+                'module_name': self.module_name,
+                'kind': self.kind,
+                'status': self.status,
+                'created_at': self.created_at,
+                'fields': {}
+            },
+            'data': {},
+        }
         for field in self.module_fields:
-            out[field.field_name] = field.serialize()
-        return json.dumps(out)
+            myfield = field.serializable()
+            out['data'][field.field_name] = myfield['data']
+            out['analysis_result']['fields'][field.field_name] = myfield['analysis_result_field']
+        return out
+
+    def serialize(self):
+        return json.dumps(self.serializable())
 
     def save(self):
         db.session.add(self)
@@ -176,6 +204,7 @@ class SampleAnalysisResult(AnalysisResult):
     module_fields = db.relationship(
         'SampleAnalysisResultField', backref='analysis_result', lazy=True
     )
+    kind = 'sample'
 
     @property
     def parent_uuid(self):
@@ -206,6 +235,7 @@ class SampleGroupAnalysisResult(AnalysisResult):
     module_fields = db.relationship(
         'SampleGroupAnalysisResultField', backref='analysis_result', lazy=True
     )
+    kind = 'sample_group'
 
     @property
     def parent_uuid(self):

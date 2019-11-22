@@ -25,8 +25,8 @@ def get_single_result_field(result_uuid, field_name):
     """Get a single field analysis result."""
     try:
         analysis_result = get_analysis_result(result_uuid)
-        result = analysis_result.field(field_name).serialize()
-        return {'data': result}, 200
+        result = analysis_result.field(field_name).serializable()
+        return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
@@ -38,8 +38,8 @@ def get_single_result(result_uuid):
     """Get single analysis result."""
     try:
         analysis_result = get_analysis_result(result_uuid)
-        result = analysis_result.serialize()
-        return {'data': result}, 200
+        result = analysis_result.serializable()
+        return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
@@ -50,8 +50,8 @@ def get_single_result(result_uuid):
 def get_all_analysis_results():
     """Get all analysis result models."""
     try:
-        result = [ar.serialize() for ar in SampleAnalysisResult.all()]
-        result += [ar.serialize() for ar in SampleGroupAnalysisResult.all()]
-        return {'data': result}, 200
+        result = [ar.serializable() for ar in SampleAnalysisResult.all()]
+        result += [ar.serializable() for ar in SampleGroupAnalysisResult.all()]
+        return result, 200
     except DoesNotExist:
         raise NotFound('Analysis Result does not exist.')

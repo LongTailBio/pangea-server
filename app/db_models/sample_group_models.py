@@ -52,6 +52,16 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         self.is_public = is_public
         self.created_at = created_at
 
+    def sample(self, sample_name, metadata={}):
+        """Return a sample bound to this library.
+
+        Create and save the sample if it does not already exist.
+        """
+        samps = [samp for samp in self.samples if samp.name == sample_name]
+        if samps:
+            return samps[0]
+        return Sample(sample_name, self.uuid, metadata=metadata).save()
+
     def analysis_result(self, module_name):
         """Return an AR for the module bound to this sample.
 
