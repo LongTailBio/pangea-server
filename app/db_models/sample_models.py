@@ -7,6 +7,8 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from app.extensions import db
 
+from .analysis_result_models import SampleAnalysisResult
+
 
 class Sample(db.Model):
     """Represent a sample in the database."""
@@ -29,9 +31,9 @@ class Sample(db.Model):
     )
     name = db.Column(db.String(256), index=True, nullable=False)
     _sample_metadata = db.Column(db.String(10 * 1000), nullable=True)
-    # analysis_results = db.relationship(
-    #     'AnalysisResult', backref='sample', lazy=True
-    # )
+    analysis_results = db.relationship(
+        'SampleAnalysisResult', backref='parent', lazy=True
+    )
     theme = db.Column(db.String(256), default='')
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -46,6 +48,18 @@ class Sample(db.Model):
 
     def serialize(self):
         pass
+
+    def analysis_result(self, module_name):
+        """Return an AR for the module bound to this sample.
+
+        Create and save the AR if it does not already exist.
+        """
+        ars = [ar for ar in self.analysis_results if ar.module_name == module_name]
+        if ars:
+            result = ars[0]
+        else:
+            result = SampleAnalysisResult(module_name, self.uuid).save()
+        return result
 
     @property
     def sample_metadata(self):

@@ -100,13 +100,64 @@ def block_if_analysis_result_exists(module, analysis_result):
 
 def task_body_sample(sample_uuid, module):
     """Wrap analysis work with status update operations."""
-    uuid = UUID(sample_uuid)
-    sample = Sample.objects.get(uuid=uuid)
-    analysis_result = sample.analysis_result.fetch()
-    if block_if_analysis_result_exists(module, analysis_result):
+    sample = Sample.query.filter_by(uuid=UUID(sample_uuid)).first()
+    result = sample.analysis_result(module.name())
+    if result.status in ['WORKING', 'SUCCESS']:
         return
-    analysis_result.set_module_status(module.name(), 'W')
-    data = module.single_sample_processor()(sample)
+    result.set_status('WORKING')
+    try:
+        data = module.single_sample_processor()(sample)
+        for key, val in data.items():
+            result_field = result.field(key)
+            result_field.set_data(val)
+        result.set_status('SUCCESS')
+    except Exception:
+        result.set_status('ERROR')
+
+
+def task_body_sample_group(sample_group_uuid, module):
+    """Wrap analysis work for SampleGroup."""
+    sample_group = SampleGroup.query.filter_by(uuid=UUID(sample_group_uuid)).first()
+    result = sample_group.analysis_result(module.name())
+    if result.status in ['WORKING', 'SUCCESS']:
+        return
+    result.set_status('WORKING')
+    try:
+        data = module.samples_processor()(sample_group.samples)
+        for key, val in data.items():
+            result_field = result.field(key)
+            result_field.set_data(val)
+        result.set_status('SUCCESS')
+    except Exception:
+        result.set_status('ERROR')
+
+
+def generic_task_body(result_parent, module, processor):
+    """Wrap analysis work for SampleGroup."""
+    result = result_parent.analysis_result(module.name())
+    if result.status in ['WORKING', 'SUCCESS']:
+        return
+    result.set_status('WORKING')
+    try:
+        data = processor(sample_group.samples)
+        for key, val in data.items():
+            result_field = result.field(key)
+            result_field.set_data(val)
+        result.set_status('SUCCESS')
+    except Exception:
+        result.set_status('ERROR')
+
+
+
+def task_body_group_tool_result(sample_group_uuid, module):
+    """Wrap analysis work for a SampleGroup's GroupToolResult."""
+    sample_group = SampleGroup.filter_by(uuid=sample_group_uuid).one()
+    sample_group.analysis_result.set_module_status(module.name(), 'W')
+    group_tool_cls = module.required_modules()[0].result_model()
+    group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.uuid)
+    data = module.group_tool_processor()(group_tool)
+    analysis_result_uuid = sample_group.analysis_result_uuid
+    analysis_result = AnalysisResult.get(uuid=analysis_result_uuid)
     persist_result_helper(analysis_result, module, data)
 
 
@@ -120,34 +171,17 @@ def run_sample(sample_uuid, module_name):
         return
 
     try:
-        _ = module.single_sample_processor()
-        task_body_sample(sample_uuid, module)
+        processor = module.single_sample_processor()
+        sample = Sample.query.filter_by(uuid=UUID(sample_uuid)).first()
+        generic_task_body_sample(sample, module, processor)
     except UnsupportedAnalysisMode:
         pass
 
 
-def task_body_sample_group(sample_group_uuid, module):
-    """Wrap analysis work for SampleGroup."""
-    sample_group = SampleGroup.filter_by(uuid=sample_group_uuid).one()
-    if block_if_analysis_result_exists(module, sample_group.analysis_result):
-        return
-    sample_group.analysis_result.set_module_status(module.name(), 'W')
-    samples = filter_samples(sample_group.samples, module)
-    data = module.samples_processor()(*samples)
-    analysis_result = sample_group.analysis_result
-    persist_result_helper(analysis_result, module, data)
 
 
-def task_body_group_tool_result(sample_group_uuid, module):
-    """Wrap analysis work for a SampleGroup's GroupToolResult."""
-    sample_group = SampleGroup.filter_by(uuid=sample_group_uuid).one()
-    sample_group.analysis_result.set_module_status(module.name(), 'W')
-    group_tool_cls = module.required_modules()[0].result_model()
-    group_tool = group_tool_cls.objects.get(sample_group_uuid=sample_group.uuid)
-    data = module.group_tool_processor()(group_tool)
-    analysis_result_uuid = sample_group.analysis_result_uuid
-    analysis_result = AnalysisResult.get(uuid=analysis_result_uuid)
-    persist_result_helper(analysis_result, module, data)
+
+
 
 
 @celery.task()

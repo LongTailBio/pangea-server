@@ -6,7 +6,9 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.extensions import db
+
 from .sample_models import Sample
+from .analysis_result_models import SampleGroupAnalysisResult
 
 
 class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
@@ -25,7 +27,7 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
     is_public = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     samples = db.relationship('Sample', lazy=True)
-    # analysis_results = db.relationship('AnalysisResult', lazy=True)
+    analysis_results = db.relationship('GroupAnalysisResult', backref='parent', lazy=True)
 
     # Duplicate owner properties/indices because we don't know how we will be looking it up
     __table_args__ = (
@@ -49,6 +51,18 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         self.is_library = is_library
         self.is_public = is_public
         self.created_at = created_at
+
+    def analysis_result(self, module_name):
+        """Return an AR for the module bound to this sample.
+
+        Create and save the AR if it does not already exist.
+        """
+        ars = [ar for ar in self.analysis_results if ar.module_name == module_name]
+        if ars:
+            result = ars[0]
+        else:
+            result = SampleGroupAnalysisResult(module_name, self.uuid).save()
+        return result
 
     # @property
     # def samples(self):

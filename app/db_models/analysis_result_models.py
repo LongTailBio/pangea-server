@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from app.extensions import db
 
-from .constants import MAX_DATA_FIELD_LENGTH
+from .constants import MAX_DATA_FIELD_LENGTH, ANALYSIS_RESULT_STATUSES
 
 
 class AnalysisResultField(db.Model):
@@ -29,13 +29,16 @@ class AnalysisResultField(db.Model):
     def __init__(  # pylint: disable=too-many-arguments
             self, analysis_result_uuid, field_name,
             data=[],
-            owned_by_group=False,
             created_at=datetime.datetime.utcnow()):
         """Initialize Analysis Result model."""
         self.parent_uuid = analysis_result_uuid
         self.field_name = field_name
         self.data = json.dumps(data)
         self.created_at = created_at
+
+    def set_data(self, data):
+        self.data = json.dumps(data)
+        return self.save()
 
     def serialize(self):
         pass
@@ -128,6 +131,22 @@ class AnalysisResult(db.Model):
         self.status = status
         self.created_at = created_at
 
+    def field(self, field_name):
+        """Return an AR-filed for the module bound to this AR.
+
+        Create and save the AR-field if it does not already exist.
+        """
+        ar_fs = [ar_f for ar_f in self.module_fields if ar_f.field_name == field_name]
+        if ar_fs:
+            return ar_fs[0]
+        return type(self).__field_type()(self.uuid, field_name).save()
+
+    def set_status(self, status):
+        """Set status and save. Return self."""
+        assert status in ANALYSIS_RESULT_STATUSES
+        self.status = status
+        return self.save()
+
     def serialize(self):
         pass
 
@@ -162,6 +181,10 @@ class SampleAnalysisResult(AnalysisResult):
         """Set the value of parent uuid."""
         self.sample_uuid = value
 
+    @classmethod
+    def __field_type(cls):
+        return SampleAnalysisResultField
+
 
 class SampleGroupAnalysisResult(AnalysisResult):
 
@@ -187,3 +210,7 @@ class SampleGroupAnalysisResult(AnalysisResult):
     def parent_uuid(self, value):
         """Set the value of parent uuid."""
         self.sample_group_uuid = value
+
+    @classmethod
+    def __field_type(cls):
+        return SampleAnalysisResultField
