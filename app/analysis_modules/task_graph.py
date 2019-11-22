@@ -5,8 +5,8 @@ from celery import group as task_group
 
 from app.analysis_modules import MODULES_BY_NAME
 
-from .tasks import clean_error
-from .utils import run_sample, run_sample_group, processes_single_samples, processes_sample_groups
+from .tasks import clean_error, run_sample, run_sample_group
+from .utils import processes_single_samples, processes_sample_groups
 
 
 class TaskConductor:
@@ -31,11 +31,11 @@ class TaskConductor:
             if self.filter_func(module_name)
         ]
 
-    def build_sig(self, module_name):
+    def build_sig(self, module_name, dependency_names):
         """Build a signature for a single module."""
         if self.is_group:
-            return run_sample_group.si(self.uuid, module_name).on_error(clean_error.s())
-        return run_sample.s(self.uuid, module_name).on_error(clean_error.s())
+            return run_sample_group.si(self.uuid, module_name, dependency_names).on_error(clean_error.s())
+        return run_sample.s(self.uuid, module_name, dependency_names).on_error(clean_error.s())
 
     def build_depend_digraph(self):
         """Build a digraph representing module dependencies."""
@@ -52,11 +52,7 @@ class TaskConductor:
 
     def recurse_chords(self, source_module_name, depend_graph):
         """Build a tree of tasks. Return the signature."""
-        try:
-            source_signature = self.signature_tbl[source_module_name]
-        except KeyError:
-            source_signature = self.build_sig(source_module_name)
-            self.signature_tbl[source_module_name] = source_signature
+        source_signature = self.build_sig(source_module_name)
         depends_on_chord = [
             self.recurse_chords(upstream_name, depend_graph)
             for upstream_name in nx.descendants(depend_graph, source_module_name)
