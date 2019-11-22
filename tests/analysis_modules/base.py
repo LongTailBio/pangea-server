@@ -14,27 +14,40 @@ class BaseAnalysisModuleTest(BaseTestCase):
 
     def generic_getter_test(self, data, endpt, verify_fields=('samples',)):
         """Check that we can get an analysis result."""
-        wrapper = AnalysisResultWrapper(data=data, status='S').save()
-        analysis_result = AnalysisResultMeta(**{endpt: wrapper}).save()
+        library = add_sample_group('LBRY_01', is_library=True)
+        sample = Sample('SMPL_01', library.uuid,).save()
+        analysis_result = sample.analysis_result(endpt)
+        for key, val in data.items():
+            result_field = analysis_result.field(key)
+            result_field.set_data(val)
+        analysis_result.set_status('SUCCESS')
         with self.client:
             response = self.client.get(
-                f'/api/v1/analysis_results/{analysis_result.uuid}/{endpt}',
+                f'/api/v1/analysis_results/{analysis_result.uuid}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('success', data['status'])
-            analysis_result = data['data']
-            self.assertEqual(analysis_result['status'], 'S')
             for field in verify_fields:
-                self.assertIn(field, analysis_result['data'])
+                self.assertIn(field, data['data']['data'])
+                field_response = self.client.get(
+                    f'/api/v1/analysis_results/{analysis_result.uuid}/{field}',
+                    content_type='application/json',
+                )
+                self.assertEqual(field_response.status_code, 200)
 
     def generic_adder_test(self, data, endpt):
         """Check that we can add an analysis result."""
-        wrapper = AnalysisResultWrapper(data=data).save()
-        result = AnalysisResultMeta(**{endpt: wrapper}).save()
+        library = add_sample_group('LBRY_01', is_library=True)
+        sample = Sample('SMPL_01', library.uuid,).save()
+        result = sample.analysis_result(endpt)
+        for key, val in data.items():
+            result_field = result.field(key)
+            result_field.set_data(val)
+        result.set_status('SUCCESS')
         self.assertTrue(result.uuid)
-        self.assertTrue(getattr(result, endpt))
+        for key, val in data.items():
+            result_field = result.field(key)
+            self.assertEqual(val, result_field.data)
 
     def generic_run_sample_test(self, sample_kwargs, module):
         """Check that we can run a wrangler on a single samples."""

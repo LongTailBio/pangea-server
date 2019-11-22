@@ -52,7 +52,9 @@ class TaskConductor:
 
     def recurse_chords(self, source_module_name, depend_graph):
         """Build a tree of tasks. Return the signature."""
-        source_signature = self.build_sig(source_module_name)
+        source_signature = self.build_sig(
+            source_module_name, nx.ancestors(depend_graph, source_module_name)
+        )
         depends_on_chord = [
             self.recurse_chords(upstream_name, depend_graph)
             for upstream_name in nx.descendants(depend_graph, source_module_name)

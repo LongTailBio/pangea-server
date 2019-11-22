@@ -24,7 +24,7 @@ class AnalysisResultField(db.Model):
     )
     created_at = db.Column(db.DateTime, nullable=False)
     field_name = db.Column(db.String(256), index=True, nullable=False)
-    data = db.Column(db.String(MAX_DATA_FIELD_LENGTH), index=True, nullable=False)
+    stored_data = db.Column(db.String(MAX_DATA_FIELD_LENGTH), index=False, nullable=False)
 
     def __init__(  # pylint: disable=too-many-arguments
             self, analysis_result_uuid, field_name,
@@ -33,15 +33,20 @@ class AnalysisResultField(db.Model):
         """Initialize Analysis Result model."""
         self.parent_uuid = analysis_result_uuid
         self.field_name = field_name
-        self.data = json.dumps(data)
+        self.stored_data = json.dumps(data)
         self.created_at = created_at
 
+    @property
+    def data(self):
+        """Return the deserialized data for this field."""
+        return json.loads(self.stored_data)
+
     def set_data(self, data):
-        self.data = json.dumps(data)
+        self.stored_data = json.dumps(data)
         return self.save()
 
     def serialize(self):
-        pass
+        return self.stored_data
 
     def save(self):
         db.session.add(self)
@@ -122,12 +127,10 @@ class AnalysisResult(db.Model):
     def __init__(  # pylint: disable=too-many-arguments
             self, module_name, parent_uuid,
             status='PENDING',
-            data=[],
             created_at=datetime.datetime.utcnow()):
         """Initialize Analysis Result model."""
         self.module_name = module_name
         self.parent_uuid = parent_uuid
-        self.data = json.dumps(data)
         self.status = status
         self.created_at = created_at
 
@@ -139,7 +142,7 @@ class AnalysisResult(db.Model):
         ar_fs = [ar_f for ar_f in self.module_fields if ar_f.field_name == field_name]
         if ar_fs:
             return ar_fs[0]
-        return type(self).__field_type()(self.uuid, field_name).save()
+        return type(self)._field_type()(self.uuid, field_name).save()
 
     def set_status(self, status):
         """Set status and save. Return self."""
@@ -148,7 +151,10 @@ class AnalysisResult(db.Model):
         return self.save()
 
     def serialize(self):
-        pass
+        out = {}
+        for field in self.module_fields:
+            out[field.field_name] = field.serialize()
+        return json.dumps(out)
 
     def save(self):
         db.session.add(self)
@@ -182,7 +188,7 @@ class SampleAnalysisResult(AnalysisResult):
         self.sample_uuid = value
 
     @classmethod
-    def __field_type(cls):
+    def _field_type(cls):
         return SampleAnalysisResultField
 
 
@@ -212,5 +218,5 @@ class SampleGroupAnalysisResult(AnalysisResult):
         self.sample_group_uuid = value
 
     @classmethod
-    def __field_type(cls):
+    def _field_type(cls):
         return SampleAnalysisResultField

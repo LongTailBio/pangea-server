@@ -27,7 +27,7 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
     is_public = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     samples = db.relationship('Sample', lazy=True)
-    analysis_results = db.relationship('GroupAnalysisResult', backref='parent', lazy=True)
+    analysis_results = db.relationship('SampleGroupAnalysisResult', backref='parent', lazy=True)
 
     # Duplicate owner properties/indices because we don't know how we will be looking it up
     __table_args__ = (
