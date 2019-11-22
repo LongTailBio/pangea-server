@@ -14,7 +14,7 @@ class TestAnalysisModuleUploads(BaseAnalysisModuleTest):
     pass
 
 
-for analysis_module in all_analysis_modules[:3]:
+for analysis_module in all_analysis_modules:
     # Grab top-level values we need
     analysis_name = unpack_module(analysis_module)[1]
 
