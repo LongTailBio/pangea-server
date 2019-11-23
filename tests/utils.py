@@ -9,6 +9,13 @@ from functools import wraps
 from app import db
 from app.authentication import User, PasswordAuthentication, Organization
 from app.db_models import Sample, SampleGroup
+from random import choices
+
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+
+def rand_string(n=10):
+    return ''.join(choices(ALPHABET, k=1))
+
 
 
 def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
@@ -39,7 +46,8 @@ def add_sample_group(name, owner=None, org_name=None, is_library=False,
                      created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding sample group."""
     if owner is None:
-        owner = add_user('justatest', 'test@test.com', 'test')
+        owner_name = rand_string()
+        owner = add_user(owner_name, f'{owner_name}@test.com', 'test')
     org = Organization.from_user(owner, org_name if org_name else 'Test Organization')
     group = SampleGroup(
         name=name,
