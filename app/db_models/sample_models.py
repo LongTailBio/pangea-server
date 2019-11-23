@@ -46,8 +46,21 @@ class Sample(db.Model):
         self._sample_metadata = json.dumps(metadata)
         self.created_at = created_at
 
+    def serializable(self):
+        out = {
+            'sample': {
+                'uuid': self.uuid,
+                'name': self.name,
+                'library_uuid': self.library_uuid,
+                'created_at': self.created_at,
+                'analysis_result_uuids': [ar.uuid for ar in self.analysis_results],
+            },
+            'sample_metadata': self.sample_metadata,
+        }
+        return out
+
     def serialize(self):
-        pass
+        return json.dumps(self.serializable())
 
     def analysis_result(self, module_name):
         """Return an AR for the module bound to this sample.

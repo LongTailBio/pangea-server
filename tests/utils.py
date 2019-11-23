@@ -13,9 +13,9 @@ from random import choices
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
+
 def rand_string(n=10):
     return ''.join(choices(ALPHABET, k=1))
-
 
 
 def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
@@ -48,7 +48,7 @@ def add_sample_group(name, owner=None, org_name=None, is_library=False,
     if owner is None:
         owner_name = rand_string()
         owner = add_user(owner_name, f'{owner_name}@test.com', 'test')
-    org = Organization.from_user(owner, org_name if org_name else 'Test Organization')
+    org = Organization.from_user(owner, org_name if org_name else f'Test Organization {rand_string()}')
     group = SampleGroup(
         name=name,
         organization_uuid=org.uuid,

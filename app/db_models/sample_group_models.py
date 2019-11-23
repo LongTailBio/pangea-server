@@ -1,7 +1,7 @@
 """Sample Group model definitions."""
 
 import datetime
-
+import json
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -68,22 +68,6 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
             result = SampleGroupAnalysisResult(module_name, self.uuid).save()
         return result
 
-    # @property
-    # def samples(self):
-    #     """Get SampleGroup's associated Samples.
-    #     """
-    #     return Sample.quer(uuid__in=self.sample_uuids)
-
-    # @samples.setter
-    # def samples(self, value):
-    #     """Set SampleGroup's samples."""
-    #     self.sample_uuids = [sample.uuid for sample in value]
-
-    # @samples.deleter
-    # def samples(self):
-    #     """Remove SampleGroup's samples."""
-    #     self.sample_uuids = []
-
     @property
     def tools_present(self):
         """Return list of names for Tool Results present across all Samples in this group."""
@@ -99,8 +83,24 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
                 tools_present_in_all &= tool_results
         return list(tools_present_in_all)
 
+    def serializable(self):
+        out = {
+            'sample_group': {
+                'uuid': self.uuid,
+                'name': self.name,
+                'organization_uuid': self.organization_uuid,
+                'description': self.description,
+                'is_library': self.is_library,
+                'is_public': self.is_public,
+                'created_at': self.created_at,
+                'sample_uuids': [sample.uuid for sample in self.samples],
+                'analysis_result_uuids': [ar.uuid for ar in self.analysis_results],
+            },
+        }
+        return out
+
     def serialize(self):
-        pass
+        return json.dumps(self.serializable())
 
     def save(self):
         db.session.add(self)

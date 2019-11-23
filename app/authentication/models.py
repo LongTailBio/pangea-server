@@ -57,6 +57,18 @@ class Organization(db.Model):
         ).save()
         return self
 
+    def admin_uuids(self):
+        return [
+            membership.user_uuid for membership in self.memberships
+            if membership.role == 'admin'
+        ]
+
+    def writer_uuids(self):
+        return [
+            membership.user_uuid for membership in self.memberships
+            if membership.role in ['admin', 'write']
+        ]
+
     def sample_groups(self, name, description='', is_library=False, is_public=True):
         """Return a SampleGroup bound to this organization.
 
