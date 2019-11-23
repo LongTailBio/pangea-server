@@ -17,7 +17,7 @@ from app.db_models import SampleGroup
 from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db
-from app.authentication.models import User, OrganizationMembership
+from app.authentication import User
 from app.authentication.helpers import authenticate, fetch_organization
 from app.utils import XLSDictReader
 
@@ -260,32 +260,17 @@ def run_sample_group_display_modules(uuid):    # pylint: disable=invalid-name
     return result, 202
 
 
-@sample_groups_blueprint.route('/libraries/<library_uuid>/metadata', methods=['POST'])
-@authenticate()
-def upload_metadata(_, library_uuid):  # pylint: disable=too-many-branches,too-many-locals
-    """Upload metadata for a library."""
-    try:
-        library_id = UUID(library_uuid)
-        # Enforce is_library
-        _ = SampleGroup.query.filter_by(uuid=library_id).one()
-    except ValueError:
-        raise ParseError('Invalid Library UUID.')
-    except NoResultFound:
-        raise NotFound('Library does not exist')
-
+def get_metadata_from_request(request):
     try:
         metadata_file = request.files['metadata']
     except KeyError:
         raise ParseError('Missing metadata file attachment.')
-
     if metadata_file.filename == '':
         raise ParseError('Missing metadata file attachment.')
-
     try:
         extension = metadata_file.filename.split('.')[1]
     except KeyError:
         raise ParseError('Metadata file missing extension.')
-
     stream = StringIO(metadata_file.stream.read().decode('UTF8'), newline=None)
     if extension == 'csv':
         metadata = DictReader(stream)
@@ -293,42 +278,28 @@ def upload_metadata(_, library_uuid):  # pylint: disable=too-many-branches,too-m
         metadata = XLSDictReader(stream)
     else:
         raise ParseError('Missing valid metadata file attachment.')
+    return metadata
 
+
+@sample_groups_blueprint.route('/libraries/<library_uuid>/metadata', methods=['POST'])
+@authenticate()
+def upload_metadata(_, library_uuid):  # pylint: disable=too-many-branches,too-many-locals
+    """Upload metadata for a library."""
+    try:
+        library = SampleGroup.query.filter_by(uuid=UUID(library_uuid)).first()
+    except ValueError:
+        raise ParseError('Invalid Library UUID.')
+    except NoResultFound:
+        raise NotFound('Library does not exist')
+    metadata = get_metadata_from_request(request)
     sample_name_col = metadata.fieldnames[0]
-    updates = {}
-
+    updates, updated_uuids = {}, []
     for row in metadata:
-        sample_name = row[sample_name_col]
-        new_metadata = {key: value for key, value in row.items()
-                        if key is not sample_name_col}
-        updates[sample_name] = new_metadata
-
-    # MongoDB has no transactions so we must do as much as we can upfront to
-    # avoid errors; ensure all samples at least exist
-    updates_by_uuid = []
-    missing_samples = []
-    for sample_name in updates:
-        try:
-            sample = Sample.objects.get(name=sample_name, library_uuid=library_id)
-            # Searching by UUID directly will be faster in the actual update phase
-            updates_by_uuid.append((sample.uuid, updates[sample_name]))
-        except DoesNotExist:
-            missing_samples.append(sample_name)
-    if missing_samples:
-        raise InvalidRequest((f'The following samples do not exist in Library '
-                              f'{library_id}: {missing_samples}'))
-
-    # Actually perform the updates
-    updated_uuids = []
-    for sample_uuid, new_metadata in updates_by_uuid:
-        try:
-            sample = Sample.objects.get(uuid=sample_uuid)
-            sample.metadata = new_metadata
-            sample.save()
-            updated_uuids.append(str(sample_uuid))
-        except ValidationError as validation_error:
-            current_app.logger.exception('Sample metadata could not be updated.')
-            raise ParseError(f'Metadata upload failed partway through: {str(validation_error)}')
+        sample = library.sample(row[sample_name_col])
+        sample = sample.set_sample_metadata({
+            key: value for key, value in row.items() if key is not sample_name_col
+        })
+        updated_uuids.append(sample.uuid)
 
     return {'updated_uuids': updated_uuids}, 201
 

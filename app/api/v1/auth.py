@@ -11,12 +11,10 @@ from sqlalchemy.orm.exc import NoResultFound
 from app.api.constants import PAGE_SIZE
 from app.api.exceptions import InvalidRequest, InternalError
 from app.extensions import db, bcrypt
-from app.authentication.models import (
+from app.authentication import (
     User,
-    OrganizationMembership,
+    Organization,
     PasswordAuthentication,
-    user_schema,
-    organization_schema,
 )
 from app.authentication.helpers import (
     encode_auth_token,

@@ -24,14 +24,7 @@ class TestSampleGroupModel(BaseTestCase):
     def test_add_user_duplicate_name(self):
         """Ensure duplicate group names are not allowed."""
         add_sample_group('Sample Group One')
-        duplicate_group = SampleGroup(
-            name='Sample Group One',
-            owner_uuid=uuid4(),
-            owner_name='a_username',
-            is_library=False,
-        )
-        db.session.add(duplicate_group)
-        self.assertRaises(IntegrityError, db.session.commit)
+        self.assertRaises(IntegrityError, lambda: add_sample_group('Sample Group One'))
 
     def test_add_samples(self):
         """Ensure that samples can be added to SampleGroup."""

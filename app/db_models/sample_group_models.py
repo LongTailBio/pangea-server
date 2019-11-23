@@ -20,8 +20,7 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
                      primary_key=True,
                      server_default=db.text('uuid_generate_v4()'))
     name = db.Column(db.String(128), index=True, nullable=False)
-    owner_uuid = db.Column(UUID(as_uuid=True), index=True, nullable=False)
-    owner_name = db.Column(db.String(128), index=True, nullable=False)
+    organization_uuid = db.Column(db.ForeignKey('organizations.uuid'), nullable=False)
     description = db.Column(db.String(300), nullable=False, default='')
     is_library = db.Column(db.Boolean, default=False, nullable=False)
     is_public = db.Column(db.Boolean, default=True, nullable=False)
@@ -33,20 +32,15 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
     __table_args__ = (
         db.Index('_sample_group_lower_name_idx',
                  func.lower(name), unique=True),
-        db.Index('_sample_group_unique_owner_name_idx',
-                 func.lower(name), func.lower(owner_name), unique=True),
-        db.Index('_sample_group_unique_owner_uuid_idx',
-                 func.lower(name), owner_uuid, unique=True),
     )
 
     def __init__(  # pylint: disable=too-many-arguments
-            self, name, owner_uuid, owner_name,
+            self, name, organization_uuid,
             description='', is_library=False, is_public=True,
             created_at=datetime.datetime.utcnow()):
         """Initialize MetaGenScope User model."""
         self.name = name
-        self.owner_name = owner_name
-        self.owner_uuid = owner_uuid
+        self.organization_uuid = organization_uuid
         self.description = description
         self.is_library = is_library
         self.is_public = is_public
@@ -107,3 +101,8 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
 
     def serialize(self):
         pass
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self

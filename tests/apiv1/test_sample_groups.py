@@ -10,7 +10,7 @@ from app import db
 from app.db_models import Sample, SampleGroup
 
 from ..base import BaseTestCase
-from ..utils import add_sample, add_sample_group, add_member, with_user, add_organization
+from ..utils import add_sample, add_sample_group, with_user
 
 from .utils import middleware_tester, get_analysis_result_with_data
 

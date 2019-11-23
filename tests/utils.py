@@ -7,7 +7,7 @@ from uuid import uuid4
 from functools import wraps
 
 from app import db
-from app.authentication.models import User, PasswordAuthentication, OrganizationMembership
+from app.authentication import User, PasswordAuthentication, Organization
 from app.db_models import Sample, SampleGroup
 
 
@@ -16,36 +16,10 @@ def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
     user = User(
         username=username,
         email=email,
-        user_type='user',
         created_at=created_at,
     )
     user.password_authentication = PasswordAuthentication(password=password)
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-def add_organization(name, email, created_at=datetime.datetime.utcnow()):
-    """Wrap functionality for adding organization."""
-    organization = User(
-        username=name,
-        email=email,
-        user_type='organization',
-        created_at=created_at,
-    )
-    db.session.add(organization)
-    db.session.commit()
-    return organization
-
-
-def add_member(user, organization, role, commit=True):
-    """Add user to organization."""
-    membership = OrganizationMembership(role=role)
-    membership.user = user
-    membership.organization = organization
-    # db.session.add(membership)
-    if commit:
-        db.session.commit()
+    return user.save()
 
 
 # pylint: disable=too-many-arguments,dangerous-default-value
@@ -61,13 +35,15 @@ def add_sample(name, library_uuid=None,
                   ).save()
 
 
-def add_sample_group(name, owner=None, is_library=False,
+def add_sample_group(name, owner=None, org_name=None, is_library=False,
                      created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding sample group."""
+    if owner is None:
+        owner = add_user('justatest', 'test@test.com', 'test')
+    org = Organization.from_user(owner, org_name if org_name else 'Test Organization')
     group = SampleGroup(
         name=name,
-        owner_uuid=owner.uuid if owner else uuid4(),
-        owner_name=owner.username if owner else 'ausername',
+        organization_uuid=org.uuid,
         is_library=is_library,
         created_at=created_at
     )

@@ -61,6 +61,12 @@ class Sample(db.Model):
             result = SampleAnalysisResult(module_name, self.uuid).save()
         return result
 
+    def set_sample_metadata(self, data):
+        metadata = self.sample_metadata
+        metadata.update(data)
+        self._sample_metadata = json.dumps(metadata)
+        return self.save()
+
     @property
     def sample_metadata(self):
         return json.loads(self._sample_metadata)

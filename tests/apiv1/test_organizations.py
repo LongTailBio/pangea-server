@@ -11,7 +11,7 @@ from app.authentication.models import User
 from app.db_models import SampleGroup
 
 from ..base import BaseTestCase
-from ..utils import add_user, add_organization, add_member, add_sample_group, with_user
+from ..utils import add_user, add_sample_group, with_user
 
 
 class TestOrganizationModule(BaseTestCase):

@@ -1,11 +1,10 @@
 """Test suite for Organization management."""
 
 from sqlalchemy.exc import IntegrityError
+from app.authentication import Organization
 
-from app import db
-from app.authentication.models import User
 from ..base import BaseTestCase
-from ..utils import add_user, add_organization, add_member
+from ..utils import add_user
 
 
 class TestOrganizationManagement(BaseTestCase):
@@ -13,29 +12,21 @@ class TestOrganizationManagement(BaseTestCase):
 
     def test_add_user_to_organization(self):
         """Ensure user can be added to organization."""
-        organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        add_member(user, organization, 'read', commit=False)
-        db.session.commit()
-        self.assertIn(user, organization.users)
+        org = Organization.from_user(user, 'Test Organization')
+        print(org.memberships)
+        self.assertIn(user, org.users)
 
     def test_add_duplicate_users_to_organization(self):     # pylint: disable=invalid-name
         """Ensure user can only be added to organization once."""
-        organization = add_organization('Test Organization', 'admin@test.org')
         user = add_user('justatest', 'test@test.com', 'test')
-        add_member(user, organization, 'read', commit=False)
-        db.session.commit()
-        add_member(user, organization, 'read', commit=False)
-        self.assertRaises(IntegrityError, db.session.commit)
+        org = Organization.from_user(user, 'Test Organization')
+        self.assertRaises(IntegrityError, lambda: org.add_user(user))
 
     def test_add_admin_user_to_organization(self):      # pylint: disable=invalid-name
         """Ensure user can be added to organization."""
-        organization = add_organization('Test Organization', 'admin@test.org')
-        user = add_user('justatest', 'test@test.com', 'test')
-        add_member(user, organization, 'admin', commit=False)
-        db.session.commit()
-        admin_users = User.query.filter(
-            User.organization_memberships.any(organization_uuid=organization.uuid,
-                                              role='admin'),
-        ).all()
-        self.assertIn(user, admin_users)
+        user1 = add_user('just test1', 'test1@test.com', 'test1')
+        org = Organization.from_user(user1, 'Test Organization')
+        user2 = add_user('just test2', 'test2@test.com', 'test2')
+        org.add_user(user2, role_in_org='admin')
+        self.assertIn(user2.uuid, [el.uuid for el in org.users])

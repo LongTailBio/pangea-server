@@ -10,7 +10,7 @@ from flask import request, current_app
 from flask_api.exceptions import ParseError, NotFound, NotAuthenticated, AuthenticationFailed
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.authentication.models import User
+from app.authentication import User
 
 
 def encode_auth_token(user):
@@ -24,7 +24,7 @@ def encode_auth_token(user):
         'uuid': membership.organization_uuid,
         'name': membership.organization.name,
         'roles': membership.role,
-    } for membership in user.organization_memberships]
+    } for membership in user.memberships]
 
     payload = {
         'exp': expires,

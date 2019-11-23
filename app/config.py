@@ -56,6 +56,7 @@ class TestingConfig(Config):
 
     DEBUG = True
     TESTING = True
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_TEST_URL')
     MONGODB_HOST = os.environ.get('MONGODB_TEST_HOST')
     BCRYPT_LOG_ROUNDS = 4

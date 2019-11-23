@@ -4,7 +4,7 @@ import datetime
 import json
 
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ENUM
 
 from app.extensions import db
 
@@ -134,7 +134,10 @@ class AnalysisResult(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
 
     module_name = db.Column(db.String(256), index=True, nullable=False)
-    status = db.Column(db.String(16), index=True, nullable=False)
+    status = db.Column(
+        ENUM(*ANALYSIS_RESULT_STATUSES, name='status'),
+        nullable=False
+    )
 
     def __init__(  # pylint: disable=too-many-arguments
             self, module_name, parent_uuid,

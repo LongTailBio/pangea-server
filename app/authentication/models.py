@@ -5,44 +5,85 @@
 import datetime
 
 from flask import current_app
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import fields
+from sqlalchemy.dialects.postgresql import UUID, ENUM
 
-from app.base import BaseSchema
 from app.extensions import db, bcrypt
+from app.db_models import SampleGroup
 
 
-class OrganizationMembership(db.Model):
-    """Association object for linking users to organizations with role."""
+class Organization(db.Model):
+    """Represent an orgnization.
 
-    __tablename__ = 'organization_memberships'
+    One to Many relationship to SampleGroups
+    Many to Many relationship with Users
+    Many to One realtionship with a User as a primary admin
+    """
 
-    organization_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'),
-                                  primary_key=True, nullable=False)
-    user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'),
-                          primary_key=True, nullable=False)
-    role = db.Column(ENUM('admin', 'write', 'read', name='organization_role'),
-                     nullable=False)
-    is_public = db.Column(db.Boolean, default=True, nullable=False)
+    __tablename__ = 'organizations'
+
+    uuid = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=db.text('uuid_generate_v4()')
+    )
+    name = db.Column(db.String(128), nullable=False, unique=True)
+    primary_admin_uuid = db.Column(db.ForeignKey('users.uuid'), nullable=False)
+    users = association_proxy("memberships", "users")
+    sample_groups = db.relationship('SampleGroup', backref='organization', lazy=True)
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    __table_args__ = (
-        db.UniqueConstraint('organization_uuid', 'user_uuid', name='_organization_user_uc'),
-    )
-
     def __init__(
-            self, role, organization_uuid=None, user_uuid=None,
-            is_public=True, created_at=datetime.datetime.utcnow()):
-        """Initialize organization membership model."""
-        if organization_uuid:
-            self.organization_uuid = organization_uuid
-        if user_uuid:
-            self.user_uuid = user_uuid
-        self.role = role
-        self.is_public = is_public
+            self, primary_admin_uuid, name,
+            is_deleted=False,
+            created_at=datetime.datetime.utcnow()):
+        """Initialize Pangea User model."""
+        self.primary_admin_uuid = primary_admin_uuid
+        self.name = name
+        self.is_deleted = is_deleted
         self.created_at = created_at
+
+    def serializable(self):
+        pass
+
+    def serialize(self):
+        pass
+
+    def add_user(self, user, role_in_org='read'):
+        OrganizationMembership(
+            self.uuid, user.uuid, role=role_in_org
+        ).save()
+        return self
+
+    def sample_groups(self, name, description='', is_library=False, is_public=True):
+        """Return a SampleGroup bound to this organization.
+
+        Create and save the SampleGroup if it does not already exist.
+        """
+        sample_groups = [sg for sg in self.sample_groups if sg.name == name]
+        if sample_groups:
+            sample_group = sample_groups[0]
+        else:
+            sample_group = SampleGroup(
+                name, self.uuid,
+                description=description,
+                is_library=is_library,
+                is_public=is_public
+            ).save()
+        return sample_group
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    @classmethod
+    def from_user(cls, user, name):
+        org = cls(user.uuid, name).save()
+        org.add_user(user, role_in_org='admin')
+        return org.save()
 
 
 class User(db.Model):
@@ -54,13 +95,14 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    uuid = db.Column(UUID(as_uuid=True),
-                     primary_key=True,
-                     server_default=db.text('uuid_generate_v4()'))
+    uuid = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=db.text('uuid_generate_v4()')
+    )
+    organizations = association_proxy("memberships", "organizations")
     username = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
-    user_type = db.Column(ENUM('user', 'organization', name='user_type'),
-                          nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     is_fake = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
@@ -69,33 +111,62 @@ class User(db.Model):
         db.Index('_user_lower_username_idx', func.lower(username), unique=True),
     )
 
-    # Users that belong to this organization
-    user_memberships = db.relationship(
-        'OrganizationMembership',
-        primaryjoin='User.uuid == OrganizationMembership.organization_uuid',
-        backref=db.backref('organization'),
-    )
-    users = association_proxy('user_memberships', 'user')
-
-    # Organizations this user belongs to
-    organization_memberships = db.relationship(
-        'OrganizationMembership',
-        primaryjoin='User.uuid == OrganizationMembership.user_uuid',
-        backref=db.backref('user'),
-    )
-    organizations = association_proxy('organization_memberships', 'organization')
-
     def __init__(
-            self, username, email, user_type,
+            self, username, email,
             is_deleted=False, is_fake=False,
             created_at=datetime.datetime.utcnow()):
         """Initialize Pangea User model."""
         self.username = username
         self.email = email
-        self.user_type = user_type
         self.is_deleted = is_deleted
         self.is_fake = is_fake
         self.created_at = created_at
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+
+class OrganizationMembership(db.Model):
+    __tablename__ = 'organization_memberships'
+    __table_args__ = (
+        UniqueConstraint("organization_uuid", "user_uuid"),
+    )
+    uuid = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=db.text('uuid_generate_v4()')
+    )
+    organization_uuid = db.Column(
+        UUID(as_uuid=True),
+        db.ForeignKey('organizations.uuid'),
+        index=True,
+        nullable=False
+    )
+    user_uuid = db.Column(
+        UUID(as_uuid=True),
+        db.ForeignKey('users.uuid'),
+        index=True,
+        nullable=False
+    )
+    role = db.Column(
+        'user_role',
+        ENUM('admin', 'write', 'read', name='user_role'),
+        nullable=False
+    )
+    organizations = db.relationship("Organization", backref="memberships", lazy=True)
+    users = db.relationship("User", backref="memberships", lazy=True)
+
+    def __init__(self, org_uuid, user_uuid, role='read'):
+        self.organization_uuid = org_uuid
+        self.user_uuid = user_uuid
+        self.role = role
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
 
 
 class PasswordAuthentication(db.Model):
@@ -124,39 +195,3 @@ class PasswordAuthentication(db.Model):
             password, current_app.config.get('BCRYPT_LOG_ROUNDS')
         ).decode()
         self.created_at = created_at
-
-
-class UserSchema(BaseSchema):
-    """Serializer for User."""
-
-    __envelope__ = {
-        'single': 'user',
-        'many': 'users',
-    }
-    __model__ = User
-
-    uuid = fields.Str()
-    username = fields.Str()
-    email = fields.Str()
-    created_at = fields.Date()
-
-
-user_schema = UserSchema()      # pylint: disable=invalid-name
-
-
-class OrganizationSchema(BaseSchema):
-    """Serializer for Organization."""
-
-    __envelope__ = {
-        'single': 'organization',
-        'many': 'organizations',
-    }
-    __model__ = User
-
-    uuid = fields.Str()
-    username = fields.Str()
-    email = fields.Str()
-    created_at = fields.Date()
-
-
-organization_schema = OrganizationSchema()  # pylint: disable=invalid-name
