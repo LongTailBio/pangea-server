@@ -184,6 +184,7 @@ class User(db.Model):
                 'organizations': [org.uuid for org in self.organizations],
                 'email': self.email,
                 'is_deleted': self.is_deleted,
+                'created_at': self.created_at,
             },
         }
         return out

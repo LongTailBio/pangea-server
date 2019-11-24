@@ -50,7 +50,6 @@ def register_user():
         new_user = User(
             username=username,
             email=email,
-            user_type='user',
         )
         new_user.password_authentication = PasswordAuthentication(password=password)
         db.session.add(new_user)
@@ -102,7 +101,7 @@ def logout_user(_):
 def get_user_status(authn):
     """Get user status."""
     user = User.query.filter_by(uuid=authn.sub).first()
-    result = user_schema.dump(user)
+    result = user.serializable()
     return result, 200
 
 
