@@ -1,5 +1,5 @@
 """Test suite for adding AnalysisModules."""
-
+import json
 from app.analysis_modules.wrangler import all_analysis_modules
 
 from .base import BaseAnalysisModuleTest
@@ -20,7 +20,7 @@ for analysis_module in all_analysis_modules:
         """Ensure an AnalysisModules can be added."""
         (_, module_name, factory_module) = unpack_module(module)
         Factory = discover_factory_class(factory_module)  # pylint: disable=invalid-name
-        result_model = Factory()
+        result_model = json.loads(Factory().to_json())
         self.generic_adder_test(result_model, module_name)
 
     add_module.__doc__ = f'Ensure a {analysis_module.__name__} can be added.'

@@ -7,10 +7,15 @@ from uuid import uuid4
 from functools import wraps
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.authentication.models import User, PasswordAuthentication, OrganizationMembership
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
+from app.authentication import User, PasswordAuthentication, Organization
+from app.db_models import Sample, SampleGroup
+from random import choices
+
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+
+
+def rand_string(n=10):
+    return ''.join(choices(ALPHABET, k=1))
 
 
 def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
@@ -18,67 +23,42 @@ def add_user(username, email, password, created_at=datetime.datetime.utcnow()):
     user = User(
         username=username,
         email=email,
-        user_type='user',
         created_at=created_at,
     )
     user.password_authentication = PasswordAuthentication(password=password)
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-def add_organization(name, email, created_at=datetime.datetime.utcnow()):
-    """Wrap functionality for adding organization."""
-    organization = User(
-        username=name,
-        email=email,
-        user_type='organization',
-        created_at=created_at,
-    )
-    db.session.add(organization)
-    db.session.commit()
-    return organization
-
-
-def add_member(user, organization, role, commit=True):
-    """Add user to organization."""
-    membership = OrganizationMembership(role=role)
-    membership.user = user
-    membership.organization = organization
-    # db.session.add(membership)
-    if commit:
-        db.session.commit()
+    return user.save()
 
 
 # pylint: disable=too-many-arguments,dangerous-default-value
-def add_sample(name, library_uuid=None, analysis_result=None,
+def add_sample(name, library_uuid=None,
                metadata={}, created_at=datetime.datetime.utcnow(),
                sample_kwargs={}):
     """Wrap functionality for adding sample."""
     if not library_uuid:
         library_uuid = uuid4()
-    if not analysis_result:
-        analysis_result = AnalysisResultMeta().save()
-
-    for module_name, module_val in sample_kwargs.items():
-        setattr(analysis_result, module_name, module_val)
 
     return Sample(library_uuid=library_uuid, name=name, metadata=metadata,
-                  analysis_result=analysis_result, created_at=created_at,
+                  created_at=created_at,
                   ).save()
 
 
-def add_sample_group(name, owner=None, analysis_result=None, is_library=False,
+def add_sample_group(name=None, owner=None, org_name=None, is_library=False, org=None,
                      created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding sample group."""
-    if not analysis_result:
-        analysis_result = AnalysisResultMeta().save()
-    group = SampleGroup(name=name,
-                        owner_uuid=owner.uuid if owner else uuid4(),
-                        owner_name=owner.username if owner else 'ausername',
-                        is_library=is_library,
-                        analysis_result=analysis_result,
-                        created_at=created_at)
+    if owner is None:
+        owner_name = rand_string()
+        owner = add_user(owner_name, f'{owner_name}@test.com', 'test')
+    if org is None:
+        org = Organization.from_user(
+            owner,
+            org_name if org_name else f'Test Organization {rand_string()}'
+        )
+    group = SampleGroup(
+        name=f'SampleGroup {rand_string()}' if name is None else name,
+        organization_uuid=org.uuid,
+        is_library=is_library,
+        created_at=created_at
+    )
     db.session.add(group)
     db.session.commit()
     return group

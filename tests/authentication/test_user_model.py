@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.authentication.helpers import encode_auth_token, decode_auth_token
-from app.authentication.models import User
+from app.authentication import User
 from ..base import BaseTestCase
 from ..utils import add_user
 
@@ -29,10 +29,8 @@ class TestUserModel(BaseTestCase):
         duplicate_user = User(
             username='justatest',
             email='test@test2.com',
-            user_type='user',
         )
-        db.session.add(duplicate_user)
-        self.assertRaises(IntegrityError, db.session.commit)
+        self.assertRaises(IntegrityError, duplicate_user.save)
 
     def test_add_user_duplicate_email(self):
         """Ensure duplicate email addresses are not allowed."""
@@ -40,17 +38,17 @@ class TestUserModel(BaseTestCase):
         duplicate_user = User(
             username='justanothertest',
             email='test@test.com',
-            user_type='user',
         )
-        db.session.add(duplicate_user)
-        self.assertRaises(IntegrityError, db.session.commit)
+        self.assertRaises(IntegrityError, duplicate_user.save)
 
     def test_passwords_are_random(self):
         """Ensure passwords are random."""
         user_one = add_user('justatest', 'test@test.com', 'test')
         user_two = add_user('justatest2', 'test@test2.com', 'test')
-        self.assertNotEqual(user_one.password_authentication.password,
-                            user_two.password_authentication.password)
+        self.assertNotEqual(
+            user_one.password_authentication.password,
+            user_two.password_authentication.password
+        )
 
     def test_encode_auth_token(self):
         """Ensure auth token is encoded correctly."""

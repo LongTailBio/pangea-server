@@ -18,7 +18,7 @@ from app.api.v1.ping import ping_blueprint
 from app.api.v1.samples import samples_blueprint
 from app.api.v1.sample_groups import sample_groups_blueprint
 from app.config import app_config
-from app.extensions import mongoDB, db, migrate, bcrypt, celery
+from app.extensions import db, migrate, bcrypt, celery
 
 
 def create_app(environment=None):
@@ -36,7 +36,6 @@ def create_app(environment=None):
     app.config.from_object(config_object)
 
     # Set up extensions
-    mongoDB.init_app(app)
     db.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)

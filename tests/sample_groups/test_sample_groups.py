@@ -5,9 +5,8 @@ from uuid import uuid4
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.analysis_results.analysis_result_models import AnalysisResultMeta
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import Sample, SampleGroup
+
 from ..base import BaseTestCase
 from ..utils import add_sample_group
 
@@ -25,37 +24,25 @@ class TestSampleGroupModel(BaseTestCase):
     def test_add_user_duplicate_name(self):
         """Ensure duplicate group names are not allowed."""
         add_sample_group('Sample Group One')
-        duplicate_group = SampleGroup(
-            name='Sample Group One',
-            owner_uuid=uuid4(),
-            owner_name='a_username',
-            is_library=False,
-            analysis_result=AnalysisResultMeta().save(),
-        )
-        db.session.add(duplicate_group)
-        self.assertRaises(IntegrityError, db.session.commit)
-
-    def test_sample_group_analysis_result(self):  # pylint: disable=invalid-name
-        """Ensure sample group's analysis result can be accessed."""
-        analysis_result = AnalysisResultMeta().save()
-        sample_group = add_sample_group('Sample Group One', analysis_result=analysis_result)
-        self.assertEqual(sample_group.analysis_result, analysis_result)
+        self.assertRaises(IntegrityError, lambda: add_sample_group('Sample Group One'))
 
     def test_add_samples(self):
         """Ensure that samples can be added to SampleGroup."""
         sample_group = add_sample_group('Sample Group One')
         sample_one = Sample(name='SMPL_01',
                             library_uuid=uuid4(),
-                            metadata={'subject_group': 1}).save()
+                            metadata={'subject_group': 1})
         sample_two = Sample(name='SMPL_02',
                             library_uuid=uuid4(),
-                            metadata={'subject_group': 4}).save()
+                            metadata={'subject_group': 4})
         sample_group.samples = [sample_one, sample_two]
         db.session.commit()
-        self.assertEqual(len(sample_group.sample_uuids), 2)
-        self.assertIn(sample_one.uuid, sample_group.sample_uuids)
-        self.assertIn(sample_two.uuid, sample_group.sample_uuids)
+
         samples = sample_group.samples
+        sample_uuids = [sample.uuid for sample in samples]
+        self.assertEqual(len(samples), 2)
+        self.assertIn(sample_one.uuid, sample_uuids)
+        self.assertIn(sample_two.uuid, sample_uuids)
         self.assertEqual(len(samples), 2)
         self.assertIn(sample_one, samples)
         self.assertIn(sample_two, samples)

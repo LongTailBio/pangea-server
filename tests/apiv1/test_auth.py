@@ -208,6 +208,8 @@ class TestAuthBlueprint(BaseTestCase):
                 headers=auth_headers
             )
             data = json.loads(response.data.decode())
+            print(response)
+            print(data)
             self.assertEqual(data['status'], 'success')
             self.assertTrue(data['data'] is not None)
             self.assertEqual(data['data']['user']['username'], 'test')

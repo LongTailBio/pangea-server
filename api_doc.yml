@@ -1,0 +1,155 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths:
+  # analysis_results.py
+  /analysis_results/{result_uuid}:
+    get:
+      summary: Get a specific AnalysisResult
+      operationId: showAnalysisResultById
+      parameters:
+        - name: result_uuid
+          in: path
+          description: uuid of the analysis result_uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            '#/components/schemas/AnalysisResult'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /analysis_results:
+    get:
+      summary: Get all AnalysisResults
+      operationId: showAnalysisResults
+      responses:
+        '200':
+          content:
+            '#/components/schemas/AnalysisResults'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # auth.py
+  /auth/register:
+    post:
+      summary: Register a new user and log them in
+  /auth/login:
+    post:
+      summary: Log current user in
+  /auth/logout:
+    get:
+      summary: Log current user out
+  /auth/status:
+    get:
+      summary: get status of current user
+  /organizations:
+    post:
+      summary: Create a new organization
+    get:
+      summary: List all organizations the current user is allowed to see
+  /organizations/{organization_uuid}:
+    get:
+      summary: Get a specified organization
+  /organizations/{organization_uuid}/users:
+    post:
+      summary: Add a user to an organization
+    get:
+      summary: List all users in an organization
+
+  # ping.py
+  /ping:
+    get:
+      summary: Return a pong
+
+  # sample_groups.py
+  /sample_groups:
+    post:
+      summary: Add a sample group
+    get:
+      summary: Get all sample groups the user is allowed to see
+  /sample_groups/{group_uuid}:
+    get:
+      summary: Get a specified sample group
+    delete:
+      summary: Delete a specified sample group
+  /sample_groups/{group_uuid}/samples:
+    get:
+      summary: Get all samples in a specified group
+    post:
+      summary: Add samples to a specified group
+  /sample_groups/{group_uuid}/middleware:
+    post:
+      summary: Run requested middleware/analysis modules for the specified group
+  /libraries/{library_uuid}/metadata:
+    post:
+      summary: Upload metadata to a library 
+  /organizations/{organization_uuid}/sample_groups:
+    post:
+      summary: Add a sample group to an organization
+    get:
+      summary: Get all sample groups owned by an organization
+
+  # samples.py
+  /samples:
+    post:
+      summary: Create a sample and add it to a library
+    get:
+      summary: Get all samples the current user is allowed to see
+  /samples/{sample_uuid}:
+    get:
+      summary: Get a specified sample
+  /samples/{sample_uuid}/metadata:
+    get:
+      summary: Get metadata for a specified sample
+    post:
+      summary: Upload metadata for specified sample
+  /samples/getid/{sample_name}:
+    get:
+      summary: Get the uuid for a specific sample name
+  /samples/{sample_uuid}/middleware:
+    post:
+      summary: Run requested middleware/analysis modules for the specified sample
+
+
+components:
+  schemas:
+    AnalysisResult:
+      type: object
+      required:
+        - uuid
+        - module_name
+      properties:
+        uuid:
+          type: string
+        module_name:
+          type: string
+    AnalysisResults:
+      type: array
+      items:
+        $ref: "#/components/schemas/AnalysisResult"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

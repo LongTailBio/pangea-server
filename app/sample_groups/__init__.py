@@ -1,1 +1,0 @@
-"""Sample Group module."""

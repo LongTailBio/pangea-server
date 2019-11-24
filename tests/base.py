@@ -1,15 +1,30 @@
 """Defines base test suite to use for MetaGenScope tests."""
 
 import logging
+import psycopg2
 
 from flask_testing import TestCase
+from testing.postgresql import PostgresqlFactory
 
 from app import create_app, db, celery
 from app.config import app_config
-from app.mongo import drop_mongo_collections
 
 
 app = create_app()
+
+
+def db_init_handler(postgresql):
+    conn = psycopg2.connect(**postgresql.dsn())
+    cursor = conn.cursor()
+    cursor.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+
+Postgresql = PostgresqlFactory(
+    cache_initialized_db=True, on_initialized=db_init_handler
+)
 
 
 class BaseTestCase(TestCase):
@@ -24,6 +39,8 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         """Set up test DB."""
+        self.postgresql = Postgresql()
+        app.config['SQLALCHEMY_DATABASE_URI'] = self.postgresql.url()
         db.create_all()
         db.session.commit()
 
@@ -36,8 +53,6 @@ class BaseTestCase(TestCase):
         db.session.remove()
         db.drop_all()
 
-        # Mongo
-        drop_mongo_collections()
-
         # Enable logging
         logging.disable(logging.NOTSET)
+        self.postgresql.stop()
