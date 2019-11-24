@@ -25,31 +25,17 @@ def add_sample(_):
     """Add sample."""
     try:
         post_data = request.get_json()
-        library_uuid = post_data['library_uuid']
-        sample_name = post_data['name']
+        library = SampleGroup.from_uuid(post_data['library_uuid'])
+        sample = library.sample(post_data['name'], force_new=True)
     except TypeError:
         raise ParseError('Missing Sample creation payload.')
     except KeyError:
         raise ParseError('Invalid Sample creation payload.')
-
-    try:
-        library = SampleGroup.query.filter_by(uuid=library_uuid).one()
     except NoResultFound:
         raise InvalidRequest('Library does not exist!')
-
-    sample = Sample.filter_by(library_uuid=library.uuid, name=sample_name).first()
-    if sample is not None:
+    except IntegrityError:
         raise InvalidRequest('A Sample with that name already exists in the library.')
-
-    try:
-        sample = Sample.create_and_save(sample_name, library)
-        return sample.serialize(), 201
-    except ValidationError as validation_error:
-        current_app.logger.exception('Sample could not be created.')
-        raise InternalError(str(validation_error))
-    except IntegrityError as integrity_error:
-        current_app.logger.exception('Sample could not be added to Sample Group.')
-        raise InternalError(str(integrity_error))
+    return sample.serializable(), 201
 
 
 @samples_blueprint.route('/samples', methods=['GET'])
@@ -57,18 +43,19 @@ def add_sample(_):
 def get_all_samples(authn):  # pylint: disable=unused-argument
     """Get all samples that the user is allowed to see."""
     try:
-        org_uuids = [membership.uuid for membership in authn.memberships]
+        org_uuids = {membership.uuid for membership in authn.memberships}
         sample_groups = SampleGroup.query.filter(and_(
             SampleGroup.is_library,
             or_(
                 SampleGroup.is_public,
-                SampleGroup.owner_uuid in org_uuids
+                SampleGroup.organization_uuid in org_uuids
             )
         )).all()
         samples = []
         for sample_group in sample_groups:
-            samples += sample_group.samples
-        result = SampleSchema(only=('uuid', 'name', 'created_at')).dump(samples, many=True)
+            for sample in sample_group.samples:
+                samples.append(sample.serializable())
+        result = {'samples': samples}
         return result, 200
     except NoResultFound:
         raise NotFound('No accessible samples found.')
@@ -78,9 +65,8 @@ def get_all_samples(authn):  # pylint: disable=unused-argument
 def get_single_sample(sample_uuid):
     """Get single sample details."""
     try:
-        uuid = UUID(sample_uuid)
-        sample = Sample.objects.get(uuid=uuid)
-        return sample.serialize(), 200
+        sample = Sample.from_uuid(UUID(sample_uuid))
+        return sample.serializable(), 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
@@ -91,73 +77,51 @@ def get_single_sample(sample_uuid):
 def get_single_sample_metadata(sample_uuid):
     """Get single sample metadata."""
     try:
-        uuid = UUID(sample_uuid)
-        sample = Sample.objects.get(uuid=uuid)
-        fields = ('uuid', 'name', 'metadata')
-        result = SampleSchema(only=fields).dump(sample)
+        sample = Sample.from_uuid(UUID(sample_uuid))
+        result = { 
+            'sample': {
+                'uuid': sample.uuid,
+                'name': sample.name,
+                'metadata': sample.sample_metadata,
+            },
+        }
         return result, 200
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
 
+
 @samples_blueprint.route('/samples/<sample_uuid>/metadata', methods=['POST'])
 def post_single_sample_metadata(sample_uuid):
     """Upload metadata for a single sample."""
-    assert False
     try:
         post_data = request.get_json()
-        sample_name = post_data['sample_name']
-        metadata = post_data['metadata']
+        sample = Sample.from_uuid(UUID(sample_uuid))
+        sample.set_sample_metadata(post_data['metadata'])
+        return sample.serializable(), 200
+    except ValueError:
+        raise ParseError('Invalid UUID provided.')
+    except DoesNotExist:
+        raise NotFound('Sample does not exist.')
     except TypeError:
         raise ParseError('Missing Sample metadata payload.')
     except KeyError:
         raise ParseError('Invalid Sample metadata payload.')
 
-    try:
-        sample = Sample.objects.get(name=sample_name)
-    except DoesNotExist:
-        raise NotFound('Sample does not exist.')
 
-    try:
-        sample.metadata = metadata
-        sample.save()
-        result = sample_schema.dump(sample)
-        return result, 200
-    except ValidationError as validation_error:
-        current_app.logger.exception('Sample metadata could not be updated.')
-        raise ParseError(f'Invalid Sample metadata payload: {str(validation_error)}')
-
-@samples_blueprint.route('/samples/getid/<sample_name>', methods=['GET'])
-def get_sample_uuid(sample_name):
-    """Return the UUID associated with a single sample."""
-    try:
-        sample = Sample.objects.get(name=sample_name)
-    except DoesNotExist:
-        raise NotFound('Sample does not exist.')
-
-    sample_uuid = sample.uuid
-    result = {
-        'sample_name': sample_name,  # recapitulate for convenience
-        'sample_uuid': sample_uuid,
-    }
-    return result, 200
-
-
-@samples_blueprint.route('/samples/<uuid>/middleware', methods=['POST'])
-def run_sample_display_modules(uuid):
+@samples_blueprint.route('/samples/<sample_uuid>/middleware', methods=['POST'])
+def run_sample_display_modules(sample_uuid):
     """Run display modules for samples."""
     try:
-        safe_uuid = UUID(uuid)
-        _ = Sample.objects.get(uuid=safe_uuid)
+        sample_uuid = UUID(sample_uuid)
+        _ = Sample.from_uuid(sample_uuid)
     except ValueError:
         raise ParseError('Invalid UUID provided.')
     except DoesNotExist:
         raise NotFound('Sample does not exist.')
 
     analysis_names = request.args.getlist('analysis_names')
-    TaskConductor(uuid, analysis_names).shake_that_baton()
-
+    TaskConductor(sample_uuid, analysis_names).shake_that_baton()
     result = {'middleware': analysis_names}
-
     return result, 202

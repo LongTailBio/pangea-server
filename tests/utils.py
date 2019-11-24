@@ -42,7 +42,7 @@ def add_sample(name, library_uuid=None,
                   ).save()
 
 
-def add_sample_group(name, owner=None, org_name=None, is_library=False,
+def add_sample_group(name=None, owner=None, org_name=None, is_library=False,
                      created_at=datetime.datetime.utcnow()):
     """Wrap functionality for adding sample group."""
     if owner is None:
@@ -50,7 +50,7 @@ def add_sample_group(name, owner=None, org_name=None, is_library=False,
         owner = add_user(owner_name, f'{owner_name}@test.com', 'test')
     org = Organization.from_user(owner, org_name if org_name else f'Test Organization {rand_string()}')
     group = SampleGroup(
-        name=name,
+        name=f'SampleGroup {rand_string()}' if name is None else name,
         organization_uuid=org.uuid,
         is_library=is_library,
         created_at=created_at

@@ -88,3 +88,7 @@ class Sample(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def from_uuid(cls, uuid):
+        return cls.query.filter_by(uuid=uuid).one()

@@ -46,13 +46,13 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         self.is_public = is_public
         self.created_at = created_at
 
-    def sample(self, sample_name, metadata={}):
+    def sample(self, sample_name, metadata={}, force_new=False):
         """Return a sample bound to this library.
 
         Create and save the sample if it does not already exist.
         """
         samps = [samp for samp in self.samples if samp.name == sample_name]
-        if samps:
+        if samps and not force_new:
             return samps[0]
         return Sample(sample_name, self.uuid, metadata=metadata).save()
 
@@ -67,6 +67,10 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         else:
             result = SampleGroupAnalysisResult(module_name, self.uuid).save()
         return result
+
+    @property
+    def sample_uuids(self):
+        return [sample.uuid for sample in self.samples]
 
     @property
     def tools_present(self):
@@ -106,3 +110,11 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         db.session.add(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def from_uuid(cls, uuid):
+        return cls.query.filter_by(uuid=uuid).one()
+
+    @classmethod
+    def from_name(cls, name):
+        return cls.query.filter_by(name=name).one()
