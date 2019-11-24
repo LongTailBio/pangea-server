@@ -254,69 +254,6 @@ def upload_metadata(_, library_uuid):  # pylint: disable=too-many-branches,too-m
 
     return {'updated_uuids': updated_uuids}, 201
 
-'''
-@sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
-                               methods=['POST'])
-@authenticate()
-def add_organization_sample_group(authn, organization_uuid):
-    """Add sample group to organization."""
-    # Validate organization
-    organization = fetch_organization(organization_uuid)
-
-    try:
-        authn_user = User.query.filter_by(uuid=authn.sub).one()
-        _ = OrganizationMembership.query.filter(and_(
-            OrganizationMembership.organization_uuid == organization.uuid,
-            OrganizationMembership.user_uuid == authn_user.uuid,
-            or_(
-                OrganizationMembership.role == 'admin',
-                OrganizationMembership.role == 'write',
-            ),
-        )).one()
-    except NoResultFound:
-        message = 'You do not have permission to add a sample group to that organization.'
-        raise PermissionDenied(message)
-
-    # Validate sample group
-    try:
-        post_data = request.get_json()
-        sample_group_uuid = post_data['sample_group_uuid']
-        sample_group_uuid = UUID(sample_group_uuid)
-        sample_group = SampleGroup.query.filter_by(uuid=sample_group_uuid).one()
-    except TypeError:
-        raise ParseError('Missing sample group payload.')
-    except KeyError:
-        raise ParseError('Invalid sample group payload.')
-    except ValueError:
-        raise ParseError('Invalid sample group UUID.')
-    except NoResultFound:
-        raise NotFound('Sample Group does not exist')
-
-    old_owner = sample_group.owner_uuid
-    if not old_owner == authn_user.uuid:
-        try:
-            _ = OrganizationMembership.query.filter(and_(
-                OrganizationMembership.organization_uuid == old_owner,
-                OrganizationMembership.user_uuid == authn_user.uuid,
-                OrganizationMembership.role == 'admin',
-            )).one()
-        except NoResultFound:
-            message = 'You do not have permission edit that sample group.'
-            raise PermissionDenied(message)
-
-    # Change ownership
-    try:
-        sample_group.owner_name = organization.username
-        sample_group.owner_uuid = organization.uuid
-        db.session.commit()
-        result = {'message': f'${sample_group.name} added to ${organization.username}'}
-        return result, 200
-    except IntegrityError as integrity_error:
-        current_app.logger.exception('IntegrityError encountered while saving organization.')
-        db.session.rollback()
-        raise InternalError(str(integrity_error))
-'''
-
 
 @sample_groups_blueprint.route('/organizations/<organization_uuid>/sample_groups',
                                methods=['GET'])

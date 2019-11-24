@@ -3,6 +3,7 @@
 # pylint: disable=too-many-arguments,too-few-public-methods
 
 import datetime
+import json
 
 from flask import current_app
 from sqlalchemy import UniqueConstraint, func
@@ -33,23 +34,37 @@ class Organization(db.Model):
     users = association_proxy("memberships", "users")
     sample_groups = db.relationship('SampleGroup', backref='organization', lazy=True)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    is_public = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
     def __init__(
             self, primary_admin_uuid, name,
-            is_deleted=False,
+            is_deleted=False, is_public=True,
             created_at=datetime.datetime.utcnow()):
         """Initialize Pangea User model."""
         self.primary_admin_uuid = primary_admin_uuid
         self.name = name
         self.is_deleted = is_deleted
+        self.is_public = is_public
         self.created_at = created_at
 
     def serializable(self):
-        pass
+        out = {
+            'organization': {
+                'uuid': self.uuid,
+                'name': self.name,
+                'is_public': self.is_public,
+                'is_deleted': self.is_deleted,
+                'created_at': self.created_at,
+                'primary_admin_uuid': self.primary_admin_uuid,
+                'sample_group_uuids': [sg.uuid for sg in self.sample_groups],
+                'users': [user.uuid for user in self.users],
+            },
+        }
+        return out
 
     def serialize(self):
-        pass
+        return json.dumps(self.serializable())
 
     def add_user(self, user, role_in_org='read'):
         OrganizationMembership(
@@ -69,7 +84,13 @@ class Organization(db.Model):
             if membership.role in ['admin', 'write']
         ]
 
-    def sample_groups(self, name, description='', is_library=False, is_public=True):
+    def reader_uuids(self):
+        return [
+            membership.user_uuid for membership in self.memberships
+            if membership.role in ['admin', 'write', 'read']
+        ]
+
+    def sample_group(self, name, description='', is_library=False, is_public=True):
         """Return a SampleGroup bound to this organization.
 
         Create and save the SampleGroup if it does not already exist.
@@ -92,10 +113,18 @@ class Organization(db.Model):
         return self
 
     @classmethod
-    def from_user(cls, user, name):
-        org = cls(user.uuid, name).save()
+    def from_user(cls, user, name, is_public=True):
+        org = cls(user.uuid, name, is_public=is_public).save()
         org.add_user(user, role_in_org='admin')
         return org.save()
+
+    @classmethod
+    def from_uuid(cls, uuid):
+        return cls.query.filter_by(uuid=uuid).one()
+
+    @classmethod
+    def from_name(cls, name):
+        return cls.query.filter_by(name=name).one()
 
 
 class User(db.Model):
@@ -138,6 +167,29 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def from_uuid(cls, uuid):
+        return cls.query.filter_by(uuid=uuid).one()
+
+    @classmethod
+    def from_name(cls, name):
+        return cls.query.filter_by(username=name).one()
+
+    def serializable(self):
+        out = {
+            'user': {
+                'uuid': self.uuid,
+                'username': self.username,
+                'organizations': [org.uuid for org in self.organizations],
+                'email': self.email,
+                'is_deleted': self.is_deleted,
+            },
+        }
+        return out
+
+    def serialize(self):
+        return json.dumps(self.serializable())
 
 
 class OrganizationMembership(db.Model):

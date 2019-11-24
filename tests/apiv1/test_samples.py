@@ -128,7 +128,7 @@ class TestSampleModule(BaseTestCase):
         return sample
 
     @with_user
-    def _test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
+    def test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
         """Ensure all middleware can be kicked off for sample."""
         sample = self.prepare_middleware_test()
 

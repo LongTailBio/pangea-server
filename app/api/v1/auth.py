@@ -112,35 +112,20 @@ def add_organization(authn):
     """Add organization."""
     try:
         post_data = request.get_json()
-        username = post_data['username']
-        email = post_data['email']
+        org_name = post_data['name']
+        primary_admin = User.from_uuid(authn.sub)
+        is_public = post_data.get('is_public', True)
+    except NoResultFound:
+        raise NotFound('User does not exist')
     except TypeError:
         raise ParseError('Missing organization payload.')
     except KeyError:
         raise ParseError('Invalid organization payload.')
-
-    organization = User.query.filter_by(username=username).first()
-    if organization is not None:
-        raise InvalidRequest('That name is in use.')
-
-    organization = User.query.filter_by(email=email).first()
-    if organization is not None:
-        raise InvalidRequest('That email is in use.')
-
-    authn_user = User.query.filter_by(uuid=authn.sub).one()
     try:
-        membership = OrganizationMembership(role='admin')
-        membership.user = authn_user
-        organization = User(username=username, email=email, user_type='organization')
-        organization.user_memberships.append(membership)
-        db.session.add_all([organization, membership])
-        db.session.commit()
-
-        result = organization_schema.dump(organization)
-        return result, 201
-    except IntegrityError as integrity_error:
+        org = Organization.from_user(primary_admin, org_name, is_public=is_public)
+        return org.serializable(), 201
+    except IntegrityError:
         current_app.logger.exception('There was a problem adding an organization.')
-        db.session.rollback()
         raise InternalError(str(integrity_error))
 
 
@@ -150,31 +135,30 @@ def get_organizations():
     if 'name' in request.args:
         name_query = request.args.get('name')
         try:
-            organization = User.query.filter_by(user_type='organization',
-                                                username=name_query).one()
+            organization = Organization.from_name(name_query)
         except NoResultFound:
             raise NotFound('Organization does not exist')
-        result = organization_schema.dump(organization)
-        return result, 200
+        return organization.serializable(), 200
 
     limit = request.args.get('limit', PAGE_SIZE)
     offset = request.args.get('offset', 0)
-    organizations = User.query.filter_by(user_type='organization') \
-        .order_by(asc(User.created_at)) \
-        .limit(limit) \
-        .offset(offset) \
-        .all()
-
-    result = organization_schema.dump(organizations, many=True)
+    organizations = Organization.query.all()
+    organizations = sorted(organizations, key=lambda el: str(User.created_at))
+    organizations = organizations[offset:(offset + limit)]
+    result = {'organizations': [org.serializable() for org in organizations]}
     return result, 200
 
 
 @auth_blueprint.route('/organizations/<organization_uuid>', methods=['GET'])
 def get_single_organization(organization_uuid):
     """Get single organization details."""
-    organization = fetch_organization(organization_uuid)
-    result = organization_schema.dump(organization)
-    return result, 200
+    try:
+        org = Organization.from_uuid(UUID(organization_uuid))
+        return org.serializable(), 200
+    except ValueError:
+        raise ParseError('Invalid organization UUID.')
+    except NoResultFound:
+        raise NotFound('Organization does not exist')
 
 
 @auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['POST'])
@@ -183,73 +167,44 @@ def add_organization_user(authn, organization_uuid):     # pylint: disable=too-m
     """Add user to organization."""
     try:
         post_data = request.get_json()
-        user_uuid = post_data['user_uuid']
-        organization_uuid = UUID(organization_uuid)
+        organization = Organization.from_uuid(UUID(organization_uuid))
+        admin = User.from_uuid(authn.sub)
     except TypeError:
         raise ParseError('Missing membership payload.')
-    except KeyError:
-        raise ParseError('Invalid membership payload.')
     except ValueError:
         raise ParseError('Invalid organization UUID.')
-
-    try:
-        organization = User.query.filter_by(uuid=organization_uuid).one()
     except NoResultFound:
         raise NotFound('Organization does not exist')
-
-    authn_user = User.query.filter_by(uuid=authn.sub).one()
     try:
-        _ = OrganizationMembership.query.filter_by(
-            organization_uuid=organization.uuid,
-            user_uuid=authn_user.uuid,
-            role='admin',
-        ).one()
+        user = User.from_uuid(post_data['user_uuid'])
+    except KeyError:
+        raise ParseError('Invalid membership payload.')
     except NoResultFound:
-        message = 'You do not have permission to add a user to that organization.'
-        raise PermissionDenied(message)
+        raise NotFound('User does not exist')
 
-    try:
-        user = User.query.filter_by(uuid=user_uuid).one()
-    except NoResultFound:
-        raise InvalidRequest('User does not exist')
-
-    membership = OrganizationMembership.query.filter_by(
-        organization_uuid=organization.uuid,
-        user_uuid=user.uuid,
-    ).first()
-    if membership:
-        raise InvalidRequest('User is already part of organization.')
-
-    try:
+    if admin.uuid in organization.admin_uuids():
+        if user.uuid in organization.reader_uuids():
+            raise InvalidRequest('User is already part of organization.')
         role = post_data.get('role', 'read')
-        membership = OrganizationMembership(role=role)
-        membership.user = user
-        membership.organization = organization
-        db.session.add(membership)
-        db.session.commit()
-        message = f'${user.username} added to ${organization.username}'
-        result = {'message': message}
-        return result, 200
-    except IntegrityError as integrity_error:
-        current_app.logger.exception('IntegrityError encountered.')
-        db.session.rollback()
-        raise InternalError(str(integrity_error))
+        try:
+            organization.add_user(user, role_in_org=role)
+            result = {'message': f'${user.username} added to ${organization.name}'}
+            return result, 200
+        except IntegrityError as integrity_error:
+            current_app.logger.exception('IntegrityError encountered.')
+            raise InternalError(str(integrity_error))
+    raise PermissionDenied('You do not have permission to add a user to that organization.')
 
 
 @auth_blueprint.route('/organizations/<organization_uuid>/users', methods=['GET'])
 @authenticate(required=False)
 def get_organization_users(authn, organization_uuid):
     """Get single organization's users."""
-    organization = fetch_organization(organization_uuid)
-
-    authn_user = User.query.filter_by(uuid=authn.sub).one() if authn else None
-    if authn_user in organization.users:
-        result = user_schema.dump(organization.users, many=True)
+    org = Organization.from_uuid(organization_uuid)
+    authn_user = User.from_uuid(authn.sub) if authn else None
+    if (authn_user and authn_user.uuid in org.reader_uuids()) or org.is_public:
+        result = {
+            'users': [user.serializable() for user in org.users],
+        }
         return result, 200
-
-    users = User.query.filter(
-        User.user_memberships.any(organization_uuid=organization.uuid),
-        User.user_memberships.any(is_public=True),
-    ).all()
-    result = user_schema.dump(users, many=True)
-    return result, 200
+    raise PermissionDenied('You do not have permission to see that group.')
