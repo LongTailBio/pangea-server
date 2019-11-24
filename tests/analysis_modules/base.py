@@ -23,14 +23,14 @@ class BaseAnalysisModuleTest(BaseTestCase):
         analysis_result.set_status('SUCCESS')
         with self.client:
             response = self.client.get(
-                f'/api/v1/analysis_results/{analysis_result.uuid}',
+                f'/api/v1/analysis_results/{sample.uuid}/{endpt}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             for field in verify_fields:
                 self.assertIn(field, data['data']['data'])
                 field_response = self.client.get(
-                    f'/api/v1/analysis_results/{analysis_result.uuid}/{field}',
+                    f'/api/v1/analysis_results/{sample.uuid}/{endpt}/{field}',
                     content_type='application/json',
                 )
                 self.assertEqual(field_response.status_code, 200)

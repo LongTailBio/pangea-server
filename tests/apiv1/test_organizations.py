@@ -88,8 +88,6 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations/{organization.uuid}',
                 content_type='application/json',
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('Test Org EHYTUE', data['data']['organization']['name'])
@@ -118,8 +116,6 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations?name={organization.name}',
                 content_type='application/json',
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
@@ -134,8 +130,6 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations/{organization.uuid}/users',
                 content_type='application/json',
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertTrue(len(data['data']['users']) == 1)
@@ -151,8 +145,6 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations/{org.uuid}/sample_groups',
                 content_type='application/json',
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
@@ -185,8 +177,6 @@ class TestOrganizationModule(BaseTestCase):
                 f'/api/v1/organizations',
                 content_type='application/json',
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(data['data']['organizations']), 2)
@@ -203,8 +193,6 @@ class TestOrganizationModule(BaseTestCase):
                 content_type='application/json',
                 headers=auth_headers,
             )
-            print(response)
-            print(response.data.decode())
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
