@@ -11,7 +11,6 @@ from sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.analysis_modules.task_graph import TaskConductor
 from app.db_models import SampleGroup, Sample
 
 from app.api.constants import PAGE_SIZE
