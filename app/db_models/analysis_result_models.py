@@ -223,6 +223,10 @@ class SampleAnalysisResult(AnalysisResult):
     def _field_type(cls):
         return SampleAnalysisResultField
 
+    @classmethod
+    def from_name_sample(cls, module_name, sample_uuid):
+        return cls.query.filter_by(sample_uuid=sample_uuid, module_name=module_name).one()
+
 
 class SampleGroupAnalysisResult(AnalysisResult):
 

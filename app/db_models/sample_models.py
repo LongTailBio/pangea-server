@@ -92,3 +92,7 @@ class Sample(db.Model):
     @classmethod
     def from_uuid(cls, uuid):
         return cls.query.filter_by(uuid=uuid).one()
+
+    @classmethod
+    def from_name_library(cls, module_name, library_uuid):
+        return cls.query.filter_by(library_uuid=library_uuid, name=module_name).one()

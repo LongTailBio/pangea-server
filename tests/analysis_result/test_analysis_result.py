@@ -54,16 +54,16 @@ class TestAnalysisResultModel(BaseTestCase):
 
     def test_add_duplicate_module_to_group(self):
         """Ensure duplicate sample names are not allowed."""
-        grp = add_sample_group('GRP_01')
-        SampleGroupAnalysisResult('module_1', grp.uuid).save()
-        dup = SampleGroupAnalysisResult('module_1', grp.uuid)
+        grp = add_sample_group('GRP_01 UIHHGHJ')
+        SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid).save()
+        dup = SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid)
         self.assertRaises(IntegrityError, dup.save)
 
     def test_add_duplicate_to_diff_groups(self):
         """Ensure duplicate sample names in different libraries are allowed."""
-        g1 = add_sample_group('GRP_01')
-        g2 = add_sample_group('GRP_02')
-        orig = SampleGroupAnalysisResult('module_1', g1.uuid).save()
-        dup = SampleGroupAnalysisResult('module_1', g2.uuid).save()
+        g1 = add_sample_group('GRP_01 HHJH')
+        g2 = add_sample_group('GRP_02 HHJH')
+        orig = SampleGroupAnalysisResult('module_1 HHJH', g1.uuid).save()
+        dup = SampleGroupAnalysisResult('module_1 HHJH', g2.uuid).save()
         self.assertEqual(orig.module_name, dup.module_name)
         self.assertNotEqual(orig.parent_uuid, dup.parent_uuid)

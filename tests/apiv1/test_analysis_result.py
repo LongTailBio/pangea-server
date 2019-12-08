@@ -13,57 +13,69 @@ class TestAnalysisResultModule(BaseTestCase):
 
     def test_get_sample_result_from_names(self):
         """Ensure get single analysis result behaves correctly."""
-        assert False
-        lib_name, sample_name, module_name = 'LBRY_01 YTHEH', 'SMPL_01 YTHEH', 'module_1 YTHEH'
-        library = add_sample_group(lib_nameb, is_library=True)
+        lib_name, sample_name, module_name = 'LBRY_01 UISADD', 'SMPL_01 UISADD', 'module_1 UISADD'
+        library = add_sample_group(lib_name, is_library=True)
         sample = library.sample(sample_name)
         analysis_result = sample.analysis_result(module_name)
+        ar_field_1 = analysis_result.field('field_1').set_data('data_1')
+        ar_field_2 = analysis_result.field('field_2').set_data('data_2')
+        BY_NAME_URL = f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}'
         with self.client:
             response = self.client.get(
-                f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}',
+                BY_NAME_URL,
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
+            print(data)
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertIn('uuid', data['data']['analysis_result'])
-            self.assertIn('module_name', data['data']['analysis_result'])
+            self.assertIn('field_1', data['data'])
+            self.assertEqual('data_1', data['data']['field_1'])
+            self.assertIn('field_2', data['data'])
+            self.assertEqual('data_2', data['data']['field_2'])
 
     def test_create_sample_result_ar_from_names(self):
-        """Ensure get single analysis result behaves correctly."""
-        assert False
+        """Ensure creating an analysis result field behaves correctly."""
         lib_name, sample_name, module_name = 'LBRY_01 YTHEH', 'SMPL_01 YTHEH', 'module_1 YTHEH'
-        library = add_sample_group(lib_nameb, is_library=True)
+        library = add_sample_group(lib_name, is_library=True)
         sample = library.sample(sample_name)
         analysis_result = sample.analysis_result(module_name)
+        BY_NAME_URL = f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}'
         with self.client:
             response = self.client.post(
-                f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}/{field_name}',
+                BY_NAME_URL + f'/field_2',
                 content_type='application/json',
+                data=json.dumps({
+                    "value_1": 100,
+                    "value_2": "Fields may either be s3 uris (as above) or simple JSON blobs"
+                }),
             )
+            self.assertEqual(response.status_code, 201)
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('success', data['status'])
-            self.assertIn('uuid', data['data']['analysis_result'])
-            self.assertIn('module_name', data['data']['analysis_result'])
+            uuid = data['data']['uuid']
+            field = SampleAnalysisResultField.query.filter_by(uuid=uuid).first()
+            self.assertEqual(field.field_name, 'field_2')
+            self.assertEqual(field.parent_uuid, analysis_result.uuid)
 
-    def test_spec_uri_sample_result_ar_from_names(self):
+    def test_get_s3uri_sample_result_ar_from_names(self):
         """Ensure get single analysis result behaves correctly."""
-        assert False
-        lib_name, sample_name, module_name = 'LBRY_01 YTHEH', 'SMPL_01 YTHEH', 'module_1 YTHEH'
-        library = add_sample_group(lib_nameb, is_library=True)
+        lib_name, sample_name = 'LBRY_01 HRAVWQ', 'SMPL_01 HRAVWQ'
+        module_name, field_name = 'module_1 HRAVWQ', 'field_1 HRAVWQ'
+        library = add_sample_group(lib_name, is_library=True)
         sample = library.sample(sample_name)
         analysis_result = sample.analysis_result(module_name)
+        BY_NAME_URL = f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}'
         with self.client:
-            response = self.client.post(
-                f'/api/v1/analysis_results/byname/{lib_name}/{sample_name}/{module_name}/{field_name}',
+            response = self.client.get(
+                BY_NAME_URL + f'/{field_name}/s3uri?ext=foo',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertIn('uuid', data['data']['analysis_result'])
-            self.assertIn('module_name', data['data']['analysis_result'])
+            self.assertIn('endpoint_url', data['s3_uri'])
+            self.assertIn('__type__', data['s3_uri'])
+            self.assertIn('uri', data['s3_uri'])
 
     def test_get_single_sample_result(self):
         """Ensure get single analysis result behaves correctly."""

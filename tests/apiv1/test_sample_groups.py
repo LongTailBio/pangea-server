@@ -225,31 +225,3 @@ class TestSampleGroupModule(BaseTestCase):
             self.assertIn('success', data['status'])
             self.assertEqual(sample_group_uuid, data['data']['sample_group']['uuid'])
             self.assertEqual(sample_group_name, data['data']['sample_group']['name'])
-
-    def prepare_middleware_test(self):  # pylint: disable=no-self-use
-        """Prepare database for middleware test."""
-        def create_sample(i):
-            """Create unique sample for index i."""
-            args = {
-                'library_uuid': uuid4(),
-                'analysis_result': get_analysis_result_with_data(),
-                'name': f'AncestrySample{i}',
-                'metadata': {'foobar': f'baz{i}'},
-            }
-            return Sample(**args).save()
-
-        sample_group = add_sample_group(name='Ancestry Sample Group')
-        sample_group.samples = [create_sample(i) for i in range(6)]
-        db.session.commit()
-
-        return sample_group
-
-    @with_user
-    def test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure all middleware can be kicked off for group."""
-        sample_group = self.prepare_middleware_test()
-
-        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
-        with mock.patch(patch_path) as conductor:
-            endpoint = f'/api/v1/sample_groups/{str(sample_group.uuid)}/middleware'
-            middleware_tester(self, auth_headers, conductor, endpoint)
