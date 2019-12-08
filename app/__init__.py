@@ -16,7 +16,7 @@ from app.api.v1.ping import ping_blueprint
 from app.api.v1.samples import samples_blueprint
 from app.api.v1.sample_groups import sample_groups_blueprint
 from app.config import app_config
-from app.extensions import db, migrate, bcrypt, celery
+from app.extensions import db, migrate, bcrypt
 
 
 def create_app(environment=None):
@@ -37,7 +37,6 @@ def create_app(environment=None):
     db.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
-    celery.init_app(app)
 
     # Register application components
     register_blueprints(app)

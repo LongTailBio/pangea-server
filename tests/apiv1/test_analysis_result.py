@@ -2,7 +2,13 @@
 
 import json
 
-from app.db_models import Sample, SampleAnalysisResult, SampleGroupAnalysisResult
+from app.db_models import (
+    Sample,
+    SampleAnalysisResult,
+    SampleGroupAnalysisResult,
+    SampleAnalysisResultField,
+    SampleGroupAnalysisResultField,
+)
 from tests.base import BaseTestCase
 
 from ..utils import add_sample_group
@@ -46,13 +52,15 @@ class TestAnalysisResultModule(BaseTestCase):
                 BY_NAME_URL + f'/field_2',
                 content_type='application/json',
                 data=json.dumps({
-                    "value_1": 100,
-                    "value_2": "Fields may either be s3 uris (as above) or simple JSON blobs"
+                    'field_2': {
+                        "value_1": 100,
+                        "value_2": "Fields may either be s3 uris or simple JSON blobs"
+                    }
                 }),
             )
             self.assertEqual(response.status_code, 201)
             data = json.loads(response.data.decode())
-            uuid = data['data']['uuid']
+            uuid = data['data']['analysis_result_field']['uuid']
             field = SampleAnalysisResultField.query.filter_by(uuid=uuid).first()
             self.assertEqual(field.field_name, 'field_2')
             self.assertEqual(field.parent_uuid, analysis_result.uuid)
@@ -73,9 +81,9 @@ class TestAnalysisResultModule(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertIn('endpoint_url', data['s3_uri'])
-            self.assertIn('__type__', data['s3_uri'])
-            self.assertIn('uri', data['s3_uri'])
+            self.assertIn('endpoint_url', data['data'])
+            self.assertIn('__type__', data['data'])
+            self.assertIn('uri', data['data'])
 
     def test_get_single_sample_result(self):
         """Ensure get single analysis result behaves correctly."""

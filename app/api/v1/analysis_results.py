@@ -1,11 +1,11 @@
 """Analysis Result API endpoint definitions."""
 
 from uuid import UUID
+from os import environ
 
 from flask import Blueprint, request
 from flask_api.exceptions import NotFound, ParseError
 from sqlalchemy.orm.exc import NoResultFound
-from mongoengine import DoesNotExist
 
 from app.db_models import (
     SampleAnalysisResult,
@@ -82,6 +82,19 @@ def get_analysis_result_fields_by_name(lib_name, sample_name, module_name):
         raise NotFound('Analysis Result does not exist.')
 
 
+def _build_s3_uri(library_name, sample_name, module_name, field_name, ext=''):
+    path_string = [f's3://{library_name}', environ.get('S3_KEY_PREFIX', ''), '<key>']
+    path_string = '/'.join([el for el in path_string if el])
+    if ext and ext[0] != '.':
+        ext = '.' + ext
+    key = (
+        f'{sample_name}/{module_name}/'
+        f'{library_name}.{sample_name}.{module_name}.{field_name}{ext}'
+    )
+    path_string = path_string.replace('<key>', key)
+    return path_string
+
+
 @analysis_results_blueprint.route(BY_NAME_URL + '/<field_name>/s3uri', methods=['GET'])
 def get_s3_uri_for_specified_analyis_result_field(lib_name, sample_name, module_name, field_name):
     """Get an S3 URI for the specified AR field.
@@ -89,11 +102,37 @@ def get_s3_uri_for_specified_analyis_result_field(lib_name, sample_name, module_
     This S3 URI will not point to an actual file at first.
     Just create a consistent interface for storage
     """
-    assert False
     ext = request.args.get('ext', '')
+    uri_str = _build_s3_uri(lib_name, sample_name, module_name, field_name, ext)
+    endpoint_url = environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
+    result = {
+        '__type__': 's3_uri',
+        'uri': uri_str,
+        'endpoint_url': endpoint_url,
+    }
+    return result, 200
 
 
 @analysis_results_blueprint.route(BY_NAME_URL + '/<field_name>', methods=['POST'])
 def post_analysis_result_field_by_name(lib_name, sample_name, module_name, field_name):
-    """Store the payload in the specified analysis result field."""
-    assert False
+    """Store the payload in the specified analysis result field.
+
+    Create the analysis result if it does not exist but do not create
+    the sample or library.
+    """
+    try:
+        library = SampleGroup.from_name(lib_name)
+        sample = Sample.from_name_library(sample_name, library.uuid)
+    except NoResultFound:
+        raise NotFound('Analysis Result does not exist.')
+    try:
+        analysis_result = sample.analysis_result(module_name)
+        post_data = request.get_json()
+        field = analysis_result.field(field_name)
+        field.set_data(post_data[field_name])
+        result = field.serializable()
+        return result, 201
+    except TypeError:
+        raise ParseError('Missing registration payload.')
+    except KeyError:
+        raise ParseError('Invalid registration payload.')
