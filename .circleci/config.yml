@@ -2,7 +2,8 @@ version: 2
 
 docker_build: &docker_build
   command: |
-    docker build . -t $SERVICE_NAME:$COMMIT
+    cd $DOCKERFILE_PATH
+    docker build . --file $DOCKERFILE_NAME --tag $SERVICE_NAME:$COMMIT
     docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$DOCKER_TAG
     if [ "$PUSH_GIT_COMMIT" = true ] ; then \
       docker tag $SERVICE_NAME:$COMMIT $DOCKER_ORG/$SERVICE_NAME:$COMMIT; \
@@ -41,36 +42,48 @@ build_steps: &build_steps
         name: Build and push mongo-db
         environment:
           SERVICE_NAME: mongo
+          DOCKERFILE_PATH: "./database_docker/mongo_db"
+          DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
     - run:
         name: Build and push metagenscope-db
         environment:
           SERVICE_NAME: metagenscope-db
+          DOCKERFILE_PATH: "./database_docker/postgres_db"
+          DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
     - run:
         name: Build and push redis
         environment:
           SERVICE_NAME: redis
+          DOCKERFILE_PATH: "./database_docker/redis"
+          DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
     - run:
         name: Build and push rabbitmq
         environment:
           SERVICE_NAME: rabbitmq
+          DOCKERFILE_PATH: "./database_docker/rabbitmq"
+          DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
     - run:
         name: Build and push metagenscope-worker
         environment:
           SERVICE_NAME: metagenscope-worker
+          DOCKERFILE_PATH: "."
+          DOCKERFILE_NAME: "Dockerfile-worker"
         <<: *docker_build
 
     - run:
         name: Build and push metagenscope-service
         environment:
           SERVICE_NAME: metagenscope-service
+          DOCKERFILE_PATH: "."
+          DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
 
