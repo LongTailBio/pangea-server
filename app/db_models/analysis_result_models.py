@@ -256,4 +256,8 @@ class SampleGroupAnalysisResult(AnalysisResult):
 
     @classmethod
     def _field_type(cls):
-        return SampleAnalysisResultField
+        return SampleGroupAnalysisResultField
+
+    @classmethod
+    def from_name_group(cls, module_name, group_uuid):
+        return cls.query.filter_by(sample_group_uuid=group_uuid, module_name=module_name).one()
