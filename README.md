@@ -1,10 +1,15 @@
-# MetaGenScope Server
+# Pangea Server
 
-> MetaGenScope server application.
+Pangea is a system to improve bioinformatics pipelines. Key features include:
+ - Organize projects, samples, and the results of analyses
+ - Automatically Sync results with S3 cloud storage
+ - Coordinate pipelines running across multiple sites
+
+Pangea server is currently in alpha and being heavily developed.
 
 ## Getting Started
 
-This readme documents how to run and test the MetaGenScope server as a standalone application. `metagenscope-server` is part of [`metagenscope-main`](https://github.com/longtailbio/metagenscope-main) and should usually be run as part of the complete stack.
+This readme documents how to run and test the Pangea server as a standalone application. Pangea server is based on the earlier MetaGenScope server `metagenscope-server` was a part of [`metagenscope-main`](https://github.com/longtailbio/metagenscope-main) and was usually be run as part of the complete stack.
 
 ### Prerequisites
 
