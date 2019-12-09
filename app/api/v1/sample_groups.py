@@ -164,6 +164,22 @@ def get_samples_for_group(group_uuid):
         raise NotFound('Sample Group does not exist')
 
 
+
+@sample_groups_blueprint.route('/sample_groups/byname/<group_name>/samples', methods=['GET'])
+def get_samples_for_group_by_name(group_name):
+    """Get single sample group's list of samples."""
+    try:
+        sample_group = SampleGroup.from_name(group_name)
+        result = {
+            'samples': [sample.serializable() for sample in sample_group.samples],
+        }
+        return result, 200
+    except ValueError:
+        raise ParseError('Invalid Sample Group UUID.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+
 @sample_groups_blueprint.route('/sample_groups/<group_uuid>/samples', methods=['POST'])
 @authenticate()
 def add_samples_to_group(authn, group_uuid):

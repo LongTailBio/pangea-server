@@ -85,6 +85,18 @@ class TestAnalysisResultModule(BaseTestCase):
             self.assertIn('__type__', data['data'])
             self.assertIn('uri', data['data'])
 
+    def test_get_group_result_from_names(self):
+        """Ensure get single analysis result behaves correctly."""
+        assert False
+
+    def test_create_group_result_ar_from_names(self):
+        """Ensure creating an analysis result field behaves correctly."""
+        assert False
+
+    def test_get_s3uri_group_result_ar_from_names(self):
+        """Ensure get single analysis result behaves correctly."""
+        assert False
+
     def test_get_single_sample_result(self):
         """Ensure get single analysis result behaves correctly."""
         library = add_sample_group('LBRY_01', is_library=True)
