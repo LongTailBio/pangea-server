@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build clean lint-app lint-tests lint-seed lint-worker lint-analysis-packages lint test cov
+.PHONY: clean-pyc clean-build clean lint-app lint-tests lint-seed lint-worker lint test cov
 .DEFAULT_GOAL: help
 
 help:
@@ -46,20 +46,15 @@ lint-worker:
 	pycodestyle worker --max-line-length=120 && \
 	pydocstyle worker
 
-lint-analysis-packages:
-	pylint --rcfile=.pylintrc analysis_packages -f parseable -r n && \
-	pycodestyle analysis_packages --max-line-length=120 && \
-	pydocstyle analysis_packages
-
 lint:
-	pylint --rcfile=.pylintrc app tests seed worker analysis_packages tool_packages -f parseable -r n && \
-	pycodestyle app tests seed worker analysis_packages tool_packages --max-line-length=120 && \
-	pydocstyle app tests seed worker analysis_packages tool_packages
+	pylint --rcfile=.pylintrc app tests seed worker -f parseable -r n && \
+	pycodestyle app tests seed worker --max-line-length=120 && \
+	pydocstyle app tests seed worker
 
 test:
-	pytest tests analysis_packages tool_packages
+	pytest tests
 
 cov:
 	pytest --cov-report html \
 	       --cov-config .coveragerc \
-	       --cov=app tests analysis_packages tool_packages
+	       --cov=app tests

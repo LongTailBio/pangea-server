@@ -7,10 +7,11 @@ import time
 from uuid import uuid4
 
 from app import db
-from app.organizations.organization_models import Organization
+from app.authentication.models import User, Organization
+from app.db_models import SampleGroup
 
-from tests.base import BaseTestCase
-from tests.utils import add_user, add_organization, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import add_user, add_sample_group, with_user
 
 
 class TestOrganizationModule(BaseTestCase):
@@ -24,8 +25,7 @@ class TestOrganizationModule(BaseTestCase):
                 '/api/v1/organizations',
                 headers=auth_headers,
                 data=json.dumps(dict(
-                    name='MetaGenScope',
-                    admin_email='admin@metagenscope.com'
+                    name='Test Org UYBHJGHE'
                 )),
                 content_type='application/json',
             )
@@ -33,33 +33,7 @@ class TestOrganizationModule(BaseTestCase):
             self.assertEqual(response.status_code, 201)
             self.assertIn('success', data['status'])
             self.assertIn('organization', data['data'])
-
-            organization_uuid = data['data']['organization']['uuid']
-            organization = Organization.query.filter_by(id=organization_uuid).first()
-            self.assertIn(login_user, organization.admin_users)
-
-    @with_user
-    def test_add_private_organization(self, auth_headers, *_):
-        """Ensure a new organization can be added to the database."""
-        organization_name = 'MetaGenScope'
-        with self.client:
-            response = self.client.post(
-                '/api/v1/organizations',
-                headers=auth_headers,
-                data=json.dumps(dict(
-                    name=organization_name,
-                    admin_email='admin@metagenscope.com',
-                    access_scheme='private',
-                )),
-                content_type='application/json',
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 201)
-            self.assertIn('success', data['status'])
-            self.assertIn('organization', data['data'])
-
-        organization = Organization.query.filter_by(name=organization_name).one()
-        self.assertEqual(organization.access_scheme, 'private')
+            self.assertIn(str(login_user.uuid), data['data']['organization']['users'])
 
     # pylint: disable=invalid-name
     @with_user
@@ -85,7 +59,7 @@ class TestOrganizationModule(BaseTestCase):
             response = self.client.post(
                 '/api/v1/organizations',
                 headers=auth_headers,
-                data=json.dumps(dict(admin_email='admin@metagenscope.com')),
+                data=json.dumps(dict(email='admin@metagenscope.com')),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -107,20 +81,18 @@ class TestOrganizationModule(BaseTestCase):
 
     def test_single_organization(self):
         """Ensure get single organization behaves correctly."""
-        organization = add_organization('Test Organization', 'admin@test.org')
-        uuid = str(organization.id)
+        user = add_user('new_user EHYTUE', 'new_user_EHYTUE@test.com', 'somepassword')
+        organization = Organization.from_user(user, 'Test Org EHYTUE')
         with self.client:
             response = self.client.get(
-                f'/api/v1/organizations/{uuid}',
+                f'/api/v1/organizations/{organization.uuid}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
-            self.assertIn('Test Organization', data['data']['organization']['name'])
-            self.assertIn('admin@test.org', data['data']['organization']['admin_email'])
+            self.assertIn('Test Org EHYTUE', data['data']['organization']['name'])
+            self.assertEqual(str(user.uuid), data['data']['organization']['primary_admin_uuid'])
             self.assertTrue('created_at' in data['data']['organization'])
-            self.assertTrue('users' in data['data']['organization'])
-            self.assertTrue('sample_groups' in data['data']['organization'])
             self.assertIn('success', data['status'])
 
     def test_single_organization_no_id(self):
@@ -137,59 +109,50 @@ class TestOrganizationModule(BaseTestCase):
 
     def test_get_uuid_from_name(self):
         """Ensure get organization UUID behaves correctly."""
-        organization_name = 'Sample Group One'
-        organization = add_organization(name=organization_name, admin_email='admin@test.org')
-        organization_uuid = str(organization.id)
-
+        user = add_user('new_user DUYRTYD', 'new_user_DUYRTYD@test.com', 'somepassword')
+        organization = Organization.from_user(user, 'Test Org DUYRTYD')
         with self.client:
             response = self.client.get(
-                f'/api/v1/organizations/getid/{organization_name}',
+                f'/api/v1/organizations?name={organization.name}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
-            self.assertEqual(organization_uuid, data['data']['organization_uuid'])
-            self.assertEqual(organization_name, data['data']['organization_name'])
+            self.assertEqual(str(organization.uuid), data['data']['organization']['uuid'])
 
     def test_single_organization_users(self):
         """Ensure getting users for an organization behaves correctly."""
-        user = add_user('test', 'test@test.com', 'test')
-        organization = add_organization('Test Organization', 'admin@test.org')
-        organization.users = [user]
-        db.session.commit()
-
-        uuid = str(organization.id)
+        user = add_user('new_user RQNUIAN', 'new_user_RQNUIAN@test.com', 'somepassword')
+        organization = Organization.from_user(user, 'Test Org RQNUIAN')
         with self.client:
             response = self.client.get(
-                f'/api/v1/organizations/{uuid}/users',
+                f'/api/v1/organizations/{organization.uuid}/users',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertTrue(len(data['data']['users']) == 1)
-            self.assertTrue('username' in data['data']['users'][0])
-            self.assertTrue('email' in data['data']['users'][0])
             self.assertIn('success', data['status'])
 
     def test_single_organization_sample_groups(self):
         """Ensure getting sample groups for an organization behaves correctly."""
-        sample_group = add_sample_group('Pilot Sample Group')
-        organization = add_organization('Test Organization', 'admin@test.org')
-        organization.sample_groups = [sample_group]
-        db.session.commit()
-
-        uuid = str(organization.id)
+        user = add_user('new_user WEDFVBN', 'new_user_WEDFVBN@test.com', 'somepassword')
+        org = Organization.from_user(user, 'Test Org WEDFVBN')
+        group = SampleGroup(name=f'SampleGroup WEDFVBN', organization_uuid=org.uuid).save()
         with self.client:
             response = self.client.get(
-                f'/api/v1/organizations/{uuid}/sample_groups',
+                f'/api/v1/organizations/{org.uuid}/sample_groups',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(len(data['data']['sample_groups']) == 1)
-            self.assertTrue('name' in data['data']['sample_groups'][0])
             self.assertIn('success', data['status'])
+            self.assertEqual(len(data['data']['sample_groups']), 1)
+            self.assertEqual(
+                data['data']['sample_groups'][0]['sample_group']['name'],
+                group.name
+            )
 
     def test_single_organization_incorrect_id(self):
         """Ensure error is thrown if the id does not exist."""
@@ -206,8 +169,9 @@ class TestOrganizationModule(BaseTestCase):
 
     def test_all_organizations(self):
         """Ensure get all organizations behaves correctly."""
-        add_organization('Test Organization', 'admin@test.org')
-        add_organization('Test Organization Two', 'admin@test.org')
+        user = add_user('new_user ESOGH', 'new_user_ESOGH@test.com', 'somepassword')
+        org1 = Organization.from_user(user, 'Test Org 1 ESOGH')
+        org2 = Organization.from_user(user, 'Test Org 2 ESOGH')
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations',
@@ -216,42 +180,13 @@ class TestOrganizationModule(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(data['data']['organizations']), 2)
-            self.assertIn('Test Organization', data['data']['organizations'][0]['name'])
-            self.assertIn(
-                'admin@test.org', data['data']['organizations'][0]['admin_email'])
-            self.assertIn('Test Organization Two', data['data']['organizations'][1]['name'])
-            self.assertIn(
-                'admin@test.org', data['data']['organizations'][1]['admin_email'])
-            self.assertTrue('created_at' in data['data']['organizations'][0])
-            self.assertTrue('created_at' in data['data']['organizations'][1])
-            self.assertIn('success', data['status'])
-
-    def test_private_organization(self):
-        """Ensure private organizatons do not show up in public list."""
-        add_organization('Public Organization', 'admin@public.org')
-        add_organization('Private Organization', 'admin@private.org', access_scheme='private')
-        with self.client:
-            response = self.client.get(
-                f'/api/v1/organizations',
-                content_type='application/json',
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('success', data['status'])
-            self.assertEqual(len(data['data']['organizations']), 1)
-            self.assertIn('Public Organization', data['data']['organizations'][0]['name'])
 
     @with_user
     def test_authorized_private_organization(self, auth_headers, login_user):
         """Ensure private organizatons show up in authorized user's list."""
-        add_organization('Public Organization', 'admin@public.org',
-                         created_at=datetime.datetime.utcnow())
-        time.sleep(0.3)
-        private_org = add_organization('Private Organization', 'admin@private.org',
-                                       access_scheme='private',
-                                       created_at=datetime.datetime.utcnow())
-        private_org.users.append(login_user)
-        db.session.commit()
+        user = add_user('new_user BRBBB', 'new_user_BRBBB@test.com', 'somepassword')
+        org1 = Organization.from_user(user, 'Test Public Org BRBBB', is_public=True)
+        org2 = Organization.from_user(user, 'Test Private Org BRBBB', is_public=False)
         with self.client:
             response = self.client.get(
                 f'/api/v1/organizations',
@@ -262,23 +197,19 @@ class TestOrganizationModule(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
             self.assertEqual(len(data['data']['organizations']), 2)
-            self.assertIn('Public Organization', data['data']['organizations'][0]['name'])
-            self.assertIn('Private Organization', data['data']['organizations'][1]['name'])
 
     @with_user
-    def test_add_user_to_organiztion(self, auth_headers, login_user):
+    def test_add_user_to_organization(self, auth_headers, login_user):
         """Ensure user can be added to organization by admin user."""
-        organization = add_organization('Test Organization', 'admin@test.org')
-        organization.add_admin(login_user)
-        db.session.commit()
-        user = add_user('new_user', 'new_user@test.com', 'somepassword')
+        organization = Organization.from_user(login_user, 'Test Org RWBMN')
+        user = add_user('new_user YUT', 'new_userIUYYU@test.com', 'somepassword')
         with self.client:
-            org_uuid = str(organization.id)
+            org_uuid = str(organization.uuid)
             response = self.client.post(
                 f'/api/v1/organizations/{org_uuid}/users',
                 headers=auth_headers,
                 data=json.dumps(dict(
-                    user_id=str(user.id),
+                    user_uuid=str(user.uuid),
                 )),
                 content_type='application/json',
             )
@@ -289,14 +220,14 @@ class TestOrganizationModule(BaseTestCase):
 
     def test_unauthenticated_add_user_to_organiztion(self):
         """Ensure unauthenticated user cannot attempt action."""
-        organization = add_organization('Test Organization', 'admin@test.org')
-        user_uuid = str(uuid4())
+        user = add_user('new_user IOU', 'new_userIOU@test.com', 'somepassword')
+        organization = Organization.from_user(user, 'Test Org UYHGJ')
         with self.client:
-            org_uuid = str(organization.id)
+            org_uuid = str(organization.uuid)
             response = self.client.post(
                 f'/api/v1/organizations/{org_uuid}/users',
                 data=json.dumps(dict(
-                    user_id=user_uuid,
+                    user_uuid=str(uuid4()),
                 )),
                 content_type='application/json',
             )
@@ -308,64 +239,20 @@ class TestOrganizationModule(BaseTestCase):
     @with_user
     def test_unauthorized_add_user_to_organiztion(self, auth_headers, *_):
         """Ensure user cannot be added to organization by non-organization admin user."""
-        organization = add_organization('Test Organization', 'admin@test.org')
-        user_uuid = str(uuid4())
+        user = add_user('new_user YUYUT', 'new_userYUYUT@test.com', 'somepassword')
+        organization = Organization.from_user(user, 'Test Org QQQMN')
+        other_user = add_user('new_user TYDIY', 'new_userTYDIY@test.com', 'somepassword')
         with self.client:
-            org_uuid = str(organization.id)
             response = self.client.post(
-                f'/api/v1/organizations/{org_uuid}/users',
+                f'/api/v1/organizations/{organization.uuid}/users',
                 headers=auth_headers,
                 data=json.dumps(dict(
-                    user_id=user_uuid,
+                    user_uuid=str(other_user.uuid),
                 )),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 403)
-            self.assertIn('You do not have permission to add a user to that group.',
-                          data['message'])
             self.assertIn('error', data['status'])
-
-    def add_group_to_organization(self, auth_headers, group_uuid, organization_uuid):
-        """Add sample group to organization."""
-        with self.client:
-            response = self.client.post(
-                f'/api/v1/organizations/{str(organization_uuid)}/sample_groups',
-                headers=auth_headers,
-                data=json.dumps(dict(
-                    sample_group_uuid=str(group_uuid),
-                )),
-                content_type='application/json',
-            )
-            return response
-
-    @with_user
-    def test_add_group_to_organiztion(self, auth_headers, login_user):
-        """Ensure sample group can be added to organization by member."""
-        sample_group = add_sample_group('The Most Sampled of Groups')
-        organization = add_organization('Test Organization', 'admin@test.org')
-        organization.users.append(login_user)
-        db.session.commit()
-
-        response = self.add_group_to_organization(auth_headers,
-                                                  sample_group.id,
-                                                  organization.id)
-
-        data = json.loads(response.data.decode())
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('success', data['status'])
-        self.assertIn(sample_group, organization.sample_groups)
-
-    @with_user
-    def test_unauthorized_add_group_to_organiztion(self, auth_headers, *_):
-        """Ensure sample group can be added to organization by member."""
-        sample_group = add_sample_group('The Most Sampled of Groups')
-        organization = add_organization('Test Organization', 'admin@test.org')
-
-        response = self.add_group_to_organization(auth_headers,
-                                                  sample_group.id,
-                                                  organization.id)
-
-        data = json.loads(response.data.decode())
-        self.assertEqual(response.status_code, 403)
-        self.assertIn('error', data['status'])
+            self.assertIn('You do not have permission to add a user to that organization.',
+                          data['message'])

@@ -1,24 +1,21 @@
-# pylint: disable=invalid-name
-
 """MetaGenScope seed data from ARBF 2017."""
+
+# pylint: disable=invalid-name
 
 from app.analysis_results.analysis_result_models import AnalysisResultMeta, AnalysisResultWrapper
 
 from .loader import (
     load_sample_similarity,
-    load_taxon_abundance,
-    load_reads_classified,
-    load_hmp,
     load_ags,
 )
 
 
-sample_similarity = AnalysisResultWrapper(status='S', data=load_sample_similarity()).save()
-taxon_abundance = AnalysisResultWrapper(status='S', data=load_taxon_abundance()).save()
-hmp = AnalysisResultWrapper(status='S', data=load_hmp()).save()
-ags = AnalysisResultWrapper(status='S', data=load_ags()).save()
-
-abrf_analysis_result = AnalysisResultMeta(sample_similarity=sample_similarity,
-                                          taxon_abundance=taxon_abundance,
-                                          hmp=hmp,
-                                          average_genome_size=ags)
+def create_abrf_analysis_result(save=False):
+    """Generate ABRF analysis result."""
+    sample_similarity = AnalysisResultWrapper(status='S', data=load_sample_similarity()).save()
+    ags = AnalysisResultWrapper(status='S', data=load_ags()).save()
+    analysis_result = AnalysisResultMeta(sample_similarity=sample_similarity,
+                                         average_genome_size=ags)
+    if save:
+        analysis_result.save()
+    return analysis_result

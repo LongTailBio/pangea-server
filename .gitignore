@@ -1,3 +1,7 @@
+# Sphinx Documentation
+
+docs/_build
+
 # Environments - Extended
 .env-local
 

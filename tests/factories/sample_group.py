@@ -5,7 +5,7 @@
 import factory
 
 from app import db
-from app.sample_groups.sample_group_models import SampleGroup
+from app.db_models import SampleGroup
 
 
 class SampleGroupFactory(factory.alchemy.SQLAlchemyModelFactory):

@@ -1,10 +1,15 @@
-# MetaGenScope Server
+# Pangea Server
 
-> MetaGenScope server application.
+Pangea is a system to improve bioinformatics pipelines. Key features include:
+ - Organize projects, samples, and the results of analyses
+ - Automatically Sync results with S3 cloud storage
+ - Coordinate pipelines running across multiple sites
+
+Pangea server is currently in alpha and being heavily developed.
 
 ## Getting Started
 
-This readme documents how to run and test the MetaGenScope server as a standalone application. `metagenscope-server` is part of [`metagenscope-main`](https://github.com/longtailbio/metagenscope-main) and should usually be run as part of the complete stack.
+This readme documents how to run and test the Pangea server as a standalone application. Pangea server is based on the earlier MetaGenScope server `metagenscope-server` was a part of [`metagenscope-main`](https://github.com/longtailbio/metagenscope-main) and was usually be run as part of the complete stack.
 
 ### Prerequisites
 
@@ -96,24 +101,34 @@ $ make cov
 
 MetaGenScope uses the GitFlow branching strategy along with Pull Requests for code reviews. Check out [this post](https://devblog.dwarvesf.com/post/git-best-practices/) by the Dwarves Foundation for more information.
 
-### Tool Result Modules
-
-`ToolResult` modules define database storage and API upload for outputs.
-
-To add a new `ToolResult` module write your new module `tool_packages/my_new_tool` following existing conventions. Make sure the main module class inherits from `tool_packages.base.SampleToolResultModule` or `tool_packages.base.GroupToolResultModule`.
-
 ### Analysis Modules
 
-`AnalysisModule`s provide the backing data for each front-end visualization type. They are in charge of:
+`AnalysisModule`s are the core of MetaGenScope extensibility. They are in charge of:
 
 - Providing the data model for the visualization backing data
-- Enumerating the `ToolResult` types that are valid data sources (_WIP_)
+- Enumerating other `AnalysisModule` types that are valid data sources (_WIP_)
 - The Middleware task that transforms a set of `Sample`s into the module's data model (_WIP_)
 
-These modules live in `analysis_packages/` and are self-contained: all models, processing tasks, and tests live within each module.
+The modules live in the `pangea_modules` namespace and are self-contained: all models, processing tasks, and tests live within each module. The core set is defined in [`LongtailBio/pangea_modules`](https://github.com/LongTailBio/pangea-modules).
 
 To add a new `AnalysisModule` module:
-Write your new module `analysis_packages/my_new_module` following existing conventions. Make sure the main module class inherits from `analysis_packages.base.AnalysisModule`.
+Write your new namespace package `pangea_modules.my_new_module` following existing conventions. Make sure the main module class inherits from `pangea_modules.base.AnalysisModule`.
+
+### API Documentation
+
+The API for `metagenscope-server` is documented in [`swagger.yml`](swagger.yml) in the OpenAPI v3.0 spec.
+
+**Viewing**
+
+Swagger UI can be used to view an API spec URL. You can use the [public demo](https://petstore.swagger.io), or run it locally:
+
+```sh
+docker run -p 80:8080 -e API_URL=https://raw.githubusercontent.com/longtailbio/metagenscope-server/master/swagger.yml swaggerapi/swagger-ui:v3.19.5
+```
+
+**Editing**
+
+Copying and pasting between your local editor and the [`Swagger Editor`](https://editor.swagger.io) seems to be the easiest way to edit.
 
 ## Continuous Integration
 

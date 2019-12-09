@@ -4,16 +4,17 @@ import json
 from unittest import mock
 from uuid import UUID, uuid4
 
-from analysis_packages.ancestry.constants import TOOL_MODULE_NAME
-from tool_packages.ancestry.tests.factory import create_result as create_ancestry
-
 from app import db
-from app.samples.sample_models import Sample
+from app.db_models import Sample
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import (
+    add_sample,
+    add_sample_group,
+    with_user,
+)
 
-from .utils import middleware_tester
+from .utils import middleware_tester, get_analysis_result_with_data
 
 
 class TestSampleModule(BaseTestCase):
@@ -22,15 +23,15 @@ class TestSampleModule(BaseTestCase):
     @with_user
     def test_add_sample(self, auth_headers, *_):
         """Ensure a new sample can be added to the database."""
-        sample_name = 'Exciting Research Starts Here'
-        library = add_sample_group(name='A Great Name')
+        sample_name = 'Exciting Research Starts Here KJDHHDF'
+        library = add_sample_group(is_library=True)
         with self.client:
             response = self.client.post(
                 f'/api/v1/samples',
                 headers=auth_headers,
                 data=json.dumps(dict(
                     name=sample_name,
-                    library_uuid=str(library.id),
+                    library_uuid=str(library.uuid),
                 )),
                 content_type='application/json',
             )
@@ -41,7 +42,7 @@ class TestSampleModule(BaseTestCase):
             self.assertEqual(sample_name, data['data']['sample']['name'])
 
         sample_uuid = UUID(data['data']['sample']['uuid'])
-        self.assertIn(sample_uuid, library.sample_ids)
+        self.assertIn(sample_uuid, library.sample_uuids)
 
     @with_user
     def test_add_sample_missing_group(self, auth_headers, *_):
@@ -53,22 +54,22 @@ class TestSampleModule(BaseTestCase):
                 headers=auth_headers,
                 data=json.dumps(dict(
                     library_uuid=sample_group_uuid,
-                    name='Exciting Research Starts Here',
+                    name='Exciting Research Starts Here KCJLKD',
                 )),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
             self.assertIn('error', data['status'])
-            self.assertEqual('Sample Group does not exist!', data['message'])
+            self.assertEqual('Library does not exist!', data['message'])
 
     def test_get_single_sample(self):
         """Ensure get single sample behaves correctly."""
-        sample = add_sample(name='SMPL_01')
-        sample_uuid = str(sample.uuid)
+        library = add_sample_group(is_library=True)
+        sample = library.sample('SMPL_01 HHHGJGH')
         with self.client:
             response = self.client.get(
-                f'/api/v1/samples/{sample_uuid}',
+                f'/api/v1/samples/{sample.uuid}',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -76,17 +77,33 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('success', data['status'])
             sample = data['data']['sample']
             self.assertIn('SMPL_01', sample['name'])
-            self.assertIn('analysis_result_uuid', sample)
+            self.assertIn('analysis_result_uuids', sample)
             self.assertIn('created_at', sample)
+
+    @with_user
+    def test_get_all_samples(self, auth_headers, login_user):
+        """Test method for getting all available samples."""
+        library = add_sample_group('my_library EURWILT', owner=login_user, is_library=True)
+        samples = [library.sample(f'SMPL_0{i} UUOUY') for i in range(10)]
+        with self.client:
+            response = self.client.get(
+                '/api/v1/samples',
+                headers=auth_headers,
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertEqual(len(data['data']['samples']), len(samples))
 
     def test_get_single_sample_metadata(self):
         """Ensure get metadata for a single sample behaves correctly."""
         metadata = {'foo': 'bar'}
-        sample = add_sample(name='SMPL_01', metadata=metadata)
-        sample_uuid = str(sample.uuid)
+        library = add_sample_group(is_library=True)
+        sample = library.sample('SMPL_01 HHHGJGH', metadata=metadata)
         with self.client:
             response = self.client.get(
-                f'/api/v1/samples/{sample_uuid}/metadata',
+                f'/api/v1/samples/{sample.uuid}/metadata',
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -96,43 +113,3 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('uuid', sample)
             self.assertIn('name', sample)
             self.assertEqual(sample['metadata'], metadata)
-
-    def test_get_sample_uuid_from_name(self):
-        """Ensure get sample uuid behaves correctly."""
-        sample_name = 'SMPL_01'
-        sample = add_sample(name=sample_name)
-        sample_uuid = str(sample.uuid)
-        with self.client:
-            response = self.client.get(
-                f'/api/v1/samples/getid/{sample_name}',
-                content_type='application/json',
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('success', data['status'])
-            self.assertEqual(sample_uuid, data['data']['sample_uuid'])
-            self.assertEqual(sample_name, data['data']['sample_name'])
-
-    def prepare_middleware_test(self):  # pylint: disable=no-self-use
-        """Prepare database forsample  middleware test."""
-        data = create_ancestry()
-        args = {
-            'name': 'AncestrySample',
-            'library_uuid': uuid4(),
-            'metadata': {'foobar': 'baz'},
-            TOOL_MODULE_NAME: data,
-        }
-        sample = Sample(**args).save()
-        db.session.commit()
-
-        return sample
-
-    @with_user
-    def test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure all middleware can be kicked off for sample."""
-        sample = self.prepare_middleware_test()
-
-        patch_path = 'app.api.v1.samples.conduct_sample'
-        with mock.patch(patch_path) as conductor:
-            endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
-            middleware_tester(self, auth_headers, conductor, endpoint)

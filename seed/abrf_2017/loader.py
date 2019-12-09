@@ -3,11 +3,8 @@
 import json
 import os
 
-from analysis_packages.hmp.models import HMPResult
-from analysis_packages.reads_classified.models import ReadsClassifiedResult
-from analysis_packages.sample_similarity.models import SampleSimilarityResult
-from analysis_packages.taxon_abundance.models import TaxonAbundanceResult
-from analysis_packages.ags.models import AGSResult
+from pangea_modules.sample_similarity.models import SampleSimilarityResult
+from pangea_modules.ags.models import AGSResult
 
 
 LOCATION = os.path.realpath(os.path.join(os.getcwd(),
@@ -22,66 +19,6 @@ def load_sample_similarity():
         result = SampleSimilarityResult(categories=datastore['categories'],
                                         tools=datastore['tools'],
                                         data_records=datastore['data_records'])
-        return result
-
-
-def load_taxon_abundance():
-    """Load Taxon Abundance source JSON."""
-    def transform_node(node):
-        """Transform JSON node to expected type."""
-        return {
-            'id': node['id'],
-            'name': node['nodeName'],
-            'value': node['nodeValue'],
-            'rank': 'somerank',
-        }
-
-    filename = os.path.join(LOCATION, 'taxaflow.json')
-    with open(filename, 'r') as source:
-        datastore = json.load(source)['payload']['metaphlan2']
-        nodes = [item for sublist in datastore['times'] for item in sublist]
-        cleaned_datastore = {
-            'nodes': [transform_node(node) for node in nodes],
-            'edges': datastore['links']
-        }
-        result = TaxonAbundanceResult(**{
-            'by_tool': {
-                'kraken': cleaned_datastore,
-                'metaphlan2': cleaned_datastore,
-            }
-        })
-        return result
-
-
-def load_reads_classified():
-    """Load Reads Classified source JSON."""
-    def transform_datum(datum):
-        """Transform JSON datum to expected type."""
-        return {'category': datum['name'], 'values': datum['data']}
-
-    filename = os.path.join(LOCATION, 'reads-classified_col.json')
-    with open(filename, 'r') as source:
-        datastore = json.load(source)['payload']
-        categories = datastore['categories']
-        sample_names = datastore['samples']
-        data = [transform_datum(datum) for datum in datastore['main']]
-        result = ReadsClassifiedResult(categories=categories,
-                                       sample_names=sample_names,
-                                       data=data)
-        return result
-
-
-def load_hmp():
-    """Load HMP source JSON."""
-    filename = os.path.join(LOCATION, 'hmp_box.json')
-    with open(filename, 'r') as source:
-        datastore = json.load(source)['payload']
-        categories = datastore['cats2vals']
-        sites = datastore['sites']
-        data = {category: datastore[category] for category in categories}
-        result = HMPResult(categories=categories,
-                           sites=sites,
-                           data=data)
         return result
 
 

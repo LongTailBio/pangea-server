@@ -2,6 +2,11 @@
 
 import json
 
+from pangea_modules.ancestry_data.constants import MODULE_NAME
+from pangea_modules.ancestry_data.factory import create_result as create_ancestry
+
+from app.db_models import SampleAnalysisResult
+
 
 def middleware_tester(test_case, auth_headers, mocked_conductor, endpoint):
     """Execute common middleware API testing code."""
@@ -15,3 +20,14 @@ def middleware_tester(test_case, auth_headers, mocked_conductor, endpoint):
         data = json.loads(response.data.decode())
         test_case.assertIn('middleware', data['data'])
         mocked_conductor.assert_called_once()
+
+
+def get_analysis_result_with_data():
+    """Return an analysis result with one anlysis module for groups or samples."""
+    analysis_result = AnalysisResultMeta().save()
+    analysis_result.set_module_status(MODULE_NAME, 'S')
+    result_wrapper = getattr(analysis_result, MODULE_NAME).fetch()
+    result_wrapper.data = create_ancestry()
+    result_wrapper.save()
+    analysis_result.save()
+    return analysis_result

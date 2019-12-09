@@ -5,8 +5,8 @@ from io import BytesIO
 
 from app.extensions import db
 
-from tests.base import BaseTestCase
-from tests.utils import add_sample, add_sample_group, with_user
+from ..base import BaseTestCase
+from ..utils import add_sample, add_sample_group, with_user
 
 
 class TestLibraryModule(BaseTestCase):
@@ -16,21 +16,18 @@ class TestLibraryModule(BaseTestCase):
     def test_upload_metadata(self, auth_headers, *_):
         """Ensure metadata spreadsheet may be uploaded for a library."""
         library = add_sample_group(name='Library00')
-        sample00 = add_sample(name='sample_00', library_uuid=library.id)
-        sample01 = add_sample(name='sample_01', library_uuid=library.id)
-        library.samples = [sample00, sample01]
-        db.session.commit()
+        sample00, sample01 = library.sample('sample_00'), library.sample('sample_00')
 
         metadata = (b'sample_name,time,location\n'
                     b'sample_00,morning,turnstile\n'
                     b'sample_01,evening,bench')
-        data = dict(metadata=(BytesIO(metadata), 'metadata.csv'))
-        endpoint = f'/api/v1/libraries/{library.id}/metadata'
         with self.client:
-            response = self.client.post(endpoint,
-                                        headers=auth_headers,
-                                        data=data,
-                                        content_type='multipart/form-data')
+            response = self.client.post(
+                f'/api/v1/libraries/{library.uuid}/metadata',
+                headers=auth_headers,
+                data=dict(metadata=(BytesIO(metadata), 'metadata.csv')),
+                content_type='multipart/form-data'
+            )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
             self.assertIn('success', data['status'])

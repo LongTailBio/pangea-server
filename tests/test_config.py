@@ -8,7 +8,6 @@ from flask_testing import TestCase
 
 from app import create_app
 from app.config import app_config
-from app.extensions import celery
 
 
 app = create_app()
@@ -19,7 +18,6 @@ class TestDevelopmentConfig(TestCase):
 
     def create_app(self):
         app.config.from_object(app_config['development'])
-        celery.update_from_app(app)
         return app
 
     def test_app_is_development(self):
@@ -38,23 +36,12 @@ class TestDevelopmentConfig(TestCase):
             os.environ.get('DATABASE_URL')
         )
 
-        # Celery settings
-        self.assertTrue(
-            celery.conf.broker_url ==
-            os.environ.get('CELERY_BROKER_URL')
-        )
-        self.assertTrue(
-            celery.conf.result_backend ==
-            os.environ.get('CELERY_RESULT_BACKEND')
-        )
-
 
 class TestTestingConfig(TestCase):
     """Test suite for testing configuration."""
 
     def create_app(self):
         app.config.from_object(app_config['testing'])
-        celery.update_from_app(app)
         return app
 
     def test_app_is_testing(self):
@@ -74,23 +61,12 @@ class TestTestingConfig(TestCase):
             os.environ.get('DATABASE_TEST_URL')
         )
 
-        # Celery settings
-        self.assertTrue(
-            celery.conf.broker_url ==
-            os.environ.get('CELERY_BROKER_TEST_URL')
-        )
-        self.assertTrue(
-            celery.conf.result_backend ==
-            os.environ.get('CELERY_RESULT_TEST_BACKEND')
-        )
-
 
 class TestProductionConfig(TestCase):
     """Test suite for production configuration."""
 
     def create_app(self):
         app.config.from_object(app_config['production'])
-        celery.update_from_app(app)
         return app
 
     def test_app_is_production(self):
@@ -103,16 +79,6 @@ class TestProductionConfig(TestCase):
         self.assertTrue(
             app.config['SECRET_KEY'] ==
             os.environ.get('SECRET_KEY')
-        )
-
-        # Celery settings
-        self.assertTrue(
-            celery.conf.broker_url ==
-            os.environ.get('CELERY_BROKER_URL')
-        )
-        self.assertTrue(
-            celery.conf.result_backend ==
-            os.environ.get('CELERY_RESULT_BACKEND')
         )
 
 
