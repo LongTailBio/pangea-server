@@ -4,13 +4,11 @@ from uuid import UUID
 
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import NotFound, ParseError
-from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy import and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.extensions import db
-from app.analysis_modules.task_graph import TaskConductor
 from app.api.exceptions import InvalidRequest, InternalError
 from app.db_models import Sample, SampleGroup
 from app.authentication.helpers import authenticate
@@ -108,20 +106,3 @@ def post_single_sample_metadata(sample_uuid):
         raise ParseError('Missing Sample metadata payload.')
     except KeyError:
         raise ParseError('Invalid Sample metadata payload.')
-
-
-@samples_blueprint.route('/samples/<sample_uuid>/middleware', methods=['POST'])
-def run_sample_display_modules(sample_uuid):
-    """Run display modules for samples."""
-    try:
-        sample_uuid = UUID(sample_uuid)
-        _ = Sample.from_uuid(sample_uuid)
-    except ValueError:
-        raise ParseError('Invalid UUID provided.')
-    except DoesNotExist:
-        raise NotFound('Sample does not exist.')
-
-    analysis_names = request.args.getlist('analysis_names')
-    TaskConductor(sample_uuid, analysis_names).shake_that_baton()
-    result = {'middleware': analysis_names}
-    return result, 202

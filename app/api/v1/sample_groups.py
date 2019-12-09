@@ -11,7 +11,6 @@ from sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from app.analysis_modules.task_graph import TaskConductor
 from app.db_models import SampleGroup, Sample
 
 from app.api.constants import PAGE_SIZE
@@ -155,6 +154,22 @@ def get_samples_for_group(group_uuid):
     """Get single sample group's list of samples."""
     try:
         sample_group = SampleGroup.query.filter_by(uuid=UUID(group_uuid)).one()
+        result = {
+            'samples': [sample.serializable() for sample in sample_group.samples],
+        }
+        return result, 200
+    except ValueError:
+        raise ParseError('Invalid Sample Group UUID.')
+    except NoResultFound:
+        raise NotFound('Sample Group does not exist')
+
+
+
+@sample_groups_blueprint.route('/sample_groups/byname/<group_name>/samples', methods=['GET'])
+def get_samples_for_group_by_name(group_name):
+    """Get single sample group's list of samples."""
+    try:
+        sample_group = SampleGroup.from_name(group_name)
         result = {
             'samples': [sample.serializable() for sample in sample_group.samples],
         }

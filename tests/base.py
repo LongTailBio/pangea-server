@@ -6,7 +6,7 @@ import psycopg2
 from flask_testing import TestCase
 from testing.postgresql import PostgresqlFactory
 
-from app import create_app, db, celery
+from app import create_app, db
 from app.config import app_config
 
 
@@ -34,7 +34,6 @@ class BaseTestCase(TestCase):
         """Create app configured for testing."""
         config_cls = app_config['testing']
         app.config.from_object(config_cls)
-        celery.update_from_app(app)
         return app
 
     def setUp(self):

@@ -113,26 +113,3 @@ class TestSampleModule(BaseTestCase):
             self.assertIn('uuid', sample)
             self.assertIn('name', sample)
             self.assertEqual(sample['metadata'], metadata)
-
-    def prepare_middleware_test(self):  # pylint: disable=no-self-use
-        """Prepare database forsample  middleware test."""
-        args = {
-            'name': 'AncestrySample',
-            'library_uuid': uuid4(),
-            'metadata': {'foobar': 'baz'},
-            'analysis_result': get_analysis_result_with_data(),
-        }
-        sample = Sample(**args).save()
-        db.session.commit()
-
-        return sample
-
-    @with_user
-    def test_kick_off_all_middleware(self, auth_headers, *_):  # pylint: disable=invalid-name
-        """Ensure all middleware can be kicked off for sample."""
-        sample = self.prepare_middleware_test()
-
-        patch_path = 'app.api.v1.samples.TaskConductor.shake_that_baton'
-        with mock.patch(patch_path) as conductor:
-            endpoint = f'/api/v1/samples/{str(sample.uuid)}/middleware'
-            middleware_tester(self, auth_headers, conductor, endpoint)
