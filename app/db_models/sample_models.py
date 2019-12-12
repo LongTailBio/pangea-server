@@ -54,6 +54,7 @@ class Sample(db.Model):
                 'library_uuid': self.library_uuid,
                 'created_at': self.created_at,
                 'analysis_result_uuids': [ar.uuid for ar in self.analysis_results],
+                'analysis_result_names': [ar.module_name for ar in self.analysis_results],
             },
             'sample_metadata': self.sample_metadata,
         }

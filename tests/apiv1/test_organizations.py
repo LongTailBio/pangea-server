@@ -33,7 +33,7 @@ class TestOrganizationModule(BaseTestCase):
             self.assertEqual(response.status_code, 201)
             self.assertIn('success', data['status'])
             self.assertIn('organization', data['data'])
-            self.assertIn(str(login_user.uuid), data['data']['organization']['users'])
+            self.assertIn(str(login_user.uuid), data['data']['organization']['user_uuids'])
 
     # pylint: disable=invalid-name
     @with_user

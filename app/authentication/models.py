@@ -58,7 +58,8 @@ class Organization(db.Model):
                 'created_at': self.created_at,
                 'primary_admin_uuid': self.primary_admin_uuid,
                 'sample_group_uuids': [sg.uuid for sg in self.sample_groups],
-                'users': [user.uuid for user in self.users],
+                'user_uuids': [user.uuid for user in self.users],
+                'user_usernames': [user.username for user in self.users],
             },
         }
         return out
@@ -181,7 +182,8 @@ class User(db.Model):
             'user': {
                 'uuid': self.uuid,
                 'username': self.username,
-                'organizations': [org.uuid for org in self.organizations],
+                'organization_uuids': [org.uuid for org in self.organizations],
+                'organization_names': [org.name for org in self.organizations],
                 'email': self.email,
                 'is_deleted': self.is_deleted,
                 'created_at': self.created_at,

@@ -98,7 +98,9 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
                 'is_public': self.is_public,
                 'created_at': self.created_at,
                 'sample_uuids': [sample.uuid for sample in self.samples],
+                'sample_names': [sample.name for sample in self.samples],
                 'analysis_result_uuids': [ar.uuid for ar in self.analysis_results],
+                'analysis_result_names': [ar.module_name for ar in self.analysis_results],
             },
         }
         return out
