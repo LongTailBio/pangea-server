@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import random
 
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, ENUM
@@ -106,6 +107,12 @@ class SampleGroupAnalysisResultField(AnalysisResultField):
         self.sample_group_analysis_result_uuid = value
 
 
+def random_replicate_name(len=12):
+    """Return a random alphanumeric string of length `len`."""
+    out = random.choices('abcdefghijklmnopqrtuvwxyzABCDEFGHIJKLMNOPQRTUVWXYZ0123456789', k=len)
+    return ''.join(out)
+
+
 class AnalysisResult(db.Model):
     """Represent a single field of a single result in the database.
 
@@ -134,6 +141,7 @@ class AnalysisResult(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
 
     module_name = db.Column(db.String(256), index=True, nullable=False)
+    replicate = db.Column(db.String(256), nullable=False, default=random_replicate_name)
     status = db.Column(
         ENUM(*ANALYSIS_RESULT_STATUSES, name='status'),
         nullable=False
@@ -142,12 +150,15 @@ class AnalysisResult(db.Model):
     def __init__(  # pylint: disable=too-many-arguments
             self, module_name, parent_uuid,
             status='PENDING',
-            created_at=datetime.datetime.utcnow()):
+            created_at=datetime.datetime.utcnow(),
+            replicate=None):
         """Initialize Analysis Result model."""
         self.module_name = module_name
         self.parent_uuid = parent_uuid
         self.status = status
         self.created_at = created_at
+        if replicate:
+            self.replicate = replicate
 
     def field(self, field_name):
         """Return an AR-filed for the module bound to this AR.
@@ -197,7 +208,7 @@ class SampleAnalysisResult(AnalysisResult):
 
     __tablename__ = 'sample_analysis_results'
     __table_args__ = (
-        UniqueConstraint("sample_uuid", "module_name"),
+        UniqueConstraint("sample_uuid", "module_name", "replicate"),
     )
 
     sample_uuid = db.Column(
@@ -232,7 +243,7 @@ class SampleGroupAnalysisResult(AnalysisResult):
 
     __tablename__ = 'sample_group_analysis_results'
     __table_args__ = (
-        UniqueConstraint("sample_group_uuid", "module_name"),
+        UniqueConstraint("sample_group_uuid", "module_name", "replicate"),
     )
 
     sample_group_uuid = db.Column(

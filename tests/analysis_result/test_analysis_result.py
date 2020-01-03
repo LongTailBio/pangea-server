@@ -25,13 +25,21 @@ class TestAnalysisResultModel(BaseTestCase):
         self.assertEqual(ar.parent_uuid, sample.uuid)
         self.assertTrue(ar.created_at)
 
+    def test_add_duplicate_module_replicate_to_sample(self):
+        """Ensure duplicate sample names with same replicate are not allowed."""
+        library = add_sample_group('LBRY_01', is_library=True)
+        sample = Sample(name='SMPL_01', library_uuid=library.uuid).save()
+        SampleAnalysisResult('module_1', sample.uuid, replicate='foo').save()
+        dup = SampleAnalysisResult('module_1', sample.uuid, replicate='foo')
+        self.assertRaises(IntegrityError, dup.save)
+
     def test_add_duplicate_module_to_sample(self):
         """Ensure duplicate sample names are not allowed."""
         library = add_sample_group('LBRY_01', is_library=True)
         sample = Sample(name='SMPL_01', library_uuid=library.uuid).save()
         SampleAnalysisResult('module_1', sample.uuid).save()
-        dup = SampleAnalysisResult('module_1', sample.uuid)
-        self.assertRaises(IntegrityError, dup.save)
+        SampleAnalysisResult('module_1', sample.uuid).save()
+        self.assertEqual(len(sample.analysis_results), 2)
 
     def test_add_duplicate_to_diff_samples(self):
         """Ensure duplicate sample names in different libraries are allowed."""
@@ -52,12 +60,19 @@ class TestAnalysisResultModel(BaseTestCase):
         self.assertEqual(ar.parent_uuid, library.uuid)
         self.assertTrue(ar.created_at)
 
+    def test_add_duplicate_module_replicate_to_group(self):
+        """Ensure duplicate sample names and with same replicate are not allowed."""
+        grp = add_sample_group('GRP_01 UIHHGHJ')
+        SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid, replicate='foo').save()
+        dup = SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid, replicate='foo')
+        self.assertRaises(IntegrityError, dup.save)
+
     def test_add_duplicate_module_to_group(self):
-        """Ensure duplicate sample names are not allowed."""
+        """Ensure duplicate sample names and with diff replicate are allowed."""
         grp = add_sample_group('GRP_01 UIHHGHJ')
         SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid).save()
-        dup = SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid)
-        self.assertRaises(IntegrityError, dup.save)
+        SampleGroupAnalysisResult('module_1 UIHHGHJ', grp.uuid).save()
+        self.assertEqual(len(grp.analysis_results), 2)
 
     def test_add_duplicate_to_diff_groups(self):
         """Ensure duplicate sample names in different libraries are allowed."""

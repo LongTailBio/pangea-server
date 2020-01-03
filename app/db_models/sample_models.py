@@ -63,7 +63,7 @@ class Sample(db.Model):
     def serialize(self):
         return json.dumps(self.serializable())
 
-    def analysis_result(self, module_name):
+    def analysis_result(self, module_name, replicate=None):
         """Return an AR for the module bound to this sample.
 
         Create and save the AR if it does not already exist.
@@ -72,7 +72,7 @@ class Sample(db.Model):
         if ars:
             result = ars[0]
         else:
-            result = SampleAnalysisResult(module_name, self.uuid).save()
+            result = SampleAnalysisResult(module_name, self.uuid, replicate=replicate).save()
         return result
 
     def set_sample_metadata(self, data):

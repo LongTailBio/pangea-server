@@ -56,7 +56,7 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
             return samps[0]
         return Sample(sample_name, self.uuid, metadata=metadata).save()
 
-    def analysis_result(self, module_name):
+    def analysis_result(self, module_name, replicate=None):
         """Return an AR for the module bound to this sample.
 
         Create and save the AR if it does not already exist.
@@ -65,7 +65,7 @@ class SampleGroup(db.Model):  # pylint: disable=too-many-instance-attributes
         if ars:
             result = ars[0]
         else:
-            result = SampleGroupAnalysisResult(module_name, self.uuid).save()
+            result = SampleGroupAnalysisResult(module_name, self.uuid, replicate=replicate).save()
         return result
 
     @property
