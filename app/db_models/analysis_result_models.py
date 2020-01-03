@@ -23,6 +23,7 @@ class AnalysisResultField(db.Model):
         server_default=db.text('uuid_generate_v4()')
     )
     created_at = db.Column(db.DateTime, nullable=False)
+    field_type = db.Column(db.String(256))  # for future extension (eg. S3, JSON, FTP)
     field_name = db.Column(db.String(256), index=True, nullable=False)
     stored_data = db.Column(db.String(MAX_DATA_FIELD_LENGTH), index=False, nullable=False)
 
@@ -35,6 +36,7 @@ class AnalysisResultField(db.Model):
         self.field_name = field_name
         self.stored_data = json.dumps(data)
         self.created_at = created_at
+        self.field_type = 'json'  # for future extension
 
     @property
     def data(self):
