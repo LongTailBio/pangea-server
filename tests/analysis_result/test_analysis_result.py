@@ -25,6 +25,27 @@ class TestAnalysisResultModel(BaseTestCase):
         self.assertEqual(ar.parent_uuid, sample.uuid)
         self.assertTrue(ar.created_at)
 
+    def test_add_dependencies_to_ar(self):
+        """Ensure sample model is created correctly."""
+        library = add_sample_group('LBRY_01', is_library=True)
+        sample = Sample('SMPL_01', library.uuid,).save()
+        ar = SampleAnalysisResult('module_1', sample.uuid).save()
+        ar.add_dependency_uuids('one-uuid', 'another-uuid')
+        self.assertIn('one-uuid', ar.dependency_uuids)
+        self.assertIn('another-uuid', ar.dependency_uuids)
+
+    def test_add_dup_dependencies_to_ar(self):
+        """Ensure sample model is created correctly."""
+        library = add_sample_group('LBRY_01', is_library=True)
+        sample = Sample('SMPL_01', library.uuid,).save()
+        ar = SampleAnalysisResult('module_1', sample.uuid).save()
+        ar.add_dependency_uuids('one-uuid', 'another-uuid')
+        self.assertIn('one-uuid', ar.dependency_uuids)
+        self.assertIn('another-uuid', ar.dependency_uuids)
+        ar.add_dependency_uuids('one-uuid', 'third-uuid')
+        self.assertIn('third-uuid', ar.dependency_uuids)
+        self.assertEqual(3, len(ar.dependency_uuids))
+
     def test_add_duplicate_module_replicate_to_sample(self):
         """Ensure duplicate sample names with same replicate are not allowed."""
         library = add_sample_group('LBRY_01', is_library=True)

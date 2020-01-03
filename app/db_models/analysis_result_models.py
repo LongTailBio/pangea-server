@@ -148,6 +148,7 @@ class AnalysisResult(db.Model):
         ENUM(*ANALYSIS_RESULT_STATUSES, name='status'),
         nullable=False
     )
+    dependencies = db.Column(db.String(MAX_DATA_FIELD_LENGTH), default='[]')
 
     def __init__(  # pylint: disable=too-many-arguments
             self, module_name, parent_uuid,
@@ -161,6 +162,9 @@ class AnalysisResult(db.Model):
         self.created_at = created_at
         if replicate:
             self.replicate = replicate
+        if not self.dependencies:
+            self.dependencies = '[]'
+        self.dependency_uuids = json.loads(self.dependencies)
 
     def field(self, field_name):
         """Return an AR-filed for the module bound to this AR.
@@ -199,6 +203,13 @@ class AnalysisResult(db.Model):
 
     def serialize(self):
         return json.dumps(self.serializable())
+
+    def add_dependency_uuids(self, *uuids):
+        """Add the uuids to this sample, removing dulicates. Save after."""
+        new_uuids = set(self.dependency_uuids) | set(uuids)
+        self.dependency_uuids = list(new_uuids)
+        self.dependencies = json.dumps(self.dependency_uuids)
+        return self.save()
 
     def save(self):
         db.session.add(self)
