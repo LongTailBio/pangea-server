@@ -3,6 +3,16 @@
 import os
 
 
+def get_bucket_name(default='None'):
+    if default:
+        bucket_name = os.environ.get('S3_BUCKET_NAME', default)
+    else:
+        bucket_name = os.environ.get('S3_BUCKET_NAME')
+    if bucket_name and bucket_name[:5] != 's3://':
+        bucket_name = 's3://' + bucket_name
+    return bucket_name
+
+
 class Config():
     """Parent configuration class."""
 
@@ -24,6 +34,7 @@ class Config():
 
     # S3 Settings
     S3_ENDPOINT_URL = os.environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
+    S3_BUCKET_NAME = get_bucket_name()
     S3_KEY_PREFIX = os.environ.get('S3_KEY_PREFIX', '')
 
 
@@ -44,6 +55,7 @@ class TestingConfig(Config):
     BCRYPT_LOG_ROUNDS = 4
     TOKEN_EXPIRATION_DAYS = 0
     TOKEN_EXPIRATION_SECONDS = 3
+    S3_BUCKET_NAME = get_bucket_name(default='foobar')
 
 
 class StagingConfig(Config):

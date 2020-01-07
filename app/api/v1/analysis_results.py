@@ -6,13 +6,17 @@ from os import environ
 from flask import Blueprint, request
 from flask_api.exceptions import NotFound, ParseError
 from sqlalchemy.orm.exc import NoResultFound
+from flask import current_app as app
 
 from app.db_models import (
     SampleAnalysisResult,
     SampleGroupAnalysisResult,
+    SampleAnalysisResultField,
+    SampleGroupAnalysisResultField,
     SampleGroup,
     Sample,
 )
+
 
 
 analysis_results_blueprint = Blueprint('analysis_results', __name__)  # pylint: disable=invalid-name
@@ -94,12 +98,11 @@ def get_s3_uri_for_specified_analyis_result_field(lib_name, sample_name, module_
 
     Ignore the fact that we don't use the args for now.
     """
-    uri_str = SampleAnalysisResult.get_s3_uri()
-    endpoint_url = environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
+    uri_str = SampleAnalysisResultField.get_s3_uri()
     result = {
         '__type__': 's3_uri',
         'uri': uri_str,
-        'endpoint_url': endpoint_url,
+        'endpoint_url': app.config['S3_ENDPOINT_URL'],
     }
     return result, 200
 
@@ -159,12 +162,11 @@ def get_group_s3_uri_for_specified_analyis_result_field(group_name, module_name,
 
     Ignore the fact that we don't use the args for now.
     """
-    uri_str = SampleGroupAnalysisResult.get_s3_uri()
-    endpoint_url = environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
+    uri_str = SampleGroupAnalysisResultField.get_s3_uri()
     result = {
         '__type__': 's3_uri',
         'uri': uri_str,
-        'endpoint_url': endpoint_url,
+        'endpoint_url': app.config['S3_ENDPOINT_URL'],
     }
     return result, 200
 
