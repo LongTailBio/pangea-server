@@ -63,6 +63,9 @@ def get_all_analysis_results():
         raise NotFound('Analysis Result does not exist.')
 
 
+####################################################################################################
+
+
 BY_NAME_URL = '/analysis_results/byname/<lib_name>/<sample_name>/<module_name>'
 
 
@@ -82,28 +85,16 @@ def get_analysis_result_fields_by_name(lib_name, sample_name, module_name):
         raise NotFound('Analysis Result does not exist.')
 
 
-def _build_s3_uri(library_name, sample_name, module_name, field_name, ext=''):
-    path_string = [f's3://{library_name}', environ.get('S3_KEY_PREFIX', 'pangea/samples'), '<key>']
-    path_string = '/'.join([el for el in path_string if el])
-    if ext and ext[0] != '.':
-        ext = '.' + ext
-    key = (
-        f'{sample_name}/{module_name}/'
-        f'{library_name}.{sample_name}.{module_name}.{field_name}{ext}'
-    )
-    path_string = path_string.replace('<key>', key)
-    return path_string
-
-
 @analysis_results_blueprint.route(BY_NAME_URL + '/<field_name>/s3uri', methods=['GET'])
 def get_s3_uri_for_specified_analyis_result_field(lib_name, sample_name, module_name, field_name):
     """Get an S3 URI for the specified AR field.
 
     This S3 URI will not point to an actual file at first.
-    Just create a consistent interface for storage
+    Just create a consistent interface for storage.
+
+    Ignore the fact that we don't use the args for now.
     """
-    ext = request.args.get('ext', '')
-    uri_str = _build_s3_uri(lib_name, sample_name, module_name, field_name, ext)
+    uri_str = SampleAnalysisResult.get_s3_uri()
     endpoint_url = environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
     result = {
         '__type__': 's3_uri',
@@ -138,6 +129,9 @@ def post_analysis_result_field_by_name(lib_name, sample_name, module_name, field
         raise ParseError('Invalid registration payload.')
 
 
+####################################################################################################
+
+
 BY_GROUP_NAME_URL = '/analysis_results/byname/group/<group_name>/<module_name>'
 
 
@@ -156,25 +150,16 @@ def get_group_analysis_result_fields_by_name(group_name, module_name):
         raise NotFound('Analysis Result does not exist.')
 
 
-def _build_group_s3_uri(library_name, module_name, field_name, ext=''):
-    path_string = [f's3://{library_name}', environ.get('S3_KEY_PREFIX', 'pangea/results'), '<key>']
-    path_string = '/'.join([el for el in path_string if el])
-    if ext and ext[0] != '.':
-        ext = '.' + ext
-    key = f'{module_name}/{library_name}.{module_name}.{field_name}{ext}'
-    path_string = path_string.replace('<key>', key)
-    return path_string
-
-
 @analysis_results_blueprint.route(BY_GROUP_NAME_URL + '/<field_name>/s3uri', methods=['GET'])
 def get_group_s3_uri_for_specified_analyis_result_field(group_name, module_name, field_name):
     """Get an S3 URI for the specified AR field.
 
     This S3 URI will not point to an actual file at first.
     Just create a consistent interface for storage
+
+    Ignore the fact that we don't use the args for now.
     """
-    ext = request.args.get('ext', '')
-    uri_str = _build_group_s3_uri(group_name, module_name, field_name, ext)
+    uri_str = SampleGroupAnalysisResult.get_s3_uri()
     endpoint_url = environ.get('S3_ENDPOINT_URL', 'https://s3.wasabisys.com')
     result = {
         '__type__': 's3_uri',

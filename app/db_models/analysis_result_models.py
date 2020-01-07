@@ -6,6 +6,7 @@ import random
 
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, ENUM
+from uuid import uuid4
 
 from app.extensions import db
 
@@ -66,6 +67,16 @@ class AnalysisResultField(db.Model):
         db.session.commit()
         return self
 
+    @classmethod
+    def get_s3_uri(cls):
+        """Return an S3 URI which could be used for this type of AR-field. Do NOT save this URI."""
+        path_string = [
+            's3://' + environ['S3_BUCKET_NAME'],
+            environ.get('S3_KEY_PREFIX', 'pangea'),
+            str(uuid4())
+        ]
+        return path_string
+
 
 class SampleAnalysisResultField(AnalysisResultField):
 
@@ -86,6 +97,19 @@ class SampleAnalysisResultField(AnalysisResultField):
     def parent_uuid(self, value):
         """Set the value of parent uuid."""
         self.sample_analysis_result_uuid = value
+
+    def get_s3_uri(self):
+
+        path_string = [f's3://{library_name}', environ.get('S3_KEY_PREFIX', 'pangea/samples'), '<key>']
+        path_string = '/'.join([el for el in path_string if el])
+        if ext and ext[0] != '.':
+            ext = '.' + ext
+        key = (
+            f'{sample_name}/{module_name}/'
+            f'{library_name}.{sample_name}.{module_name}.{field_name}{ext}'
+        )
+        path_string = path_string.replace('<key>', key)
+        return path_string
 
 
 class SampleGroupAnalysisResultField(AnalysisResultField):
