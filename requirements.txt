@@ -29,13 +29,13 @@ pangea-modules.top-taxa==0.1.2
 
 Flask-Testing==0.7.1
 factory-boy==2.11.1
-pylint==2.1.1
-pylint-quotes==0.1.9
-pycodestyle==2.4.0
-pydocstyle==2.1.1
-pytest==3.8.0
-pytest-cov==2.6.0
-coverage==4.5.1
+pylint==2.4.4
+pylint-quotes==0.2.1
+pycodestyle==2.5.0
+pydocstyle==5.0.2
+pytest==5.3.5
+pytest-cov==2.8.1
+coverage==5.0.3
 
 celery[redis]==4.2.1
 networkx==2.1
