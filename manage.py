@@ -8,8 +8,6 @@ from flask_migrate import MigrateCommand, upgrade
 
 from app import create_app, db
 from app.authentication.models import User, PasswordAuthentication, OrganizationMembership
-from app.samples.sample_models import Sample
-from app.sample_groups.sample_group_models import SampleGroup
 
 app = create_app()
 manager = Manager(app)  # pylint: disable=invalid-name
