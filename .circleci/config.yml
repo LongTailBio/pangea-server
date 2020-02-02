@@ -111,9 +111,9 @@ jobs:
       - checkout
 
       - run:
-        name: Install postgres-server to get /bin/initdb (required by testing.postgresql)
-        command: |
-          sudo apt update && sudo apt install postgresql postgresql-contrib
+          name: Install postgres-server to get /bin/initdb (required by testing.postgresql)
+          command: |
+            sudo apt update && sudo apt install postgresql postgresql-contrib
 
       # Download and cache dependencies
       - restore_cache:
