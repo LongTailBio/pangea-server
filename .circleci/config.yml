@@ -95,7 +95,6 @@ jobs:
           SECRET_KEY: my_precious
           APP_SETTINGS: testing
           DATABASE_TEST_URL: postgresql://postgres:@localhost/metagenscope_test
-          MONGODB_TEST_HOST: mongodb://localhost/metagenscope_test
       - image: metagenscope/postgres:0afd77cd
         auth:
           username: $DOCKER_ID
@@ -103,7 +102,6 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ""
-      - image: circleci/mongo
 
     working_directory: ~/repo
 
