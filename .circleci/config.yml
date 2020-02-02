@@ -129,11 +129,11 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      - run:
-          name: Lint app
-          command: |
-            . venv/bin/activate
-            make lint
+      # - run:
+      #     name: Lint app
+      #     command: |
+      #       . venv/bin/activate
+      #       make lint
 
       - run:
           name: Wait for DB
