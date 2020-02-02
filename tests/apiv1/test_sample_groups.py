@@ -13,8 +13,6 @@ from app.db_models import Sample, SampleGroup
 from ..base import BaseTestCase
 from ..utils import add_sample, add_sample_group, with_user, add_user
 
-from .utils import middleware_tester, get_analysis_result_with_data
-
 
 class TestSampleGroupModule(BaseTestCase):
     """Tests for the SampleGroup module."""

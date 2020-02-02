@@ -14,16 +14,6 @@ gunicorn==20.0.4
 pyjwt==1.7.1
 gevent==1.4.0
 
-pangea-modules.base==0.1.2
-pangea-modules.ags==0.1.2
-pangea-modules.ancestry==0.1.2
-pangea-modules.ancestry-data==0.1.2
-pangea-modules.krakenhll-data==0.1.2
-pangea-modules.metaphlan2-data==0.1.2
-pangea-modules.microbe-census-data==0.1.2
-pangea-modules.sample-similarity==0.1.2
-pangea-modules.top-taxa==0.1.2
-
 Flask-Testing==0.7.1
 factory-boy==2.11.1
 pylint==2.4.4

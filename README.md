@@ -1,9 +1,10 @@
 # Pangea Server
 
 Pangea is a system to improve bioinformatics pipelines. Key features include:
- - Organize projects, samples, and the results of analyses
- - Automatically Sync results with S3 cloud storage
- - Coordinate pipelines running across multiple sites
+
+- Organize projects, samples, and the results of analyses
+- Automatically Sync results with S3 cloud storage
+- Coordinate pipelines running across multiple sites
 
 Pangea server is currently in alpha and being heavily developed.
 
@@ -85,7 +86,7 @@ $ make lint
 
 ### Running Test Suite
 
-To run the test suite (will execute  `lint` prior to running tests):
+To run the test suite (will execute `lint` prior to running tests):
 
 ```sh
 $ make test
@@ -100,19 +101,6 @@ $ make cov
 ## Development
 
 MetaGenScope uses the GitFlow branching strategy along with Pull Requests for code reviews. Check out [this post](https://devblog.dwarvesf.com/post/git-best-practices/) by the Dwarves Foundation for more information.
-
-### Analysis Modules
-
-`AnalysisModule`s are the core of MetaGenScope extensibility. They are in charge of:
-
-- Providing the data model for the visualization backing data
-- Enumerating other `AnalysisModule` types that are valid data sources (_WIP_)
-- The Middleware task that transforms a set of `Sample`s into the module's data model (_WIP_)
-
-The modules live in the `pangea_modules` namespace and are self-contained: all models, processing tasks, and tests live within each module. The core set is defined in [`LongtailBio/pangea_modules`](https://github.com/LongTailBio/pangea-modules).
-
-To add a new `AnalysisModule` module:
-Write your new namespace package `pangea_modules.my_new_module` following existing conventions. Make sure the main module class inherits from `pangea_modules.base.AnalysisModule`.
 
 ### API Documentation
 
@@ -178,14 +166,13 @@ See [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Authors
 
-* **Benjamin Chrobot** - _Initial work_ - [bchrobot](https://github.com/bchrobot)
+- **Benjamin Chrobot** - _Initial work_ - [bchrobot](https://github.com/bchrobot)
 
 See also the list of [contributors][contributors] who participated in this project.
 
 ## License
 
 This project is licensed under the MIT License - see the [`LICENSE.md`](LICENSE.md) file for details.
-
 
 [project-tags]: https://github.com/longtailbio/metagenscope-server/tags
 [contributors]: https://github.com/longtailbio/metagenscope-server/contributors

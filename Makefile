@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build clean lint-app lint-tests lint-seed lint-worker lint test cov
+.PHONY: clean-pyc clean-build clean lint-app lint-tests lint-worker lint test cov
 .DEFAULT_GOAL: help
 
 help:
@@ -36,20 +36,15 @@ lint-tests:
 	pycodestyle tests --max-line-length=120 && \
 	pydocstyle tests
 
-lint-seed:
-	pylint --rcfile=.pylintrc seed -f parseable -r n && \
-	pycodestyle seed --max-line-length=120 && \
-	pydocstyle seed
-
 lint-worker:
 	pylint --rcfile=.pylintrc worker -f parseable -r n && \
 	pycodestyle worker --max-line-length=120 && \
 	pydocstyle worker
 
 lint:
-	pylint --rcfile=.pylintrc app tests seed worker -f parseable -r n && \
-	pycodestyle app tests seed worker --max-line-length=120 && \
-	pydocstyle app tests seed worker
+	pylint --rcfile=.pylintrc app tests worker -f parseable -r n && \
+	pycodestyle app tests worker --max-line-length=120 && \
+	pydocstyle app tests worker
 
 test:
 	pytest tests

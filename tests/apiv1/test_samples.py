@@ -14,8 +14,6 @@ from ..utils import (
     with_user,
 )
 
-from .utils import middleware_tester, get_analysis_result_with_data
-
 
 class TestSampleModule(BaseTestCase):
     """Tests for the Sample module."""
