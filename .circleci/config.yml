@@ -132,6 +132,7 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+      ### Disabled until .pylintrc is properly configured
       # - run:
       #     name: Lint app
       #     command: |
@@ -198,20 +199,21 @@ workflows:
           filters:
             tags:
               only: /^v.*/
-      - build_staging:
-          context: metagenscope-staging
-          filters:
-            branches:
-              only: develop
-          requires:
-            - test_app
-      - deploy_staging:
-          context: metagenscope-staging
-          filters:
-            branches:
-              only: develop
-          requires:
-            - build_staging
+      ### Disabled until new pangea staging deploy process has been established
+      # - build_staging:
+      #     context: metagenscope-staging
+      #     filters:
+      #       branches:
+      #         only: develop
+      #     requires:
+      #       - test_app
+      # - deploy_staging:
+      #     context: metagenscope-staging
+      #     filters:
+      #       branches:
+      #         only: develop
+      #     requires:
+      #       - build_staging
       - build_release:
           context: metagenscope-staging
           filters:
