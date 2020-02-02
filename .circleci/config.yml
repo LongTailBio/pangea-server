@@ -86,12 +86,11 @@ build_steps: &build_steps
           DOCKERFILE_NAME: "Dockerfile"
         <<: *docker_build
 
-
 # CircleCI Jobs
 jobs:
   test_app:
     docker:
-      - image: circleci/python:3.6.3-jessie
+      - image: circleci/python:3.6.9-buster
         environment:
           SECRET_KEY: my_precious
           APP_SETTINGS: testing
@@ -114,9 +113,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run:
           name: Install Python Dependencies
@@ -130,11 +129,11 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      - run:
-          name: Lint app
-          command: |
-            . venv/bin/activate
-            make lint
+      # - run:
+      #     name: Lint app
+      #     command: |
+      #       . venv/bin/activate
+      #       make lint
 
       - run:
           name: Wait for DB
@@ -185,7 +184,6 @@ jobs:
       PUSH_GIT_COMMIT: false
       PUSH_GIT_TAG: true
       DOCKER_ORG: metagenscope
-
 
 workflows:
   version: 2
