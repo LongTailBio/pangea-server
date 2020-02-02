@@ -6,7 +6,6 @@ from csv import DictReader
 
 from flask import Blueprint, current_app, request
 from flask_api.exceptions import ParseError, NotFound, PermissionDenied
-from mongoengine.errors import ValidationError, DoesNotExist
 from sqlalchemy import func, and_, or_, asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
